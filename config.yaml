@@ -1,0 +1,5 @@
+tasks:
+  - framework: tornado
+    target: D:\codehouse\cem-server\api\auto
+  - framework: markfile
+    target: D:\codehouse\cem-server\api\auto
