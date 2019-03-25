@@ -5,12 +5,12 @@
 
 import os
 import yaml
-import json
+import fire
 import datetime
-from jinja2 import Environment, PackageLoader, select_autoescape
-from makers import maker_markfile, maker_tornado, factory
-
 from tornado.util import ObjectDict
+from jinja2 import Environment, PackageLoader, select_autoescape
+from core import parseModel
+from makers import factory
 
 
 def dict2objectdict(adict):
@@ -53,18 +53,24 @@ def render(tmpl, adict, dst_file, overwrite=True):
     open(dst_file, 'w', encoding='utf-8').write(code)
 
 
+def run(filename):
+    """
+    获取文件指定的配置文件及其对应输出， 并生成模板
+    :param filename:
+    :return:
+    """
+    config_filepath = os.path.join(script_path, "conf", filename)
+    if not os.path.exists(config_filepath):
+        exit("文件不存在")
+    config = yaml.load(open(config_filepath, encoding='utf8'))
+
+    for task in config.get('tasks', []):
+        app_filepath = os.path.join(script_path, "apps", task.get('input', ""))
+        if not os.path.exists(config_filepath):
+            continue
+        apps_dict = dict2objectdict(parseModel(app_filepath))
+        factory.make_code(jinja_env, apps_dict, task.get('output', []), render)
+
+
 if __name__ == "__main__":
-    config = dict2objectdict(yaml.load(open('config.yaml', encoding='utf8')))
-    if os.path.exists('local_config.yaml'):
-        local_config = dict2objectdict(yaml.load(open('local_config.yaml', encoding='utf8')))
-        config.update(local_config)
-
-    ALL_MODEL = None
-
-    for root, path, files in os.walk(os.path.join(os.getcwd(), "block")):
-        for file in files:
-            if not (ALL_MODEL is not None and file not in ALL_MODEL):
-                with open(os.path.join(root, file)) as info:
-                    app = dict2objectdict(json.load(info))
-                    app_list = []
-                    factory.make_code(jinja_env, app_list, config, render)
+    fire.Fire(run)

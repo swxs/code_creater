@@ -24,15 +24,15 @@ class MakerThrift2(Maker):
         }
         return ttype_dict.get(ttype, 'string')
 
-    def make(self, app, task):
+    def make(self, app_name, model, task):
         tmpl = os.path.join('backend', 'rpc', self.config.backend.rpc, 'rpc.protocol')
-        dst_file = os.path.join(self.config.target.backend, 'rpc', 'protocols', app.name + '.thrift')
-        self.render(tmpl, {'app': app, 'conv_type': MakerThrift2.conv_type}, dst_file)
+        dst_file = os.path.join(self.config.target.backend, 'rpc', 'protocols', model.name + '.thrift')
+        self.render(tmpl, {'model': model, 'conv_type': MakerThrift2.conv_type}, dst_file)
 
         tmpl = os.path.join('backend', 'rpc', self.config.backend.rpc, 'rpc_server.py')
-        dst_file = os.path.join(self.config.target.backend, 'rpc', app.name + '_rpc_server.py')
-        self.render(tmpl, {'app': app}, dst_file)
+        dst_file = os.path.join(self.config.target.backend, 'rpc', model.name + '_rpc_server.py')
+        self.render(tmpl, {'model': model, 'app_name': app_name}, dst_file)
 
         tmpl = os.path.join('backend', 'rpc', self.config.backend.rpc, 'rpc_client.py')
-        dst_file = os.path.join(self.config.target.backend, 'rpc', app.name + '_rpc_client.py')
-        self.render(tmpl, {'app': app}, dst_file)
+        dst_file = os.path.join(self.config.target.backend, 'rpc', model.name + '_rpc_client.py')
+        self.render(tmpl, {'model': model, 'app_name': app_name}, dst_file)

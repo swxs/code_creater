@@ -8,23 +8,25 @@ import abc
 
 
 class Maker(object, metaclass=abc.ABCMeta):
-    def __init__(self, env, app_list, config, render):
+    def __init__(self, env, apps_dict, config, render):
         self.env = env
         self.config = config
-        self.render = render
-        self.app_list = app_list
-
+        self.base_render = render
+        self.apps_dict = apps_dict
+        for conf in self.config:
+            target_path = conf.get('target')
+            if not os.path.exists(target_path):
+                os.makedirs(target_path)
         self.register_filters()
 
-    def add_init(self, target_path):
-        if not os.path.exists(target_path):
-            os.makedirs(target_path)
-        dst_file = os.path.join(target_path, '__init__.py')
-        if not os.path.exists(dst_file):
-            open(dst_file, 'wb').close()
+    def render(self, tmpl, adict, dst_file):
+        adict.update(dict(
+            apps_dict=self.apps_dict,
+        ))
+        return self.base_render(tmpl, adict, dst_file)
 
     @abc.abstractmethod
-    def make(self, app, task):
+    def make(self, name, app, task):
         """
         具体的渲染机制实现
         :return:

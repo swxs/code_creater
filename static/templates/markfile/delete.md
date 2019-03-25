@@ -1,8 +1,8 @@
-删除{{app.name}}
+删除{{model.name}}
 
 ### **请求URL：**
 
-`/api/{{app.name}}/delete/<{{app.name}}_id>`
+`/api/{{model.name}}/delete/<{{model.name}}_id>`
 
 ### **请求方式：**
 

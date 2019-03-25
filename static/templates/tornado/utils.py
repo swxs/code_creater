@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # -*- coding: utf-8 -*-
-# @File    : {{app.name}}.py
-# @AUTH    : model_creater
+# @File    : {{model.name}}.py
+# @AUTH    : model
 # @Time    : {{current_time}}
 
 import datetime
@@ -12,24 +12,26 @@ from common.Utils.log_utils import getLogger
 log = getLogger("utils/{self.model_name}")
 
 
-class {{app.name | get_title}}(BaseDocument):
-    {% for field in app.settings %}
-    {% if field.type in ['DateTime', ] %}
-    {{field.name}} = models_fields.DateTimeField({{field | get_params}})
-    {% elif field.type in ['String', ] %}
-    {{field.name}} = models_fields.StringField({{field | get_params}})
-    {% elif field.type in ['Int', ] %}
-    {{field.name}} = models_fields.IntField({{field | get_params}})
-    {% elif field.type in ['List',] %}
-    {{field.name}} = models_fields.ListField({{field | get_params}})
-    {% elif field.type in ['Dict', ] %}
-    {{field.name}} = models_fields.DictField({{field | get_params}})
-    {% elif field.type in ['Boolean', ] %}
-    {{field.name}} = models_fields.BooleanField({{field | get_params}})
-    {% elif field.type in ['objectid'] %}
-    {{field.name}} = models_fields.ObjectIdField({{field | get_params}})
+class {{model.name | get_title}}(BaseDocument):
+    {% for field in model.field_list %}
+    {% if field.field_type == "datetime" %}
+    {{field.field_name}} = model.DateTimeField({{field|get_model_params(model)}})
+    {% elif field.field_type == "str" %}
+    {{field.field_name}} = model.StringField({{field|get_model_params(model)}})
+    {% elif field.field_type == "int" %}
+    {{field.field_name}} = model.IntField({{field|get_model_params(model)}})
+    {% elif field.field_type == "list" %}
+    {{field.field_name}} = model.ListField({{field|get_model_params(model)}})
+    {% elif field.field_type == "dict" %}
+    {{field.field_name}} = model.DictField({{field|get_model_params(model)}})
+    {% elif field.field_type == "boolean" %}
+    {{field.field_name}} = model.BooleanField({{field|get_model_params(model)}})
+    {% elif field.field_type == "objectid" %}
+    {{field.field_name}} = model.ObjectIdField({{field|get_model_params(model)}})
+    {% else %}
+    {{field.field_name}} = model.StringField({{field|get_model_params(model)}})
     {% endif %}
     {% endfor %}
 
     def __init__(self, **kwargs):
-        super({{app.name | get_title}}, self).__init__(**kwargs)
+        super({{model.name | get_title}}, self).__init__(**kwargs)

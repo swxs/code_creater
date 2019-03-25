@@ -12,19 +12,19 @@ from .registry import factory
 class MakerMarkfile(Maker):
     name = "markfile"
 
-    def make(self, app, task):
+    def make(self, app_name, model, task):
         tmpl = os.path.join(task.get('framework'), 'create.md')
-        dst_file = os.path.join(task.get('target'), "docs", app.name, 'create.md')
-        self.render(tmpl, {'app': app}, dst_file)
+        dst_file = os.path.join(task.get('target'), "docs", model.name, 'create.md')
+        self.render(tmpl, {'model': model, 'app_name': app_name}, dst_file)
 
         tmpl = os.path.join(task.get('framework'), 'select.md')
-        dst_file = os.path.join(task.get('target'), "docs", app.name, 'select.md')
-        self.render(tmpl, {'app': app}, dst_file)
+        dst_file = os.path.join(task.get('target'), "docs", model.name, 'select.md')
+        self.render(tmpl, {'model': model, 'app_name': app_name}, dst_file)
 
         tmpl = os.path.join(task.get('framework'), 'update.md')
-        dst_file = os.path.join(task.get('target'), "docs", app.name, 'update.md')
-        self.render(tmpl, {'app': app}, dst_file)
+        dst_file = os.path.join(task.get('target'), "docs", model.name, 'update.md')
+        self.render(tmpl, {'model': model, 'app_name': app_name}, dst_file)
 
         tmpl = os.path.join(task.get('framework'), 'delete.md')
-        dst_file = os.path.join(task.get('target'), "docs", app.name, 'delete.md')
-        self.render(tmpl, {'app': app}, dst_file)
+        dst_file = os.path.join(task.get('target'), "docs", model.name, 'delete.md')
+        self.render(tmpl, {'model': model, 'app_name': app_name}, dst_file)

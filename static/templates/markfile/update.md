@@ -1,10 +1,10 @@
 ### **简要描述：**
 
-更新{{app.name}}
+更新{{model.name}}
 
 ### **请求URL：**
 
-`/api/{{app.name}}/update/<{{app.name}}_id>`
+`/api/{{model.name}}/update/<{{model.name}}_id>`
 
 ### **请求方式：**
 
@@ -12,10 +12,28 @@ PATCH
 
 ### **类型：**
 
+{% for field in model.field_list %}
+{% if "enums" is in(field) %}
+---
+#### {{field.field_name}}
+|值|原名|备注|
+|:--|:--|:--|
+{% for enum in field["enums"] %}
+|{{ loop.index }}|{{enum["name"]}}||
+{% endfor %}
+
+{% endif %}
+{% endfor %}
+
 ### **请求参数：**
 
 |参数名|参数类型|备注|
 |:--|:--|:--|
-{% for field in app.settings %}
-|{{field.name}}|{{field.type}}|{{field.get('params', {}).get("help_text", "")}}|
+{% if "parent" in model %}
+{% for field in apps_dict[app_name][model["parent"]].field_list %}
+|{{field.field_name}}|{{field.field_type}}|{{field.get("help_text", "")}}|
+{% endfor %}
+{% endif %}
+{% for field in model.field_list %}
+|{{field.field_name}}|{{field.field_type}}|{{field.get("help_text", "")}}|
 {% endfor %}

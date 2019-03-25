@@ -1,10 +1,10 @@
 ### **简要描述：**
 
-获取{{app.name}}
+获取{{model.name}}
 
 ### **请求URL：**
 
-`/api/{{app.name}}/select/<{{app.name}}_id>`
+`/api/{{model.name}}/select/<{{model.name}}_id>`
 
 ### **请求方式：**
 
