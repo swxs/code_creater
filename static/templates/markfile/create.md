@@ -29,10 +29,11 @@ POST
 
 |参数名|参数类型|备注|
 |:--|:--|:--|
-{% if "parent" in model %}
+{% if "parent" in model and model["parent"] %}
 {% for field in apps_dict[app_name][model["parent"]].field_list %}
 |{{field.field_name}}|{{field.field_type}}|{{field.get("help_text", "")}}|
 {% endfor %}
+{% endif %}
 {% for field in model.field_list %}
 |{{field.field_name}}|{{field.field_type}}|{{field.get("help_text", "")}}|
 {% endfor %}

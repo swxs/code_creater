@@ -19,6 +19,14 @@ class Maker(object, metaclass=abc.ABCMeta):
                 os.makedirs(target_path)
         self.register_filters()
 
+    def render_once(self, tmpl, adict, dst_file):
+        if os.path.exists(dst_file):
+            return
+        adict.update(dict(
+            apps_dict=self.apps_dict,
+        ))
+        return self.base_render(tmpl, adict, dst_file)
+
     def render(self, tmpl, adict, dst_file):
         adict.update(dict(
             apps_dict=self.apps_dict,
@@ -36,6 +44,7 @@ class Maker(object, metaclass=abc.ABCMeta):
         from importlib import import_module
         from inspect import getmembers, isfunction
         module_name_list = [
+            f'filters',
             f'filters.{self.name}'
         ]
         module_list = []

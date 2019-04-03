@@ -1,7 +1,23 @@
 tasks:
+  - input: "密码控制.xmind"
+    output:
+    - framework: tornado
+      target: D:\codehouse\home\api
+    - framework: markfile
+      target: D:\codehouse\home\doc
+
+  - input: "多媒体.xmind"
+    output:
+    - framework: tornado
+      target: D:\codehouse\home\api
+    - framework: markfile
+      target: D:\codehouse\home\doc
+
   - input: "BI.xmind"
     output:
     - framework: tornado
-      target: D:\codehouse\testcreate\api\auto
+      target: D:\codehouse\home\api
     - framework: markfile
-      target: D:\codehouse\testcreate\doc
+      target: D:\codehouse\home\doc
+
+

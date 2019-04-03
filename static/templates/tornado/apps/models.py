@@ -5,12 +5,12 @@
 
 import datetime
 import mongoengine as model
-from common.Utils.log_utils import getLogger
+from ..consts.{{model.name | get_title}} import *
+from ...BaseModel import BaseModelDocument
+from mongoengine_utils import NAME_DICT
 
-log = getLogger("model/{{model.name}}")
 
-
-class {{model.name | get_title}}(model.Document):
+class {{model.name | get_title}}(BaseModelDocument):
     {% for field in model.field_list %}
     {% if field.field_type == "datetime" %}
     {{field.field_name}} = model.DateTimeField({{field|get_model_params(model)}})
@@ -45,3 +45,5 @@ class {{model.name | get_title}}(model.Document):
         ]
     }
     {% endif %}
+
+NAME_DICT["{{model.name | get_title}}"] = {{model.name | get_title}}

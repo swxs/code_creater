@@ -5,7 +5,7 @@
 
 import re
 from xmindparser import xmind_to_dict
-
+from filters import get_title
 from utils.Helper_validate import RegType, Validate
 
 
@@ -23,13 +23,13 @@ def parseModel(filename):
                 continue
 
             parts = title.replace("：", ":").split(":")
-            app_name = parts[1]
+            app_name = get_title(parts[1].strip())
             tmp_apps[app_name] = topic
 
     for app_name, app_node in tmp_apps.items():
         apps_dict = dict()
         for topic in app_node.get("topics", []):
-            name = topic.get("title").strip()
+            name = get_title(topic.get("title").strip())
             app = dict(name=name, field_list=[], parent=None)
             for field_topic in topic.get("topics", []):
                 field_name = field_topic.get("title").strip()
@@ -48,8 +48,6 @@ def parseModel(filename):
 
 
 def parseField(app, topic):
-    # print("Field", topic)
-
     parts = topic.get("title").strip().replace("：", ":").split(":")
     if len(parts) == 0:
         return None
@@ -81,7 +79,7 @@ def parseField(app, topic):
     elif ttype in ("intlist",):
         field_type = "list"
         field_detail_type = "int"
-    elif ttype in ("objectidlist",):
+    elif ttype in ("objectidlist", "idlist"):
         field_type = "list"
         field_detail_type = "objectid"
     elif ttype in ("dictlist",):
@@ -128,7 +126,6 @@ def parseField(app, topic):
 
 
 def parseMeta(app, topic):
-    # print("Meta", topic)
     meta_dict = dict(
         allow_inheritance=False,
         index_list=[],
