@@ -4,7 +4,7 @@ import re
 
 try:
     from typing.re import Pattern
-except:
+except Exception:
     Pattern = re.compile(r"")
 
 

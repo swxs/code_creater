@@ -36,3 +36,11 @@ class {{model.name | get_title}}(BaseUtils):
 
     def __init__(self, **kwargs):
         super({{model.name | get_title}}, self).__init__(**kwargs)
+
+    {% if ("meta" is in(model)) and ("listorder") is in(model["meta"]) %}
+    def create(self, **kwargs):
+        {% for field in model.field_list %}
+        {{field.field_name}} = {{model.name | get_title}}.first().{{field.field_name}} + 100000
+        {% endfor %}
+        super({{model.name | get_title}}, self).create(**kwargs)
+
