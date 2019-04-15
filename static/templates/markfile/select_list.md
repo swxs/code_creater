@@ -1,10 +1,10 @@
 ### **简要描述：**
 
-获取{{model.name}}
+获取{{model.name}}列表
 
 ### **请求URL：**
 
-`/api/{{app_name | get_lower}}/{{model.name}}/<{{model.name}}_id>/`
+`/api/{{app_name | get_lower}}/{{model.name}}/`
 
 ### **请求方式：**
 

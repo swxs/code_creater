@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # @File    : {{model.name}}.py
 # @AUTH    : model_creater
-# @Time    : {{current_time}}
 {% for field in model.field_list %}
 {% if "enums" is in(field) %}
 

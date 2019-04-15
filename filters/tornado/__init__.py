@@ -28,6 +28,8 @@ def get_index_params(index):
 
 def get_utils_params(field, model) -> str:
     params_list = list()
+    if "no_create" in field:
+        params_list.append(f"create=False")
     return ", ".join(params_list)
 
 
@@ -39,7 +41,7 @@ def get_model_params(field, model) -> str:
         if field["default"] in ('False', 'false'):
             params_list.append(f"default=False")
         elif field["default"] in ('True', 'true'):
-            params_list.append(f"default=true")
+            params_list.append(f"default=True")
         elif "enums" in field:
             params_list.append(f"default={get_enum_upper(field['default'], field, model)}")
         elif field["field_type"] in ("int",):

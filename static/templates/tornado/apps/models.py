@@ -1,16 +1,23 @@
 # -*- coding: utf-8 -*-
 # @File    : {{model.name}}.py
 # @AUTH    : model_creater
-# @Time    : {{current_time}}
 
 import datetime
 import mongoengine as model
 from ..consts.{{model.name | get_title}} import *
+{% if "parent" in model and model["parent"] %}
+from .{{apps_dict[app_name][model["parent"]].name | get_title}} import {{apps_dict[app_name][model["parent"]].name | get_title}}
+{% else %}
 from ...BaseModel import BaseModelDocument
+{% endif %}
 from mongoengine_utils import NAME_DICT
 
 
+{% if "parent" in model and model["parent"] %}
+class {{model.name | get_title}}({{apps_dict[app_name][model["parent"]].name | get_title}}):
+{% else %}
 class {{model.name | get_title}}(BaseModelDocument):
+{% endif %}
     {% for field in model.field_list %}
     {% if field.field_type == "datetime" %}
     {{field.field_name}} = model.DateTimeField({{field|get_model_params(model)}})
@@ -30,9 +37,10 @@ class {{model.name | get_title}}(BaseModelDocument):
     {{field.field_name}} = model.StringField({{field|get_model_params(model)}})
     {% endif %}
     {% endfor %}
-
     {% if "meta" is in(model) %}
+
     meta = {
+        {% if "index_list" is in(model["meta"]) and model["meta"]["index_list"] %}
         'indexes': [
             {% for index in model["meta"]["index_list"] %}
             {
@@ -42,8 +50,13 @@ class {{model.name | get_title}}(BaseModelDocument):
                 {% endif %}
             },
             {% endfor %}
-        ]
+        ],
+        {% endif %}
+        {% if "allow_inheritance" is in(model["meta"]) and model["meta"]["allow_inheritance"] %}
+        'allow_inheritance': True,
+        {% endif %}
     }
     {% endif %}
+
 
 NAME_DICT["{{model.name | get_title}}"] = {{model.name | get_title}}

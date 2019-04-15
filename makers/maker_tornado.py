@@ -13,6 +13,9 @@ from utils.Helper_dir import get_dir_path
 class MakerTornado(Maker):
     name = "tornado"
 
+    def total_make(self, app_name, models, task):
+        pass
+
     def make(self, app_name, model, task):
         # 创建 app 下的 __init__.py 文件, 只创建一次
         dst_path = get_dir_path(task.get('target'), app_name)

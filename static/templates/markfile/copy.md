@@ -1,10 +1,10 @@
 ### **简要描述：**
 
-创建{{model.name}}
+复制{{model.name}}
 
 ### **请求URL：**
 
-`/api/{{app_name | get_lower}}/{{model.name}}/`
+`/api/{{app_name | get_lower}}/{{model.name}}/<{{model.name}}_id>/`
 
 ### **请求方式：**
 

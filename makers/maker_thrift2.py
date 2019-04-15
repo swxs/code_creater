@@ -24,6 +24,9 @@ class MakerThrift2(Maker):
         }
         return ttype_dict.get(ttype, 'string')
 
+    def total_make(self, app_name, models, task):
+        pass
+
     def make(self, app_name, model, task):
         tmpl = os.path.join('backend', 'rpc', self.config.backend.rpc, 'rpc.protocol')
         dst_file = os.path.join(self.config.target.backend, 'rpc', 'protocols', model.name + '.thrift')

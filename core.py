@@ -108,6 +108,14 @@ def parseField(app, topic):
                 field_dict["default"] = default_parts[1].strip()
             else:
                 pass
+        elif Validate.start_with(title, RegType.REF):
+            ref_parts = title.replace("：", ":").split(":")
+            if len(ref_parts) > 1:
+                field_dict["ref"] = get_title(ref_parts[1].strip())
+            else:
+                pass
+        elif Validate.start_with(title, RegType.NOCREATE):
+            field_dict["no_create"] = True
         elif Validate.start_with(title, RegType.ENUM):
             enum_list = list()
             for enum in info.get("topics", []):
@@ -149,7 +157,7 @@ def parseMeta(app, topic):
                     if Validate.start_with(deep_index_info, RegType.UNIQ):
                         is_uniq = True
                 index_info = dict(
-                    field_name_list=index.get("title").strip().replace("，", ",").split(","),
+                    field_name_list=[field_name.strip() for field_name in index.get("title").strip().replace("，", ",").split(",")],
                     is_uniq=is_uniq
                 )
                 meta_dict["index_list"].append(index_info)

@@ -4,7 +4,7 @@
 
 ### **请求URL：**
 
-`/api/{{model.name}}/update/<{{model.name}}_id>`
+`/api/{{app_name | get_lower}}/{{model.name}}/<{{model.name}}_id>/`
 
 ### **请求方式：**
 
@@ -37,3 +37,5 @@ PATCH
 {% for field in model.field_list %}
 |{{field.field_name}}|{{field.field_type}}|{{field.get("help_text", "")}}|
 {% endfor %}
+
+[返回目录](../base.md)

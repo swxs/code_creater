@@ -15,6 +15,7 @@ class Factory(object):
         for task in config:
             maker = self.maker_dict[task.get('framework')](env, apps_dict, config, render)
             for (app_name, models) in apps_dict.items():
+                maker.total_make(app_name, models, task)
                 for model_name, model in models.items():
                     try:
                         maker.make(app_name, model, task)

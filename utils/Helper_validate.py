@@ -14,6 +14,8 @@ class RegType:
     COMMIT = r'#'
     META = r'meta'
     DEFAULT = r'default'
+    REF = r'ref'
+    NOCREATE = r'no_create'
     ENUM = r'enum'
     ALLOW_INHERITANCE = r'allow_inheritance'
     PARENT = r'parent'
