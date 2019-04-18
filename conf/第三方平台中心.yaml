@@ -4,11 +4,11 @@ tasks:
     - framework: tornado
       target: D:\codehouse\home\api
     - framework: markfile
-      target: D:\codehouse\home\doc
+      target: D:\codehouse\home\docs
 
   - input: "支付宝第三方平台.xmind"
     output:
     - framework: tornado
       target: D:\codehouse\home\api
     - framework: markfile
-      target: D:\codehouse\home\doc
+      target: D:\codehouse\home\docs

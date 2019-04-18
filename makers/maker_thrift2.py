@@ -12,30 +12,26 @@ from .registry import factory
 class MakerThrift2(Maker):
     name = "thrift2"
 
-    @classmethod
-    def conv_type(cls, ttype):
-        ttype_dict = {
-            'str': 'string',
-            'int': 'i32',
-            'bool': 'bool',
-            'strlist': 'list<string>',
-            'intlist': 'list<inting>',
-            'objectid': 'string'
-        }
-        return ttype_dict.get(ttype, 'string')
-
     def total_make(self, app_name, models, task):
-        pass
+        tmpl = os.path.join(task.get('framework'), 'protocols', 'model.thrift')
+        dst_file = os.path.join(task.get('target'), app_name, 'protocols', 'model.thrift')
+        self.render(tmpl, {'models': models, 'app_name': app_name}, dst_file)
+
+        tmpl = os.path.join(task.get('framework'), 'protocols', 'main.thrift')
+        dst_file = os.path.join(task.get('target'), app_name, 'protocols', 'main.thrift')
+        self.render_once(tmpl, {'models': models, 'app_name': app_name}, dst_file)
+
+        tmpl = os.path.join(task.get('framework'), '__init__.py')
+        dst_file = os.path.join(task.get('target'), app_name, '__init__.py')
+        self.render_once(tmpl, {'models': models, 'app_name': app_name}, dst_file)
+
+        tmpl = os.path.join(task.get('framework'), 'base_client.py')
+        dst_file = os.path.join(task.get('target'), app_name, 'base_client.py')
+        self.render(tmpl, {'models': models, 'app_name': app_name}, dst_file)
+
+        tmpl = os.path.join(task.get('framework'), 'base_server.py')
+        dst_file = os.path.join(task.get('target'), app_name, 'base_server.py')
+        self.render(tmpl, {'models': models, 'app_name': app_name}, dst_file)
 
     def make(self, app_name, model, task):
-        tmpl = os.path.join('backend', 'rpc', self.config.backend.rpc, 'rpc.protocol')
-        dst_file = os.path.join(self.config.target.backend, 'rpc', 'protocols', model.name + '.thrift')
-        self.render(tmpl, {'model': model, 'conv_type': MakerThrift2.conv_type}, dst_file)
-
-        tmpl = os.path.join('backend', 'rpc', self.config.backend.rpc, 'rpc_server.py')
-        dst_file = os.path.join(self.config.target.backend, 'rpc', model.name + '_rpc_server.py')
-        self.render(tmpl, {'model': model, 'app_name': app_name}, dst_file)
-
-        tmpl = os.path.join('backend', 'rpc', self.config.backend.rpc, 'rpc_client.py')
-        dst_file = os.path.join(self.config.target.backend, 'rpc', model.name + '_rpc_client.py')
-        self.render(tmpl, {'model': model, 'app_name': app_name}, dst_file)
+        pass

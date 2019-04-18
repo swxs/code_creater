@@ -4,9 +4,9 @@
 
 import datetime
 import mongoengine_utils as model
-from ..models.{{model.name | get_title }} import {{model.name | get_title}} as _
+from ..models.{{model.name | title }} import {{model.name | title}} as _
 {% if "parent" in model and model["parent"] %}
-from .{{apps_dict[app_name][model["parent"]].name | get_title}} import {{apps_dict[app_name][model["parent"]].name | get_title}}
+from .{{apps_dict[app_name][model["parent"]].name | title}} import {{apps_dict[app_name][model["parent"]].name | title}}
 {% else %}
 from ...BaseUtils import BaseUtils
 {% endif %}
@@ -16,9 +16,9 @@ log = getLogger("utils/{self.model_name}")
 
 
 {% if "parent" in model and model["parent"] %}
-class {{model.name | get_title}}({{apps_dict[app_name][model["parent"]].name | get_title}}):
+class {{model.name | title}}({{apps_dict[app_name][model["parent"]].name | title}}):
 {% else %}
-class {{model.name | get_title}}(BaseUtils):
+class {{model.name | title}}(BaseUtils):
 {% endif %}
     {% for field in model.field_list %}
     {% if field.field_type == "datetime" %}
@@ -41,27 +41,27 @@ class {{model.name | get_title}}(BaseUtils):
     {% endfor %}
 
     def __init__(self, **kwargs):
-        super({{model.name | get_title}}, self).__init__(**kwargs)
+        super({{model.name | title}}, self).__init__(**kwargs)
 
     {% for field in model.field_list %}
     {% if "ref" is in(field) %}
     {% set ref_model = apps_dict[app_name][field["ref"]] %}
     @property
-    def {{ref_model["name"] | get_lower}}(self):
-        from .{{ref_model["name"] | get_title}} import {{ref_model["name"] | get_title}}
-        return {{ref_model["name"] | get_title}}.get_{{ref_model["name"] | get_lower}}_by_{{ref_model["name"] | get_lower}}_id(self.{{field.field_name}})
+    def {{ref_model["name"] | lower}}(self):
+        from .{{ref_model["name"] | title}} import {{ref_model["name"] | title}}
+        return {{ref_model["name"] | title}}.get_{{ref_model["name"] | lower}}_by_{{ref_model["name"] | lower}}_id(self.{{field.field_name}})
 
     {% endif %}
     {% endfor %}
     @classmethod
-    def get_{{model.name | get_lower}}_by_{{model.name | get_lower}}_id(cls, {{model.name | get_lower}}_id):
-        return cls.select(id={{model.name | get_lower}}_id)
+    def get_{{model.name | lower}}_by_{{model.name | lower}}_id(cls, {{model.name | lower}}_id):
+        return cls.select(id={{model.name | lower}}_id)
 
     {% if ("meta" is in(model)) and ("listorder") is in(model["meta"]) %}
     def create(self, **kwargs):
         {% for field in model.field_list %}
-        {{field.field_name}} = {{model.name | get_title}}.first().{{field.field_name}} + 100000
+        {{field.field_name}} = {{model.name | title}}.first().{{field.field_name}} + 100000
         {% endfor %}
-        super({{model.name | get_title}}, self).create(**kwargs)
+        super({{model.name | title}}, self).create(**kwargs)
 
     {% endif %}

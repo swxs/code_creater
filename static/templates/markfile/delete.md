@@ -2,7 +2,7 @@
 
 ### **请求URL：**
 
-`/api/{{app_name | get_lower}}/{{model.name}}/<{{model.name}}_id>/`
+`/api/{{app_name | lower}}/{{model.name}}/<{{model.name}}_id>/`
 
 ### **请求方式：**
 

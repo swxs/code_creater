@@ -5,24 +5,24 @@
 from base import BaseHandler
 from common.Utils.log_utils import getLogger
 from ...BaseConsts import *
-from ..utils.{{model.name | get_title}} import {{model.name | get_title}}
+from ..utils.{{model.name | title}} import {{model.name | title}}
 
 log = getLogger("views/{{model.name}}")
 
 
-class {{model.name | get_title}}Handler(BaseHandler):
+class {{model.name | title}}Handler(BaseHandler):
     @BaseHandler.ajax_base()
-    def get(self, {{model.name | get_lower}}_id=None):
-        if {{model.name | get_lower}}_id:
-            {{model.name | get_lower}} = {{model.name | get_title}}.select(id={{model.name | get_lower}}_id)
-            return {{model.name | get_lower}}.to_front()
+    def get(self, {{model.name | lower}}_id=None):
+        if {{model.name | lower}}_id:
+            {{model.name | lower}} = {{model.name | title}}.select(id={{model.name | lower}}_id)
+            return {{model.name | lower}}.to_front()
         else:
-            {{model.name | get_lower}}_list = {{model.name | get_title}}.filter()
-            return [{{model.name | get_lower}}.to_front() for {{model.name | get_lower}} in {{model.name | get_lower}}_list]
+            {{model.name | lower}}_list = {{model.name | title}}.filter()
+            return [{{model.name | lower}}.to_front() for {{model.name | lower}} in {{model.name | lower}}_list]
 
     @BaseHandler.ajax_base()
-    def post(self, {{model.name | get_lower}}_id=None):
-        if {{model.name | get_lower}}_id:
+    def post(self, {{model.name | lower}}_id=None):
+        if {{model.name | lower}}_id:
             params = dict()
             {# 如果存在继承， 添加父类字段 #}
             {% if "parent" in model and model["parent"] %}
@@ -42,9 +42,9 @@ class {{model.name | get_title}}Handler(BaseHandler):
             params['{{field.field_name}}'] = self.get_argument('{{field.field_name}}', undefined)
             {% endif %}
             {% endfor %}
-            {{model.name | get_lower}} = {{model.name | get_title}}.select(id={{model.name | get_lower}}_id)
-            {{model.name | get_lower}} = {{model.name | get_lower}}.copy(**params)
-            return {{model.name | get_lower}}.id
+            {{model.name | lower}} = {{model.name | title}}.select(id={{model.name | lower}}_id)
+            {{model.name | lower}} = {{model.name | lower}}.copy(**params)
+            return {{model.name | lower}}.id
         else:
             params = dict()
             {# 如果存在继承， 添加父类字段 #}
@@ -65,11 +65,11 @@ class {{model.name | get_title}}Handler(BaseHandler):
             params['{{field.field_name}}'] = self.get_argument('{{field.field_name}}', None)
             {% endif %}
             {% endfor %}
-            {{model.name | get_lower}} = {{model.name | get_title}}.create(**params)
-            return {{model.name | get_lower}}.id
+            {{model.name | lower}} = {{model.name | title}}.create(**params)
+            return {{model.name | lower}}.id
 
     @BaseHandler.ajax_base()
-    def put(self, {{model.name | get_lower}}_id=None):
+    def put(self, {{model.name | lower}}_id=None):
         params = dict()
         {# 如果存在继承， 添加父类字段 #}
         {% if "parent" in model and model["parent"] %}
@@ -89,12 +89,12 @@ class {{model.name | get_title}}Handler(BaseHandler):
         params['{{field.field_name}}'] = self.get_argument('{{field.field_name}}', None)
         {% endif %}
         {% endfor %}
-        {{model.name | get_lower}} = {{model.name | get_title}}.select(id={{model.name | get_lower}}_id)
-        {{model.name | get_lower}} = {{model.name | get_lower}}.update(**params)
-        return {{model.name | get_lower}}.id
+        {{model.name | lower}} = {{model.name | title}}.select(id={{model.name | lower}}_id)
+        {{model.name | lower}} = {{model.name | lower}}.update(**params)
+        return {{model.name | lower}}.id
 
     @BaseHandler.ajax_base()
-    def patch(self, {{model.name | get_lower}}_id=None):
+    def patch(self, {{model.name | lower}}_id=None):
         params = dict()
         {# 如果存在继承， 添加父类字段 #}
         {% if "parent" in model and model["parent"] %}
@@ -114,14 +114,14 @@ class {{model.name | get_title}}Handler(BaseHandler):
         params['{{field.field_name}}'] = self.get_argument('{{field.field_name}}', undefined)
         {% endif %}
         {% endfor %}
-        {{model.name | get_lower}} = {{model.name | get_title}}.select(id={{model.name | get_lower}}_id)
-        {{model.name | get_lower}} = {{model.name | get_lower}}.update(**params)
-        return {{model.name | get_lower}}.id
+        {{model.name | lower}} = {{model.name | title}}.select(id={{model.name | lower}}_id)
+        {{model.name | lower}} = {{model.name | lower}}.update(**params)
+        return {{model.name | lower}}.id
 
     @BaseHandler.ajax_base()
-    def delete(self, {{model.name | get_lower}}_id=None):
-        {{model.name | get_lower}} = {{model.name | get_title}}.select(id={{model.name | get_lower}}_id)
-        {{model.name | get_lower}}.delete()
+    def delete(self, {{model.name | lower}}_id=None):
+        {{model.name | lower}} = {{model.name | title}}.select(id={{model.name | lower}}_id)
+        {{model.name | lower}}.delete()
         return None
 
     def set_default_headers(self):

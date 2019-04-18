@@ -3,8 +3,8 @@
 # @AUTH    : model
 
 from tornado.web import url
-from ..views.{{model.name | get_title}} import {{model.name | get_title}}Handler
+from ..views.{{model.name | title}} import {{model.name | title}}Handler
 
 url_mapping = [
-    url(r"/api/{{app_name | get_lower}}/{{model.name}}/(?:([a-zA-Z0-9&%\.~-]+)/)?", {{model.name | get_title}}Handler),
+    url(r"/api/{{app_name | lower}}/{{model.name}}/(?:([a-zA-Z0-9&%\.~-]+)/)?", {{model.name | title}}Handler),
 ]

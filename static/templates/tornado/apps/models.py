@@ -4,9 +4,9 @@
 
 import datetime
 import mongoengine as model
-from ..consts.{{model.name | get_title}} import *
+from ..consts.{{model.name | title}} import *
 {% if "parent" in model and model["parent"] %}
-from .{{apps_dict[app_name][model["parent"]].name | get_title}} import {{apps_dict[app_name][model["parent"]].name | get_title}}
+from .{{apps_dict[app_name][model["parent"]].name | title}} import {{apps_dict[app_name][model["parent"]].name | title}}
 {% else %}
 from ...BaseModel import BaseModelDocument
 {% endif %}
@@ -14,9 +14,9 @@ from mongoengine_utils import NAME_DICT
 
 
 {% if "parent" in model and model["parent"] %}
-class {{model.name | get_title}}({{apps_dict[app_name][model["parent"]].name | get_title}}):
+class {{model.name | title}}({{apps_dict[app_name][model["parent"]].name | title}}):
 {% else %}
-class {{model.name | get_title}}(BaseModelDocument):
+class {{model.name | title}}(BaseModelDocument):
 {% endif %}
     {% for field in model.field_list %}
     {% if field.field_type == "datetime" %}
@@ -59,4 +59,4 @@ class {{model.name | get_title}}(BaseModelDocument):
     {% endif %}
 
 
-NAME_DICT["{{model.name | get_title}}"] = {{model.name | get_title}}
+NAME_DICT["{{model.name | title}}"] = {{model.name | title}}

@@ -10,13 +10,13 @@ re_letter = re.compile(r'[a-zA-Z]')
 
 
 def get_enum_upper(name, field, model):
-    from .. import get_upper
-    return f"{get_upper(model.name)}_{get_upper(field.get('field_name'))}_{get_upper(name)}"
+    from .. import upper
+    return f"{upper(model.name)}_{upper(field.get('field_name'))}_{upper(name)}"
 
 
 def get_enum_list(field, model):
-    from .. import get_upper
-    return f"{get_upper(model.name)}_{get_upper(field.get('field_name'))}_LIST"
+    from .. import upper
+    return f"{upper(model.name)}_{upper(field.get('field_name'))}_LIST"
 
 
 def get_index_params(index):

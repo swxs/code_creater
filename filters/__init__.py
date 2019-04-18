@@ -31,7 +31,7 @@ def get_base_name(name: str):
     return [name for name in name_list if name]
 
 
-def get_title(name: str) -> str:
+def title(name: str) -> str:
     """
     驼峰表示: field_name=>FieldName
     :param name:
@@ -41,7 +41,7 @@ def get_title(name: str) -> str:
     return "".join(name.title() for name in name_list)
 
 
-def get_lower(name: str) -> str:
+def lower(name: str) -> str:
     """
     小写表示：Field_Name, FieldName, fieldName, field_name, FIELD_NAME=>field_name
     :param name:
@@ -51,7 +51,7 @@ def get_lower(name: str) -> str:
     return "_".join(name.lower() for name in name_list)
 
 
-def get_upper(name: str) -> str:
+def upper(name: str) -> str:
     """
     大写表示：Field_Name, FieldName, fieldName, field_name, FIELD_NAME=>FIELD_NAME
     :param name:

@@ -5,7 +5,7 @@
 
 import re
 from xmindparser import xmind_to_dict
-from filters import get_title
+from filters import title as title_filter
 from utils.Helper_validate import RegType, Validate
 
 
@@ -23,13 +23,13 @@ def parseModel(filename):
                 continue
 
             parts = title.replace("：", ":").split(":")
-            app_name = get_title(parts[1].strip())
+            app_name = title_filter(parts[1].strip())
             tmp_apps[app_name] = topic
 
     for app_name, app_node in tmp_apps.items():
         apps_dict = dict()
         for topic in app_node.get("topics", []):
-            name = get_title(topic.get("title").strip())
+            name = title_filter(topic.get("title").strip())
             app = dict(name=name, field_list=[], parent=None)
             for field_topic in topic.get("topics", []):
                 field_name = field_topic.get("title").strip()
@@ -111,7 +111,7 @@ def parseField(app, topic):
         elif Validate.start_with(title, RegType.REF):
             ref_parts = title.replace("：", ":").split(":")
             if len(ref_parts) > 1:
-                field_dict["ref"] = get_title(ref_parts[1].strip())
+                field_dict["ref"] = title_filter(ref_parts[1].strip())
             else:
                 pass
         elif Validate.start_with(title, RegType.NOCREATE):

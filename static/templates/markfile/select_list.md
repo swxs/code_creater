@@ -4,7 +4,7 @@
 
 ### **请求URL：**
 
-`/api/{{app_name | get_lower}}/{{model.name}}/`
+`/api/{{app_name | lower}}/{{model.name}}/`
 
 ### **请求方式：**
 

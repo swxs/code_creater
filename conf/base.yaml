@@ -4,7 +4,7 @@ tasks:
     - framework: "生成模块名"
       target: D:\codehouse\testcreate\api\auto
     - framework: markfile
-      target: D:\codehouse\testcreate\doc
+      target: D:\codehouse\testcreate\docs
 
 model:
   name: "生成模块名"

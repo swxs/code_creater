@@ -4,20 +4,22 @@ tasks:
     - framework: tornado
       target: D:\codehouse\home\api
     - framework: markfile
-      target: D:\codehouse\home\doc
+      target: D:\codehouse\home\docs
+    - framework: thrift2
+      target: D:\codehouse\home\rpc
 
   - input: "多媒体.xmind"
     output:
     - framework: tornado
       target: D:\codehouse\home\api
     - framework: markfile
-      target: D:\codehouse\home\doc
+      target: D:\codehouse\home\docs
 
   - input: "BI.xmind"
     output:
     - framework: tornado
       target: D:\codehouse\home\api
     - framework: markfile
-      target: D:\codehouse\home\doc
+      target: D:\codehouse\home\docs
 
 
