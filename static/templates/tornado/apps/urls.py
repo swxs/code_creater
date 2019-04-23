@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # @File    : {{model.name}}.py
-# @AUTH    : model
+# @AUTH    : model_creater
 
 from tornado.web import url
 from ..views.{{model.name | title}} import {{model.name | title}}Handler
