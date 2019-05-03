@@ -1,9 +1,9 @@
 tasks:
-  - input: "BI.xmind"
+  - input: "密码控制.yaml.xmind"
     output:
     - framework: tornado
       target: D:\codehouse\home\api
     - framework: markfile
       target: D:\codehouse\home\docs
-
-
+    - framework: thrift2
+      target: D:\codehouse\home\rpc
