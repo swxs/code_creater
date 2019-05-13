@@ -67,9 +67,9 @@ def render(tmpl, adict, dst_file, overwrite=True):
 
 
 if __name__ == "__main__":
-    config = dict2objectdict(yaml.load(open('bi.yaml', encoding='utf8')))
+    config = dict2objectdict(yaml.safe_load(open('bi.yaml', encoding='utf8')))
     if os.path.exists('local_config.yaml'):
-        local_config = dict2objectdict(yaml.load(open('local_config.yaml', encoding='utf8')))
+        local_config = dict2objectdict(yaml.safe_load(open('local_config.yaml', encoding='utf8')))
         config.update(local_config)
 
     with open(os.path.join(script_path, "apps", "container.json")) as info:
