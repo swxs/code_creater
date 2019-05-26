@@ -12,6 +12,7 @@ class RegType:
     ALL = r'.*'
     APP = r'[Aa]pp'
     COMMIT = r'#'
+    DESC = r"##"
     META = r'meta'
     DEFAULT = r'default'
     REF = r'ref'

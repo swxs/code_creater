@@ -18,10 +18,12 @@ def parseModel(filename):
     print(f"正在生成{root.get('title')}相关内容")
     for topic in root.get("topics", []):
         title = topic.get("title").strip()
-        if Validate.has(title, RegType.APP):
-            if Validate.start_with(title, RegType.COMMIT):
-                continue
-
+        # APP描述
+        if Validate.start_with(title, RegType.DESC):
+            apps["_description"] = title[2:].strip()
+        elif Validate.start_with(title, RegType.COMMIT):
+            continue
+        elif Validate.has(title, RegType.APP):
             parts = title.replace("：", ":").split(":")
             app_name = title_filter(parts[1].strip())
             tmp_apps[app_name] = topic
@@ -29,19 +31,26 @@ def parseModel(filename):
     for app_name, app_node in tmp_apps.items():
         apps_dict = dict()
         for topic in app_node.get("topics", []):
-            name = title_filter(topic.get("title").strip())
-            app = dict(name=name, field_list=[], parent=None)
-            for field_topic in topic.get("topics", []):
-                field_name = field_topic.get("title").strip()
-                if Validate.check(field_name, RegType.META):
-                    meta = parseMeta(app, field_topic)
-                    if meta:
-                        app["meta"] = meta
-                else:
-                    field = parseField(app, field_topic)
-                    if field:
-                        app["field_list"].append(field)
-            apps_dict[name] = app
+            title = topic.get("title").strip()
+            if Validate.start_with(title, RegType.DESC):
+                apps_dict["_description"] = title[2:].strip()
+            elif Validate.start_with(title, RegType.COMMIT):
+                continue
+            else:
+                name = title_filter(title)
+                app = dict(name=name, field_list=[], parent=None)
+                for field_topic in topic.get("topics", []):
+                    field_name = field_topic.get("title").strip()
+
+                    if Validate.check(field_name, RegType.META):
+                        meta = parseMeta(app, field_topic)
+                        if meta:
+                            app["meta"] = meta
+                    else:
+                        field = parseField(app, field_topic)
+                        if field:
+                            app["field_list"].append(field)
+                apps_dict[name] = app
         print(apps_dict)
         apps[app_name] = apps_dict
     return apps
@@ -99,9 +108,10 @@ def parseField(app, topic):
     field_dict = dict(field_name=field_name, field_type=field_type, struct=field_detail_type)
     for info in topic.get("topics", []):
         title = info.get("title").strip()
-        if Validate.start_with(title, RegType.COMMIT):
-            help_text_parts = title.split("#")
-            field_dict["help_text"] = help_text_parts[1].strip()
+        if Validate.start_with(title, RegType.DESC):
+            field_dict["_description"] = title[2:].strip()
+        elif Validate.start_with(title, RegType.COMMIT):
+            continue
         elif Validate.start_with(title, RegType.DEFAULT):
             default_parts = title.replace("：", ":").split(":")
             if len(default_parts) > 1:

@@ -31,11 +31,11 @@ PATCH
 |:--|:--|:--|
 {% if "parent" in model and model["parent"] %}
 {% for field in apps_dict[app_name][model["parent"]].field_list %}
-|{{field.field_name}}|{{field.field_type}}|{{field.get("help_text", "")}}|
+|{{field.field_name}}|{{field.field_type}}|{{field.get("_description", "")}}|
 {% endfor %}
 {% endif %}
 {% for field in model.field_list %}
-|{{field.field_name}}|{{field.field_type}}|{{field.get("help_text", "")}}|
+|{{field.field_name}}|{{field.field_type}}|{{field.get("_description", "")}}|
 {% endfor %}
 
 [返回目录](../base.md)

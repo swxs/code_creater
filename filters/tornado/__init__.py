@@ -50,6 +50,6 @@ def get_model_params(field, model) -> str:
             params_list.append(f"default={float(field['default'])}")
         else:
             params_list.append(f"default='{field['default']}'")
-    if "help_text" in field:
-        params_list.append(f"helper_text='{field['help_text']}'")
+    if "_description" in field:
+        params_list.append(f"helper_text='{field['_description']}'")
     return ", ".join(params_list)

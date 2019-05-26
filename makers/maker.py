@@ -5,13 +5,14 @@
 
 import os
 import abc
-
+import datetime
 
 class Maker(object, metaclass=abc.ABCMeta):
-    def __init__(self, env, apps_dict, config, render):
+    name = 'base'
+
+    def __init__(self, env, apps_dict, config):
         self.env = env
         self.config = config
-        self.base_render = render
         self.apps_dict = apps_dict
         for conf in self.config:
             target_path = conf.get('target')
@@ -19,33 +20,21 @@ class Maker(object, metaclass=abc.ABCMeta):
                 os.makedirs(target_path)
         self.register_filters()
 
-    def render_once(self, tmpl, adict, dst_file):
-        if os.path.exists(dst_file):
-            return
+    def base_render(self, tmpl, adict, dst_file, overwrite=True):
+        if not overwrite:
+            if os.path.exists(dst_file):
+                print('Skipped. Target file: %s exists!' % dst_file)
+                return
+
+        # 添加部分常用方法
         adict.update(dict(
-            apps_dict=self.apps_dict,
+            current_time=f"{datetime.datetime.now():%Y-%m-%d %H:%M:%S}"
         ))
-        return self.base_render(tmpl, adict, dst_file)
-
-    def render(self, tmpl, adict, dst_file):
-        adict.update(dict(
-            apps_dict=self.apps_dict,
-        ))
-        return self.base_render(tmpl, adict, dst_file)
-
-    @abc.abstractmethod
-    def total_make(self, name, app, task):
-        """
-        具体的渲染机制实现
-        :return:
-        """
-
-    @abc.abstractmethod
-    def make(self, name, app, task):
-        """
-        具体的渲染机制实现
-        :return:
-        """
+        tmpl = tmpl.replace('\\', '/')
+        code = self.env.get_template(tmpl).render(**adict)
+        if not os.path.exists(os.path.dirname(dst_file)):
+            os.makedirs(os.path.dirname(dst_file))
+        open(dst_file, 'w', encoding='utf-8').write(code)
 
     def register_filters(self):
         from importlib import import_module
@@ -71,3 +60,31 @@ class Maker(object, metaclass=abc.ABCMeta):
                 else:
                     print(f'Filter loaded: {name}')
                 self.env.filters[name] = func
+
+    def render(self, tmpl, adict, dst_file):
+        adict.update(dict(
+            apps_dict=self.apps_dict,
+        ))
+        return self.base_render(tmpl, adict, dst_file)
+
+    def render_once(self, tmpl, adict, dst_file):
+        if os.path.exists(dst_file):
+            return
+        adict.update(dict(
+            apps_dict=self.apps_dict,
+        ))
+        return self.base_render(tmpl, adict, dst_file)
+
+    @abc.abstractmethod
+    def make(self, name, app, task):
+        """
+        具体的渲染机制实现
+        :return:
+        """
+
+    @abc.abstractmethod
+    def total_make(self, name, app, task):
+        """
+        具体的渲染机制实现
+        :return:
+        """

@@ -6,7 +6,7 @@
 import os
 from .maker import Maker
 from .registry import factory
-from utils.Helper_dir import get_dir_path
+from utils.utils import get_dir_path
 
 
 @factory.add_makers
@@ -42,7 +42,7 @@ class MakerTornado(Maker):
         self.render_once(tmpl, {'model': model, 'app_name': app_name}, dst_file)
 
         # 创建 app/commons 下的 __init__.py 文件, 只创建一次
-        dst_path = get_dir_path(task.get('target'), app_name, 'commons')
+        dst_path = get_dir_path(task.get('target'), app_name, 'dao')
         tmpl = os.path.join(task.get('framework'), 'apps', '__init__.py.jinja2')
         dst_file = os.path.join(dst_path, f'__init__.py')
         self.render_once(tmpl, {'model': model, 'app_name': app_name}, dst_file)
@@ -78,8 +78,8 @@ class MakerTornado(Maker):
         self.render(tmpl, {'model': model, 'app_name': app_name}, dst_file)
 
         # 创建 app/commons 下的 commons.py 文件, 记录模块操作信息
-        dst_path = get_dir_path(task.get('target'), app_name, 'commons')
-        tmpl = os.path.join(task.get('framework'), 'apps', 'commons.py.jinja2')
+        dst_path = get_dir_path(task.get('target'), app_name, 'dao')
+        tmpl = os.path.join(task.get('framework'), 'apps', 'dao.jinja2')
         dst_file = os.path.join(dst_path, f'{model.name}.py')
         self.render_once(tmpl, {'model': model, 'app_name': app_name}, dst_file)
 
