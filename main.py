@@ -32,7 +32,7 @@ def run(filename):
     config_filepath = os.path.join(script_path, "conf", filename)
     if not os.path.exists(config_filepath):
         exit("文件不存在")
-    config = yaml.load(open(config_filepath, encoding='utf8'))
+    config = yaml.safe_load(open(config_filepath, encoding='utf8'))
 
     for task in config.get('tasks', []):
         app_filepath = os.path.join(script_path, "apps", task.get('input', ""))
