@@ -27,3 +27,6 @@ note.txt
 .venv
 **/logs/
 block/
+.pytest_cache
+.tox
+code_creater.egg-info
