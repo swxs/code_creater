@@ -5,22 +5,11 @@
 
 import os
 import yaml
-import json
-import datetime
+import fire
+from core import parseModel
+from makers import factory
+from utils import utils
 from jinja2 import Environment, PackageLoader, select_autoescape
-from makers import maker_markfile, maker_tornado, factory
-
-from tornado.util import ObjectDict
-
-
-def dict2objectdict(adict):
-    for key, value in adict.items():
-        if isinstance(value, dict):
-            new_value = dict2objectdict(value)
-            adict[key] = new_value
-    obj = ObjectDict(adict)
-    return obj
-
 
 script_path = os.path.dirname(os.path.abspath(__file__))
 
@@ -34,37 +23,24 @@ jinja_env = Environment(
 )
 
 
-def render(tmpl, adict, dst_file, overwrite=True):
-    if not overwrite:
-        if os.path.exists(dst_file):
-            print('Skipped. Target file: %s exists!' % dst_file)
-            return
-    tmpl = tmpl.replace('\\', '/')
-    template = jinja_env.get_template(tmpl)
+def run(filename):
+    """
+    获取文件指定的配置文件及其对应输出， 并生成模板
+    :param filename:
+    :return:
+    """
+    config_filepath = os.path.join(script_path, "conf", filename)
+    if not os.path.exists(config_filepath):
+        exit("文件不存在")
+    config = yaml.safe_load(open(config_filepath, encoding='utf8'))
 
-    # 添加部分常用方法
-    adict.update(dict(
-        current_time=f"{datetime.datetime.now():%Y-%m-%d %H:%M:%S}"
-    ))
-
-    code = template.render(**adict)
-    if not os.path.exists(os.path.dirname(dst_file)):
-        os.makedirs(os.path.dirname(dst_file))
-    open(dst_file, 'w', encoding='utf-8').write(code)
+    for task in config.get('tasks', []):
+        app_filepath = os.path.join(script_path, "apps", task.get('input', ""))
+        if not os.path.exists(config_filepath):
+            continue
+        apps_dict = utils.dict2objectdict(parseModel(app_filepath))
+        factory.make_code(jinja_env, apps_dict, task.get('output', []))
 
 
 if __name__ == "__main__":
-    config = dict2objectdict(yaml.load(open('config.yaml', encoding='utf8')))
-    if os.path.exists('local_config.yaml'):
-        local_config = dict2objectdict(yaml.load(open('local_config.yaml', encoding='utf8')))
-        config.update(local_config)
-
-    ALL_MODEL = None
-
-    for root, path, files in os.walk(os.path.join(os.getcwd(), "block")):
-        for file in files:
-            if not (ALL_MODEL is not None and file not in ALL_MODEL):
-                with open(os.path.join(root, file)) as info:
-                    app = dict2objectdict(json.load(info))
-                    app_list = []
-                    factory.make_code(jinja_env, app_list, config, render)
+    fire.Fire(run)

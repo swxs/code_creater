@@ -1,0 +1,116 @@
+# -*- coding: utf-8 -*-
+# @File    : base_client.py
+# @AUTH    : model_creater
+
+import os
+import thriftpy2
+from ..client_pool import register_thrift_pool, get_thrift_pool
+
+rpc_dir = os.path.abspath(os.path.dirname(__file__))
+{{app_name | lower}}_thrift = thriftpy2.load(rpc_dir + "/protocols/main.thrift", module_name="{{app_name | lower}}_thrift")
+register_thrift_pool('{{app_name | title}}', {{app_name | lower}}_thrift.{{app_name | title}}Service, replace=False)
+
+{% for model_name, model in models.items() %}
+def create_{{model_name | lower}}(**kwargs):
+    {{model_name | lower}} = {{app_name | lower}}_thrift.{{model_name | title}}()
+    {{model_name | lower}}.__dict__.update(kwargs)
+    with get_thrift_pool('{{app_name | title}}').get_client() as client:
+        result = client.create_{{app_name | lower}}_{{model_name | lower}}({{model_name | lower}})
+        return result
+
+
+def update_{{model_name | lower}}(id, **kwargs):
+    {{model_name | lower}} = {{app_name | lower}}_thrift.{{model_name | title}}()
+    {{model_name | lower}}.__dict__.update(kwargs)
+    with get_thrift_pool('{{app_name | title}}').get_client() as client:
+        result = client.update_{{app_name | lower}}_{{model_name | lower}}(id, {{model_name | lower}})
+        return result
+
+
+def delete_{{model_name | lower}}(id):
+    with get_thrift_pool('{{app_name | title}}').get_client() as client:
+        result = client.delete_{{app_name | lower}}_{{model_name | lower}}(id)
+        return result
+
+
+def select_{{model_name | lower}}(id):
+    with get_thrift_pool('{{app_name | title}}').get_client() as client:
+        result = client.select_{{app_name | lower}}_{{model_name | lower}}(id)
+        if 0 == result.code and result.{{model_name | lower}}:
+            result_object = result.{{model_name | lower}}
+            result.{{model_name | lower}} = {
+                "id": result_object.id,
+                {% for field in model.field_list %}
+                    {% if field.field_type == "datetime" %}
+                "{{field.field_name}}": datetime.strptime({{model_name | lower}}.{{field.field_name}}, '%Y-%m-%d %H:%M:%S.%f'),
+                    {% elif field.field_type == "str" %}
+                "{{field.field_name}}": {{model_name | lower}}.{{field.field_name}},
+                    {% elif field.field_type == "int" %}
+                "{{field.field_name}}": {{model_name | lower}}.{{field.field_name}},
+                    {% elif field.field_type == "list" %}
+                        {% if field.field_detail_type == "str" %}
+                "{{field.field_name}}": {{model_name | lower}}.{{field.field_name}},
+                        {% elif field.field_detail_type == "int" %}
+                "{{field.field_name}}": {{model_name | lower}}.{{field.field_name}},
+                        {% elif field.field_detail_type == "objectid" %}
+                "{{field.field_name}}": {{model_name | lower}}.{{field.field_name}},
+                        {% elif field.field_detail_type == "dict" %}
+                "{{field.field_name}}": [json.loads(i) for i in {{model_name | lower}}.{{field.field_name}}],
+                        {% else %}
+                "{{field.field_name}}": {{model_name | lower}}.{{field.field_name}},
+                        {% endif %}
+                    {% elif field.field_type == "dict" %}
+                "{{field.field_name}}": json.loads({{model_name | lower}}.{{field.field_name}}),
+                    {% elif field.field_type == "boolean" %}
+                "{{field.field_name}}": {{model_name | lower}}.{{field.field_name}},
+                    {% elif field.field_type == "objectid" %}
+                "{{field.field_name}}": {{model_name | lower}}.{{field.field_name}},
+                    {% else %}
+                "{{field.field_name}}": {{model_name | lower}}.{{field.field_name}},
+                    {% endif %}
+                {% endfor %}
+            }
+        return result
+
+
+def list_{{model_name | lower}}():
+    with get_thrift_pool('{{app_name | title}}').get_client() as client:
+        result = client.list_{{app_name | lower}}_{{model_name | lower}}()
+        result_object_list = []
+        if 0 == result.code:
+            for {{model_name | lower}} in result.{{model_name | lower}}_list:
+                result_object_list.append({
+                    "id": {{model_name | lower}}.id,
+                    {% for field in model.field_list %}
+                        {% if field.field_type == "datetime" %}
+                    "{{field.field_name}}": datetime.strptime({{model_name | lower}}.{{field.field_name}}, '%Y-%m-%d %H:%M:%S.%f'),
+                        {% elif field.field_type == "str" %}
+                    "{{field.field_name}}": {{model_name | lower}}.{{field.field_name}},
+                        {% elif field.field_type == "int" %}
+                    "{{field.field_name}}": {{model_name | lower}}.{{field.field_name}},
+                        {% elif field.field_type == "list" %}
+                            {% if field.field_detail_type == "str" %}
+                    "{{field.field_name}}": {{model_name | lower}}.{{field.field_name}},
+                            {% elif field.field_detail_type == "int" %}
+                    "{{field.field_name}}": {{model_name | lower}}.{{field.field_name}},
+                            {% elif field.field_detail_type == "objectid" %}
+                    "{{field.field_name}}": {{model_name | lower}}.{{field.field_name}},
+                            {% elif field.field_detail_type == "dict" %}
+                    "{{field.field_name}}": [json.loads(i) for i in {{model_name | lower}}.{{field.field_name}}],
+                            {% else %}
+                    "{{field.field_name}}": {{model_name | lower}}.{{field.field_name}},
+                            {% endif %}
+                        {% elif field.field_type == "dict" %}
+                    "{{field.field_name}}": json.loads({{model_name | lower}}.{{field.field_name}}),
+                        {% elif field.field_type == "boolean" %}
+                    "{{field.field_name}}": {{model_name | lower}}.{{field.field_name}},
+                        {% elif field.field_type == "objectid" %}
+                    "{{field.field_name}}": {{model_name | lower}}.{{field.field_name}},
+                        {% else %}
+                    "{{field.field_name}}": {{model_name | lower}}.{{field.field_name}},
+                        {% endif %}
+                    {% endfor %}
+                })
+            result.{{model_name | lower}}_list = result_object_list
+        return result
+{% endfor %}

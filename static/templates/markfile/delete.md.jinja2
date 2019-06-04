@@ -1,8 +1,8 @@
-删除{{app.name}}
+删除{{model.name}}
 
 ### **请求URL：**
 
-`/api/{{app.name}}/delete/<{{app.name}}_id>`
+`/api/{{app_name | lower}}/{{model.name}}/<{{model.name}}_id>/`
 
 ### **请求方式：**
 
@@ -14,3 +14,5 @@ DELETE
 
 |参数名|参数类型|备注|
 |:--|:--|:--|
+
+[返回目录](../base.md)

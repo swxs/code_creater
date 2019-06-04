@@ -1,0 +1,7 @@
+tasks:
+  - input: "BI.xmind"
+    output:
+    - framework: tornado
+      target: D:\codehouse\home\api
+    - framework: markfile
+      target: D:\codehouse\home\docs
