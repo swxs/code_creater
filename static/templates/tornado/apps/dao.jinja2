@@ -8,7 +8,7 @@ from ..models.{{model.name | title }} import {{model.name | title}} as _
 {% if "parent" in model and model["parent"] %}
 from .{{apps_dict[app_name][model["parent"]].name | title}} import {{apps_dict[app_name][model["parent"]].name | title}}
 {% else %}
-from ...BaseUtils import BaseUtils
+from ...BaseDAO import BaseDAO
 {% endif %}
 from common.Utils.log_utils import getLogger
 
@@ -18,7 +18,7 @@ log = getLogger("utils/{self.model_name}")
 {% if "parent" in model and model["parent"] %}
 class {{model.name | title}}({{apps_dict[app_name][model["parent"]].name | title}}):
 {% else %}
-class {{model.name | title}}(BaseUtils):
+class {{model.name | title}}(BaseDAO):
 {% endif %}
 {% for field in model.field_list %}
     {% if field.field_type == "datetime" %}
