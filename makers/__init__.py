@@ -9,3 +9,4 @@ from makers.registry import factory
 from makers import maker_tornado
 from makers import maker_markfile
 from makers import maker_thrift2
+from makers import maker_element_ui

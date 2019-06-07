@@ -1,0 +1,59 @@
+import request from './request.js'
+
+const {{model.name | title}}Url = '/api/{{app_name | lower}}/{{model.name | lower}}/'
+
+export const search{{model.name | title}} = () => {
+  return new Promise(function(resolve, reject) {
+    request.get(`${{ '{' }}{{model.name | title}}Url{{ '}' }}`).then((response) => {
+      resolve(response)
+    })
+  })
+}
+
+export const select{{model.name | title}} = (id) => {
+  return new Promise(function(resolve, reject) {
+    request.get(`${{ '{' }}{{model.name | title}}Url{{ '}' }}${id}/`).then((response) => {
+      resolve(response)
+    })
+  })
+}
+
+export const create{{model.name | title}} = (data) => {
+  return new Promise(function(resolve, reject) {
+    request.post(`${{ '{' }}{{model.name | title}}Url{{ '}' }}`, data).then((response) => {
+      resolve(response)
+    })
+  })
+}
+
+export const copy{{model.name | title}} = (id, data) => {
+  return new Promise(function(resolve, reject) {
+    request.post(`${{ '{' }}{{model.name | title}}Url{{ '}' }}${id}/`, data).then((response) => {
+      resolve(response)
+    })
+  })
+}
+
+export const update{{model.name | title}} = (id, data) => {
+  return new Promise(function(resolve, reject) {
+    request.put(`${{ '{' }}{{model.name | title}}Url{{ '}' }}${id}/`, data).then((response) => {
+      resolve(response)
+    })
+  })
+}
+
+export const modify{{model.name | title}} = (id, data) => {
+  return new Promise(function(resolve, reject) {
+    request.patch(`${{ '{' }}{{model.name | title}}Url{{ '}' }}${id}/`, data).then((response) => {
+      resolve(response)
+    })
+  })
+}
+
+export const delete{{model.name | title}} = (id) => {
+  return new Promise(function(resolve, reject) {
+    request.delete(`${{ '{' }}{{model.name | title}}Url{{ '}' }}${id}/`).then((response) => {
+      resolve(response)
+    })
+  })
+}

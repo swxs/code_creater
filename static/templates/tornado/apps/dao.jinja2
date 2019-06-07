@@ -20,7 +20,7 @@ class {{model.name | title}}({{apps_dict[app_name][model["parent"]].name | title
 {% else %}
 class {{model.name | title}}(BaseUtils):
 {% endif %}
-    {% for field in model.field_list %}
+{% for field in model.field_list %}
     {% if field.field_type == "datetime" %}
     {{field.field_name}} = model.DateTimeField({{field|get_utils_params(model)}})
     {% elif field.field_type == "str" %}
@@ -38,12 +38,12 @@ class {{model.name | title}}(BaseUtils):
     {% else %}
     {{field.field_name}} = model.StringField({{field|get_utils_params(model)}})
     {% endif %}
-    {% endfor %}
+{% endfor %}
 
     def __init__(self, **kwargs):
         super({{model.name | title}}, self).__init__(**kwargs)
 
-    {% for field in model.field_list %}
+{% for field in model.field_list %}
     {% if "ref" is in(field) %}
     {% set ref_model = apps_dict[app_name][field["ref"]] %}
     @property
@@ -52,16 +52,16 @@ class {{model.name | title}}(BaseUtils):
         return {{ref_model["name"] | title}}.get_{{ref_model["name"] | lower}}_by_{{ref_model["name"] | lower}}_id(self.{{field.field_name}})
 
     {% endif %}
-    {% endfor %}
+{% endfor %}
     @classmethod
     def get_{{model.name | lower}}_by_{{model.name | lower}}_id(cls, {{model.name | lower}}_id):
         return cls.select(id={{model.name | lower}}_id)
 
-    {% if ("meta" is in(model)) and ("listorder") is in(model["meta"]) %}
+{% if ("meta" is in(model)) and ("listorder") is in(model["meta"]) %}
     def create(self, **kwargs):
-        {% for field in model.field_list %}
+    {% for field in model.field_list %}
         {{field.field_name}} = {{model.name | title}}.first().{{field.field_name}} + 100000
-        {% endfor %}
+    {% endfor %}
         super({{model.name | title}}, self).create(**kwargs)
 
-    {% endif %}
+{% endif %}

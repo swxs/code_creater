@@ -9,5 +9,8 @@ tasks:
 model:
   name: "生成模块名"
   suppport:
-  - tornado - "tornado后端"
   - markfile - "接口文档"
+  - tornado - "tornado后端"
+  - rpc - "rpc接口"
+  - axios - "前端接口"
+  - element-ui - "前端界面"

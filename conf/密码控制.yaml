@@ -5,3 +5,5 @@ tasks:
       target: D:\codehouse\home\api
     - framework: markfile
       target: D:\codehouse\home\docs
+    - framework: element-ui
+      target: D:\codehouse\openapi_home\src

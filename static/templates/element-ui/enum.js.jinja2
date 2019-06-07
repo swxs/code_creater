@@ -1,0 +1,19 @@
+{% for field in model.field_list %}
+    {% if "enums" is in(field) %}
+export const {{field | get_enum_dict(model)}} = {
+        {% for enum in field["enums"] %}
+    {{enum["value"] | get_enum_upper(field, model) }} = {{ loop.index }}, // {{ enum['name'] }}
+        {% endfor %}
+}
+    {% endif %}
+{% endfor %}
+
+{% for field in model.field_list %}
+    {% if "enums" is in(field) %}
+export const {{field | get_enum_list(model)}} = [
+        {% for enum in field["enums"] %}
+    [{{field | get_enum_dict(model)}}.{{enum["value"] | get_enum_upper(field, model) }}, {{ enum['name'] }}],
+        {% endfor %}
+]
+    {% endif %}
+{% endfor %}
