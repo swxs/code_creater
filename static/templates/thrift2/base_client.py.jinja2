@@ -73,7 +73,7 @@ def select_{{model_name | lower}}(id):
         return result
 
 
-def list_{{model_name | lower}}():
+def search_{{model_name | lower}}():
     with get_thrift_pool('{{app_name | title}}').get_client() as client:
         result = client.list_{{app_name | lower}}_{{model_name | lower}}()
         result_object_list = []
@@ -113,4 +113,5 @@ def list_{{model_name | lower}}():
                 })
             result.{{model_name | lower}}_list = result_object_list
         return result
+
 {% endfor %}

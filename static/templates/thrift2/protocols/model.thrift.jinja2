@@ -20,31 +20,31 @@ struct {{model_name | title}} {
     1: optional string id;
     {% for field in model.field_list %}
         {% if field.field_type == "datetime" %}
-    {{loop.index+1}}: optional string {{field.field_name}};
+    {{loop.index + 1}}: optional string {{field.field_name}};
         {% elif field.field_type == "str" %}
-    {{loop.index+1}}: optional string {{field.field_name}};
+    {{loop.index + 1}}: optional string {{field.field_name}};
         {% elif field.field_type == "int" %}
-    {{loop.index+1}}: optional i32 {{field.field_name}};
+    {{loop.index + 1}}: optional i32 {{field.field_name}};
         {% elif field.field_type == "list" %}
             {% if field.field_detail_type == "str" %}
-    {{loop.index+1}}: optional list<string> {{field.field_name}};
+    {{loop.index + 1}}: optional list<string> {{field.field_name}};
             {% elif field.field_detail_type == "int" %}
-    {{loop.index+1}}: optional list<inting> {{field.field_name}};
+    {{loop.index + 1}}: optional list<inting> {{field.field_name}};
             {% elif field.field_detail_type == "objectid" %}
-    {{loop.index+1}}: optional list<string> {{field.field_name}};
+    {{loop.index + 1}}: optional list<string> {{field.field_name}};
             {% elif field.field_detail_type == "dict" %}
-    {{loop.index+1}}: optional list<string> {{field.field_name}};
+    {{loop.index + 1}}: optional list<string> {{field.field_name}};
             {% else %}
-    {{loop.index+1}}: optional list<string> {{field.field_name}};
+    {{loop.index + 1}}: optional list<string> {{field.field_name}};
             {% endif %}
         {% elif field.field_type == "dict" %}
-    {{loop.index+1}}: optional string {{field.field_name}};
+    {{loop.index + 1}}: optional string {{field.field_name}};
         {% elif field.field_type == "boolean" %}
-    {{loop.index+1}}: optional bool {{field.field_name}};
+    {{loop.index + 1}}: optional bool {{field.field_name}};
         {% elif field.field_type == "objectid" %}
-    {{loop.index+1}}: optional string {{field.field_name}};
+    {{loop.index + 1}}: optional string {{field.field_name}};
         {% else %}
-    {{loop.index+1}}: optional string {{field.field_name}};
+    {{loop.index + 1}}: optional string {{field.field_name}};
         {% endif %}
     {% endfor %}
 }

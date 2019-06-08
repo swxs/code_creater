@@ -33,5 +33,13 @@ class MakerThrift2(Maker):
         dst_file = os.path.join(task.get('target'), app_name, 'base_server.py')
         self.render(tmpl, {'models': models, 'app_name': app_name}, dst_file)
 
+        tmpl = os.path.join(task.get('framework'), 'client.py.jinja2')
+        dst_file = os.path.join(task.get('target'), app_name, 'client.py')
+        self.render_once(tmpl, {'models': models, 'app_name': app_name}, dst_file)
+
+        tmpl = os.path.join(task.get('framework'), 'server.py.jinja2')
+        dst_file = os.path.join(task.get('target'), app_name, 'server.py')
+        self.render_once(tmpl, {'models': models, 'app_name': app_name}, dst_file)
+
     def make(self, app_name, model, task):
         pass
