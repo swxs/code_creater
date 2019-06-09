@@ -4,7 +4,7 @@ const {{model.name | title}}Url = '/api/{{app_name | lower}}/{{model.name | lowe
 
 export const search{{model.name | title}} = (data) => {
   return new Promise(function(resolve, reject) {
-    request.get(`${{ '{' }}{{model.name | title}}Url{{ '}' }}`, {params: data}).then((response) => {
+    request.get(`${{ '{' }}{{model.name | title}}Url{{ '}' }}`, { params: data }).then((response) => {
       resolve(response)
     })
   })

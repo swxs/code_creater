@@ -1,0 +1,9 @@
+tasks:
+  - input: "健康云平台.xmind"
+    output:
+    - framework: tornado
+      target: D:\codehouse\cloudplat_server\api
+    - framework: markfile
+      target: D:\codehouse\cloudplat_server\docs
+    - framework: element-ui
+      target: D:\codehouse\cloudplat_client\src
