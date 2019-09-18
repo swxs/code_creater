@@ -3,6 +3,7 @@
 # @AUTH    : model
 
 import json
+from bson import ObjectId
 from common.Utils.log_utils import getLogger
 from common.Helpers.Helper_pagenate import Page
 from ...BaseConsts import *
@@ -14,26 +15,30 @@ log = getLogger("views/{{model.name}}")
 
 class {{model.name | title}}Handler(BaseHandler):
     @BaseHandler.ajax_base()
-    def get(self, {{model.name | lower}}_id=None):
+    {{ 'async ' if aio }}def get(self, {{model.name | lower}}_id=None):
         if {{model.name | lower}}_id:
-            {{model.name | lower}} = {{model.name | title}}.select(id={{model.name | lower}}_id)
+            {{model.name | lower}} = {{ 'await ' if aio }}{{model.name | title}}.select(id={{model.name | lower}}_id)
             return SuccessData(
-                {{model.name | lower}}.to_front()
+                {{ 'await ' if aio }}{{model.name | lower}}.to_front()
             )
         else:
             search_params = json.loads(self.get_argument("search", '{}'))
+            use_pager = self.get_argument("use_pager", 1)
             page = self.get_argument("page", 1)
             items_per_page = self.get_argument("items_per_page", 20)
-            pager = self.get_argument("pager", 1)
-            {{model.name | lower}}_list = {{model.name | title}}.search(**search_params).order_by()
-            pager = Page({{model.name | lower}}_list, pager=pager, page=page, items_per_page=items_per_page)
-            return SuccessData(
-                [item.to_front() for item in pager.items],
-                info=pager.info,
-            )
+            {{model.name | lower}}_cursor = {{model.name | title}}.search(**search_params)
+            data = []
+            {{ 'async ' if aio }}for {{model.name | lower}} in {{model.name | lower}}_cursor:
+                data.append({{ 'await ' if aio }}{{model.name | lower}}.to_front())
+            return SuccessData(data)
+            # pager = Page({{model.name | lower}}_list, use_pager=use_pager, page=page, items_per_page=items_per_page)
+            # return SuccessData(
+            #     [{{ 'await ' if aio }}item.to_front() for item in pager.items],
+            #     info=pager.info,
+            # )
 
     @BaseHandler.ajax_base()
-    def post(self, {{model.name | lower}}_id=None):
+    {{ 'async ' if aio }}def post(self, {{model.name | lower}}_id=None):
         if {{model.name | lower}}_id:
             params = dict()
             {# 如果存在继承， 添加父类字段 #}
@@ -54,8 +59,8 @@ class {{model.name | title}}Handler(BaseHandler):
             params['{{field.field_name}}'] = self.get_argument('{{field.field_name}}', undefined)
             {% endif %}
             {% endfor %}
-            {{model.name | lower}} = {{model.name | title}}.select(id={{model.name | lower}}_id)
-            {{model.name | lower}} = {{model.name | lower}}.copy(**params)
+            {{model.name | lower}} = {{ 'await ' if aio }}{{model.name | title}}.select(id={{model.name | lower}}_id)
+            {{model.name | lower}} = {{ 'await ' if aio }}{{model.name | lower}}.copy(**params)
             return SuccessData(
                 {{model.name | lower}}.id
             )
@@ -79,13 +84,13 @@ class {{model.name | title}}Handler(BaseHandler):
             params['{{field.field_name}}'] = self.get_argument('{{field.field_name}}', None)
             {% endif %}
             {% endfor %}
-            {{model.name | lower}} = {{model.name | title}}.create(**params)
+            {{model.name | lower}} = {{ 'await ' if aio }}{{model.name | title}}.create(**params)
             return SuccessData(
                 {{model.name | lower}}.id
             )
 
     @BaseHandler.ajax_base()
-    def put(self, {{model.name | lower}}_id=None):
+    {{ 'async ' if aio }}def put(self, {{model.name | lower}}_id=None):
         params = dict()
         {# 如果存在继承， 添加父类字段 #}
         {% if "parent" in model and model["parent"] %}
@@ -105,14 +110,14 @@ class {{model.name | title}}Handler(BaseHandler):
         params['{{field.field_name}}'] = self.get_argument('{{field.field_name}}', None)
         {% endif %}
         {% endfor %}
-        {{model.name | lower}} = {{model.name | title}}.select(id={{model.name | lower}}_id)
-        {{model.name | lower}} = {{model.name | lower}}.update(**params)
+        {{model.name | lower}} = {{ 'await ' if aio }}{{model.name | title}}.select(id={{model.name | lower}}_id)
+        {{model.name | lower}} = {{ 'await ' if aio }}{{model.name | lower}}.update(**params)
         return SuccessData(
             {{model.name | lower}}.id
         )
 
     @BaseHandler.ajax_base()
-    def patch(self, {{model.name | lower}}_id=None):
+    {{ 'async ' if aio }}def patch(self, {{model.name | lower}}_id=None):
         params = dict()
         {# 如果存在继承， 添加父类字段 #}
         {% if "parent" in model and model["parent"] %}
@@ -132,16 +137,16 @@ class {{model.name | title}}Handler(BaseHandler):
         params['{{field.field_name}}'] = self.get_argument('{{field.field_name}}', undefined)
         {% endif %}
         {% endfor %}
-        {{model.name | lower}} = {{model.name | title}}.select(id={{model.name | lower}}_id)
-        {{model.name | lower}} = {{model.name | lower}}.update(**params)
+        {{model.name | lower}} = {{ 'await ' if aio }}{{model.name | title}}.select(id={{model.name | lower}}_id)
+        {{model.name | lower}} = {{ 'await ' if aio }}{{model.name | lower}}.update(**params)
         return SuccessData(
             {{model.name | lower}}.id
         )
 
     @BaseHandler.ajax_base()
-    def delete(self, {{model.name | lower}}_id=None):
-        {{model.name | lower}} = {{model.name | title}}.select(id={{model.name | lower}}_id)
-        {{model.name | lower}}.delete()
+    {{ 'async ' if aio }}def delete(self, {{model.name | lower}}_id=None):
+        {{model.name | lower}} = {{ 'await ' if aio }}{{model.name | title}}.select(id={{model.name | lower}}_id)
+        {{ 'await ' if aio }}{{model.name | lower}}.delete()
         return SuccessData(
             None
         )

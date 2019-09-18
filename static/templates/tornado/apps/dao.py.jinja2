@@ -3,7 +3,10 @@
 # @AUTH    : model_creater
 
 import datetime
-import mongoengine_utils as model
+{% if aio %}
+from async_property import async_property
+{% endif %}
+import document_utils as model
 from ..models.{{model.name | title }} import {{model.name | title}} as _
 {% if "parent" in model and model["parent"] %}
 from .{{apps_dict[app_name][model["parent"]].name | title}} import {{apps_dict[app_name][model["parent"]].name | title}}
@@ -46,22 +49,26 @@ class {{model.name | title}}(BaseDAO):
 {% for field in model.field_list %}
     {% if "ref" is in(field) %}
     {% set ref_model = apps_dict[app_name][field["ref"]] %}
+    {% if aio %}
+    @async_property
+    {% else %}
     @property
-    def {{ref_model["name"] | lower}}(self):
+    {% endif %}
+    {{ 'async ' if aio }}def {{ref_model["name"] | lower}}(self):
         from .{{ref_model["name"] | title}} import {{ref_model["name"] | title}}
-        return {{ref_model["name"] | title}}.get_{{ref_model["name"] | lower}}_by_{{ref_model["name"] | lower}}_id(self.{{field.field_name}})
+        return {{ 'await ' if aio }}{{ref_model["name"] | title}}.get_{{ref_model["name"] | lower}}_by_{{ref_model["name"] | lower}}_id(self.{{field.field_name}})
 
     {% endif %}
 {% endfor %}
     @classmethod
-    def get_{{model.name | lower}}_by_{{model.name | lower}}_id(cls, {{model.name | lower}}_id):
-        return cls.select(id={{model.name | lower}}_id)
+    {{ 'async ' if aio }}def get_{{model.name | lower}}_by_{{model.name | lower}}_id(cls, {{model.name | lower}}_id):
+        return {{ 'await ' if aio }}cls.select(id={{model.name | lower}}_id)
 
 {% if ("meta" is in(model)) and ("listorder") is in(model["meta"]) %}
-    def create(self, **kwargs):
+    {{ 'async ' if aio }}def create(self, **kwargs):
     {% for field in model.field_list %}
         {{field.field_name}} = {{model.name | title}}.first().{{field.field_name}} + 100000
     {% endfor %}
-        super({{model.name | title}}, self).create(**kwargs)
+        {{ 'await ' if aio }} super({{model.name | title}}, self).create(**kwargs)
 
 {% endif %}

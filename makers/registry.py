@@ -8,9 +8,9 @@ class Factory(object):
     def __init__(self):
         self.maker_dict = dict()
 
-    def make_code(self, env, apps_dict, config):
+    def make_code(self, env, apps_dict, params_dict, config):
         for task in config:
-            maker = self.maker_dict[task.get('framework')](env, apps_dict, config)
+            maker = self.maker_dict[task.get('framework')](env, apps_dict, params_dict, config)
             for (app_name, models) in apps_dict.items():
                 if app_name == "_description":
                     continue

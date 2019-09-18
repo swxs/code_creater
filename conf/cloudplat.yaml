@@ -1,5 +1,7 @@
 tasks:
   - input: "健康云平台.xmind"
+    params:
+      aio: true
     output:
     - framework: tornado
       target: D:\codehouse\cloudplat_server\api

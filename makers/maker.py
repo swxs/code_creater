@@ -10,10 +10,11 @@ import datetime
 class Maker(object, metaclass=abc.ABCMeta):
     name = 'base'
 
-    def __init__(self, env, apps_dict, config):
+    def __init__(self, env, apps_dict, params_dict, config):
         self.env = env
         self.config = config
         self.apps_dict = apps_dict
+        self.params_dict = params_dict
         for conf in self.config:
             target_path = conf.get('target')
             if not os.path.exists(target_path):
@@ -30,6 +31,7 @@ class Maker(object, metaclass=abc.ABCMeta):
         adict.update(dict(
             current_time=f"{datetime.datetime.now():%Y-%m-%d %H:%M:%S}"
         ))
+        adict.update(**self.params_dict)
         tmpl = tmpl.replace('\\', '/')
         code = self.env.get_template(tmpl).render(**adict)
         if not os.path.exists(os.path.dirname(dst_file)):

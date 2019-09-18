@@ -1,5 +1,7 @@
 tasks:
   - input: "微信第三方平台系统.xmind"
+    params:
+      aio: true
     output:
     - framework: tornado
       target: D:\codehouse\home\api
@@ -7,6 +9,8 @@ tasks:
       target: D:\codehouse\home\docs
 
   - input: "支付宝第三方平台.xmind"
+    params:
+      aio: true
     output:
     - framework: tornado
       target: D:\codehouse\home\api

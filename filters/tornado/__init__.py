@@ -35,6 +35,22 @@ def get_utils_params(field, model) -> str:
 
 def get_model_params(field, model) -> str:
     params_list = list()
+
+    if field["field_type"] == "list":
+        if "field_detail_type" not in field:
+            params_list.append(f"fields.StringField()")
+        elif field["field_detail_type"] == "str":
+            params_list.append(f"fields.StringField()")
+        elif field["field_detail_type"] == "int":
+            params_list.append(f"fields.StringField()")
+        elif field["field_detail_type"] == "objectid":
+            params_list.append(f"fields.ObjectIdField()")
+        elif field["field_detail_type"] == "dict":
+            params_list.append(f"fields.DictField()")
+        else:
+            params_list.append(f"fields.StringField()")
+
+    params_list.append(f"allow_none=True")
     if "enums" in field:
         params_list.append(f"enums={get_enum_list(field, model)}")
     if "default" in field:

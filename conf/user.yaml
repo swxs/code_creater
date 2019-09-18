@@ -1,5 +1,7 @@
 tasks:
   - input: "用户中心.xmind"
+    params:
+      aio: true
     output:
     - framework: tornado
       target: D:\codehouse\home\api

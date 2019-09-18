@@ -35,26 +35,26 @@ class MakerTornado(Maker):
         dst_file = os.path.join(dst_path, f'__init__.py')
         self.render_once(tmpl, {'model': model, 'app_name': app_name}, dst_file)
 
+        # 创建 app/dao 下的 __init__.py 文件, 只创建一次
+        dst_path = get_dir_path(task.get('target'), app_name, 'dao')
+        tmpl = os.path.join(task.get('framework'), 'apps', '__init__.py.jinja2')
+        dst_file = os.path.join(dst_path, f'__init__.py')
+        self.render_once(tmpl, {'model': model, 'app_name': app_name}, dst_file)
+
         # 创建 app/models 下的 __init__.py 文件, 只创建一次
         dst_path = get_dir_path(task.get('target'), app_name, 'models')
         tmpl = os.path.join(task.get('framework'), 'apps', '__init__.py.jinja2')
         dst_file = os.path.join(dst_path, f'__init__.py')
         self.render_once(tmpl, {'model': model, 'app_name': app_name}, dst_file)
 
-        # 创建 app/commons 下的 __init__.py 文件, 只创建一次
-        dst_path = get_dir_path(task.get('target'), app_name, 'dao')
+        # 创建 app/urls 下的 __init__.py 文件, 只创建一次
+        dst_path = get_dir_path(task.get('target'), app_name, 'urls')
         tmpl = os.path.join(task.get('framework'), 'apps', '__init__.py.jinja2')
         dst_file = os.path.join(dst_path, f'__init__.py')
         self.render_once(tmpl, {'model': model, 'app_name': app_name}, dst_file)
 
         # 创建 app/utils 下的 __init__.py 文件, 只创建一次
         dst_path = get_dir_path(task.get('target'), app_name, 'utils')
-        tmpl = os.path.join(task.get('framework'), 'apps', '__init__.py.jinja2')
-        dst_file = os.path.join(dst_path, f'__init__.py')
-        self.render_once(tmpl, {'model': model, 'app_name': app_name}, dst_file)
-
-        # 创建 app/urls 下的 __init__.py 文件, 只创建一次
-        dst_path = get_dir_path(task.get('target'), app_name, 'urls')
         tmpl = os.path.join(task.get('framework'), 'apps', '__init__.py.jinja2')
         dst_file = os.path.join(dst_path, f'__init__.py')
         self.render_once(tmpl, {'model': model, 'app_name': app_name}, dst_file)
@@ -71,29 +71,29 @@ class MakerTornado(Maker):
         dst_file = os.path.join(dst_path, f'{model.name}.py')
         self.render(tmpl, {'model': model, 'app_name': app_name}, dst_file)
 
+        # 创建 app/dao 下的 dao.py 文件, 记录映射信息
+        dst_path = get_dir_path(task.get('target'), app_name, 'dao')
+        tmpl = os.path.join(task.get('framework'), 'apps', 'dao.py.jinja2')
+        dst_file = os.path.join(dst_path, f'{model.name}.py')
+        self.render(tmpl, {'model': model, 'app_name': app_name}, dst_file)
+
         # 创建 app/models 下的 models.py 文件, 记录模块信息
         dst_path = get_dir_path(task.get('target'), app_name, 'models')
         tmpl = os.path.join(task.get('framework'), 'apps', 'models.py.jinja2')
         dst_file = os.path.join(dst_path, f'{model.name}.py')
         self.render(tmpl, {'model': model, 'app_name': app_name}, dst_file)
 
-        # 创建 app/commons 下的 commons.py 文件, 记录模块操作信息
-        dst_path = get_dir_path(task.get('target'), app_name, 'dao')
-        tmpl = os.path.join(task.get('framework'), 'apps', 'dao.jinja2')
+        # 创建 app/urls 下的 urls.py 文件, 记录路由信息
+        dst_path = get_dir_path(task.get('target'), app_name, 'urls')
+        tmpl = os.path.join(task.get('framework'), 'apps', 'urls.py.jinja2')
         dst_file = os.path.join(dst_path, f'{model.name}.py')
-        self.render_once(tmpl, {'model': model, 'app_name': app_name}, dst_file)
+        self.render(tmpl, {'model': model, 'app_name': app_name}, dst_file)
 
         # 创建 app/utils 下的 utils.py 文件, 记录模块自定义操作信息
         dst_path = get_dir_path(task.get('target'), app_name, 'utils')
         tmpl = os.path.join(task.get('framework'), 'apps', 'utils.py.jinja2')
         dst_file = os.path.join(dst_path, f'{model.name}.py')
         self.render_once(tmpl, {'model': model, 'app_name': app_name}, dst_file)
-
-        # 创建 app/urls 下的 urls.py 文件, 记录路由信息
-        dst_path = get_dir_path(task.get('target'), app_name, 'urls')
-        tmpl = os.path.join(task.get('framework'), 'apps', 'urls.py.jinja2')
-        dst_file = os.path.join(dst_path, f'{model.name}.py')
-        self.render(tmpl, {'model': model, 'app_name': app_name}, dst_file)
 
         # 创建 app/views 下的 views.py 文件, 记录处理类信息
         dst_path = get_dir_path(task.get('target'), app_name, 'views')
