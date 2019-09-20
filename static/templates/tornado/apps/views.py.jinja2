@@ -3,18 +3,19 @@
 # @AUTH    : model
 
 import json
-from bson import ObjectId
+from common.Decorator.render import render
 from common.Utils.log_utils import getLogger
 from common.Helpers.Helper_pagenate import Page
+from result import SuccessData
 from ...BaseConsts import *
-from ...BaseViews import BaseHandler, SuccessData
+from ...BaseViews import BaseHandler
 from ..utils.{{model.name | title}} import {{model.name | title}}
 
 log = getLogger("views/{{model.name}}")
 
 
 class {{model.name | title}}Handler(BaseHandler):
-    @BaseHandler.ajax_base()
+    @render
     {{ 'async ' if aio }}def get(self, {{model.name | lower}}_id=None):
         if {{model.name | lower}}_id:
             {{model.name | lower}} = {{ 'await ' if aio }}{{model.name | title}}.select(id={{model.name | lower}}_id)
@@ -26,18 +27,20 @@ class {{model.name | title}}Handler(BaseHandler):
             use_pager = self.get_argument("use_pager", 1)
             page = self.get_argument("page", 1)
             items_per_page = self.get_argument("items_per_page", 20)
-            {{model.name | lower}}_cursor = {{model.name | title}}.search(**search_params)
-            data = []
-            {{ 'async ' if aio }}for {{model.name | lower}} in {{model.name | lower}}_cursor:
-                data.append({{ 'await ' if aio }}{{model.name | lower}}.to_front())
-            return SuccessData(data)
-            # pager = Page({{model.name | lower}}_list, use_pager=use_pager, page=page, items_per_page=items_per_page)
-            # return SuccessData(
-            #     [{{ 'await ' if aio }}item.to_front() for item in pager.items],
-            #     info=pager.info,
-            # )
 
-    @BaseHandler.ajax_base()
+            item_count = {{ 'await ' if aio }}{{model.name | title}}.count(**search_params)
+            if use_pager:
+                search_params.update({
+                    "limit": items_per_page,
+                    "skip": (page - 1) * items_per_page
+                })
+            {{model.name | lower}}_cursor = {{model.name | title}}.search(**search_params)
+            data = [{{ 'await ' if aio }} {{model.name | lower}}.to_front() {{ 'async ' if aio }}for {{model.name | lower}} in {{model.name | lower}}_cursor]
+            pager = Page(data, use_pager=use_pager, page=page, items_per_page=items_per_page, item_count=item_count)
+            return SuccessData(pager.items, info=pager.info)
+
+
+    @render
     {{ 'async ' if aio }}def post(self, {{model.name | lower}}_id=None):
         if {{model.name | lower}}_id:
             params = dict()
@@ -89,7 +92,7 @@ class {{model.name | title}}Handler(BaseHandler):
                 {{model.name | lower}}.id
             )
 
-    @BaseHandler.ajax_base()
+    @render
     {{ 'async ' if aio }}def put(self, {{model.name | lower}}_id=None):
         params = dict()
         {# 如果存在继承， 添加父类字段 #}
@@ -116,7 +119,7 @@ class {{model.name | title}}Handler(BaseHandler):
             {{model.name | lower}}.id
         )
 
-    @BaseHandler.ajax_base()
+    @render
     {{ 'async ' if aio }}def patch(self, {{model.name | lower}}_id=None):
         params = dict()
         {# 如果存在继承， 添加父类字段 #}
@@ -143,7 +146,7 @@ class {{model.name | title}}Handler(BaseHandler):
             {{model.name | lower}}.id
         )
 
-    @BaseHandler.ajax_base()
+    @render
     {{ 'async ' if aio }}def delete(self, {{model.name | lower}}_id=None):
         {{model.name | lower}} = {{ 'await ' if aio }}{{model.name | title}}.select(id={{model.name | lower}}_id)
         {{ 'await ' if aio }}{{model.name | lower}}.delete()
