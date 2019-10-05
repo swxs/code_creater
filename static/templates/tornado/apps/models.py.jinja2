@@ -11,7 +11,7 @@ from .{{apps_dict[app_name][model["parent"]].name | title}} import {{apps_dict[a
 from ...BaseModel import BaseModelDocument
 {% endif %}
 from settings import instance
-from document_utils import NAME_DICT
+
 
 @instance.register
 {% if "parent" in model and model["parent"] %}
@@ -58,6 +58,3 @@ class {{model.name | title}}(BaseModelDocument):
         {% endif %}
         pass
     {% endif %}
-
-
-NAME_DICT["{{model.name | title}}"] = {{model.name | title}}

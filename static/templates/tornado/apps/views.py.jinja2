@@ -3,6 +3,7 @@
 # @AUTH    : model
 
 import json
+from document_utils.consts import undefined
 from common.Decorator.render import render
 from common.Utils.log_utils import getLogger
 from common.Helpers.Helper_pagenate import Page
@@ -11,7 +12,7 @@ from ...BaseConsts import *
 from ...BaseViews import BaseHandler
 from ..utils.{{model.name | title}} import {{model.name | title}}
 
-log = getLogger("views/{{model.name}}")
+log = getLogger("views/{{model.name | lower}}")
 
 
 class {{model.name | title}}Handler(BaseHandler):
@@ -24,6 +25,7 @@ class {{model.name | title}}Handler(BaseHandler):
             )
         else:
             search_params = json.loads(self.get_argument("search", '{}'))
+            order_by = self.get_argument("order_by", "")
             use_pager = self.get_argument("use_pager", 1)
             page = self.get_argument("page", 1)
             items_per_page = self.get_argument("items_per_page", 20)
@@ -34,7 +36,8 @@ class {{model.name | title}}Handler(BaseHandler):
                     "limit": items_per_page,
                     "skip": (page - 1) * items_per_page
                 })
-            {{model.name | lower}}_cursor = {{model.name | title}}.search(**search_params)
+            order_by = [o for o in order_by.split(";") if bool(o)]
+            {{model.name | lower}}_cursor = {{model.name | title}}.search(**search_params).order_by(order_by)
             data = [{{ 'await ' if aio }} {{model.name | lower}}.to_front() {{ 'async ' if aio }}for {{model.name | lower}} in {{model.name | lower}}_cursor]
             pager = Page(data, use_pager=use_pager, page=page, items_per_page=items_per_page, item_count=item_count)
             return SuccessData(pager.items, info=pager.info)

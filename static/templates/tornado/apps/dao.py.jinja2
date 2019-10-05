@@ -7,7 +7,8 @@ import datetime
 from async_property import async_property
 {% endif %}
 import document_utils as model
-from ..models.{{model.name | title }} import {{model.name | title}} as _
+from document_utils.consts import NAME_DICT
+from ..models.{{model.name | title }} import {{model.name | title}} as {{model.name | title}}Model
 {% if "parent" in model and model["parent"] %}
 from .{{apps_dict[app_name][model["parent"]].name | title}} import {{apps_dict[app_name][model["parent"]].name | title}}
 {% else %}
@@ -15,7 +16,7 @@ from ...BaseDAO import BaseDAO
 {% endif %}
 from common.Utils.log_utils import getLogger
 
-log = getLogger("utils/{self.model_name}")
+log = getLogger("utils/{{ model.name | lower }}")
 
 
 {% if "parent" in model and model["parent"] %}
@@ -72,3 +73,5 @@ class {{model.name | title}}(BaseDAO):
         {{ 'await ' if aio }} super({{model.name | title}}, self).create(**kwargs)
 
 {% endif %}
+
+NAME_DICT[BaseDAO.__manager__]["{{model.name | title}}"] = {{model.name | title}}Model
