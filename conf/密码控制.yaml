@@ -5,8 +5,6 @@ tasks:
     output:
     - framework: tornado
       target: D:\codehouse\home\api
-    - framework: thrift2
-      target: D:\codehouse\home\api
     - framework: markfile
       target: D:\codehouse\home\docs
     - framework: element-ui

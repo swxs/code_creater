@@ -1,17 +1,4 @@
 tasks:
-  - input: "用户中心.xmind"
-    params:
-      aio: true
-    output:
-    - framework: tornado
-      target: D:\codehouse\home\api
-    - framework: thrift2
-      target: D:\codehouse\home\rpc
-    - framework: markfile
-      target: D:\codehouse\home\docs
-    - framework: element-ui
-      target: D:\codehouse\openapi_home\src
-
   - input: "密码控制.xmind"
     params:
       aio: true
@@ -21,18 +8,9 @@ tasks:
     - framework: markfile
       target: D:\codehouse\home\docs
     - framework: element-ui
-      target: D:\codehouse\openapi_home\src
+      target: D:\codehouse\openapi_password\src
 
-  - input: "多媒体.xmind"
-    output:
-    - framework: tornado
-      target: D:\codehouse\home\api
-    - framework: thrift2
-      target: D:\codehouse\home\rpc
-    - framework: markfile
-      target: D:\codehouse\home\docs
-
-  - input: "BI.xmind"
+  - input: "备忘录.xmind"
     params:
       aio: true
     output:
@@ -40,3 +18,5 @@ tasks:
       target: D:\codehouse\home\api
     - framework: markfile
       target: D:\codehouse\home\docs
+    - framework: element-ui
+      target: D:\codehouse\openapi_memo\src
