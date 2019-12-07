@@ -8,7 +8,7 @@ tasks:
     - framework: markfile
       target: D:\codehouse\home\docs
     - framework: element-ui
-      target: D:\codehouse\openapi_password\src
+      target: D:\codehouse\openapi_passwordlock
 
   - input: "备忘录.xmind"
     params:
@@ -19,4 +19,15 @@ tasks:
     - framework: markfile
       target: D:\codehouse\home\docs
     - framework: element-ui
-      target: D:\codehouse\openapi_memo\src
+      target: D:\codehouse\openapi_memo
+
+  - input: "单词本.xmind"
+    params:
+      aio: true
+    output:
+    - framework: tornado
+      target: D:\codehouse\home\api
+    - framework: markfile
+      target: D:\codehouse\home\docs
+    - framework: element-ui
+      target: D:\codehouse\openapi_words
