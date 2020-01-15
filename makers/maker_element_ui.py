@@ -34,11 +34,11 @@ class MakerElementUI(Maker):
             os.path.join("src", "App.vue.jinja2"),
             os.path.join("src", "views", "404.vue.jinja2"),
             os.path.join("src", "views", "index.vue.jinja2"),
+            os.path.join("src", "views", "home.vue.jinja2"),
             os.path.join("src", "plugins", "axios.js.jinja2"),
             os.path.join("src", "plugins", "element.js.jinja2"),
             os.path.join("src", "assets", "js", "bus.js.jinja2"),
             os.path.join("src", "assets", "style", "base.less.jinja2"),
-            os.path.join("src", "assets", "style", "common.less.jinja2"),
             # os.path.join("src", "assets", "fonts", "Cemicons.eot.jinja2"),
             # os.path.join("src", "assets", "fonts", "Cemicons.svg.jinja2"),
             # os.path.join("src", "assets", "fonts", "Cemicons.ttf.jinja2"),
@@ -49,13 +49,13 @@ class MakerElementUI(Maker):
             dst_file = os.path.join(dst_path, filename[:-7])
             self.render_once(tmpl, {'model': model, 'app_name': app_name}, dst_file)
 
-        # 创建 app/consts 下的 consts.py 文件, 记录映射信息
+        # 创建 对应模块的 api.js 文件, 实现模块访问方法
         dst_path = get_dir_path(task.get('target'), 'src', 'api')
         tmpl = os.path.join(task.get('framework'), 'src', 'api', 'api.js.jinja2')
         dst_file = os.path.join(dst_path, f'{model.name}.js')
         self.render(tmpl, {'model': model, 'app_name': app_name}, dst_file)
 
-        # 创建 app/models 下的 models.py 文件, 记录模块信息
+        # 创建 对应模块的 enum.js 文件, 记录模块字段映射常量
         dst_path = get_dir_path(task.get('target'), 'src', 'enum')
         tmpl = os.path.join(task.get('framework'), 'src', 'enum', 'enum.js.jinja2')
         dst_file = os.path.join(dst_path, f'{model.name}.js')
