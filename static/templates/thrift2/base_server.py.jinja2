@@ -6,7 +6,7 @@ import os
 import json
 import thriftpy2
 from common.Decorator.render import render_thrift
-from api.{{app_name | title}}.utils.{{app_name | title}} import {{app_name | title}}
+from apps.{{app_name | title}}.utils.{{app_name | title}} import {{app_name | title}}
 from rpc.dispatcher import BaseDispatcher
 
 
@@ -134,6 +134,6 @@ if __name__ == '__main__':
     from rpc.main import make_server
     server = make_server(
         port=5000,
-        module_list=['api.{{app_name | title}}.rpc.base_server']
+        module_list=['apps.{{app_name | title}}.rpc.base_server']
     )
     server.serve()

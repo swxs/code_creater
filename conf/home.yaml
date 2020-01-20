@@ -4,7 +4,7 @@ tasks:
       aio: true
     output:
     - framework: tornado
-      target: D:\codehouse\home\api
+      target: D:\codehouse\home\apps
     - framework: markfile
       target: D:\codehouse\home\docs
     - framework: element-ui
@@ -15,7 +15,7 @@ tasks:
       aio: true
     output:
     - framework: tornado
-      target: D:\codehouse\home\api
+      target: D:\codehouse\home\apps
     - framework: markfile
       target: D:\codehouse\home\docs
     - framework: element-ui
@@ -26,7 +26,7 @@ tasks:
       aio: true
     output:
     - framework: tornado
-      target: D:\codehouse\home\api
+      target: D:\codehouse\home\apps
     - framework: markfile
       target: D:\codehouse\home\docs
     - framework: element-ui

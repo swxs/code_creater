@@ -37,7 +37,7 @@ class MyLoader(unittest.TestLoader):
     settings中的db_connect迁移到main.py中，test.__init__.py中调用mock连接， 在status中， 添加setUP和tearDown处理
     具体可参见 status_region_tests.py 文件
 
-×3. 如何测试/api/, 基于requests Cookie留存登录信息
+×3. 如何测试/apps/, 基于requests Cookie留存登录信息
     数据库相关有点问题无法统一， 暂时放弃对接口的测试
 
 4. 如何生成一部分测试代码, (自动化创建, 批量)
