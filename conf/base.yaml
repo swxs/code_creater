@@ -2,7 +2,7 @@ tasks:
   - input: "配置文件名"
     output:
     - framework: "生成模块名"
-      target: D:\codehouse\testcreate\api\auto
+      target: D:\codehouse\testcreate\apps\auto
     - framework: markfile
       target: D:\codehouse\testcreate\docs
 
