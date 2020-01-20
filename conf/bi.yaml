@@ -1,9 +1,0 @@
-tasks:
-  - input: "BI.xmind"
-    params:
-      aio: true
-    output:
-    - framework: tornado
-      target: D:\codehouse\home\api
-    - framework: markfile
-      target: D:\codehouse\home\docs
