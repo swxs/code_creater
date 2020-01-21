@@ -10,7 +10,7 @@ from common.Helpers.Helper_pagenate import Page
 from result import SuccessData
 from ...BaseConsts import *
 from ...BaseViews import BaseHandler
-from ..utils.{{model.name | title}} import {{model.name | title}}
+from ..utils.{{model.name | title}} import {{model.name | title}}, {{model.name | lower}}_schema
 
 log = getLogger("views/{{model.name | lower}}")
 
@@ -21,7 +21,7 @@ class {{model.name | title}}Handler(BaseHandler):
         if {{model.name | lower}}_id:
             {{model.name | lower}} = {{ 'await ' if aio }}{{model.name | title}}.select(id={{model.name | lower}}_id)
             return SuccessData(
-                {{ 'await ' if aio }}{{model.name | lower}}.to_front()
+                data={{ 'await ' if aio }}{{model.name | lower}}.to_front()
             )
         else:
             search_params = json.loads(self.get_argument("search", '{}'))
@@ -40,121 +40,49 @@ class {{model.name | title}}Handler(BaseHandler):
             {{model.name | lower}}_cursor = {{model.name | title}}.search(**search_params).order_by(order_by)
             data = [{{ 'await ' if aio }} {{model.name | lower}}.to_front() {{ 'async ' if aio }}for {{model.name | lower}} in {{model.name | lower}}_cursor]
             pager = Page(data, use_pager=use_pager, page=page, items_per_page=items_per_page, item_count=item_count)
-            return SuccessData(pager.items, info=pager.info)
+            return SuccessData(
+                data=pager.items, 
+                info=pager.info
+            )
 
 
     @render
     {{ 'async ' if aio }}def post(self, {{model.name | lower}}_id=None):
         if {{model.name | lower}}_id:
-            params = dict()
-            {# 如果存在继承， 添加父类字段 #}
-            {% if "parent" in model and model["parent"] %}
-            {% for field in apps_dict[app_name][model["parent"]].field_list %}
-            {% if field.field_type == "list" %}
-            params['{{field.field_name}}'] = self.get_arguments('{{field.field_name}}', undefined)
-            {% else %}
-            params['{{field.field_name}}'] = self.get_argument('{{field.field_name}}', undefined)
-            {% endif %}
-            {% endfor %}
-            {% endif %}
-            {# 添加字段 #}
-            {% for field in model.field_list %}
-            {% if field.field_type == "list" %}
-            params['{{field.field_name}}'] = self.get_arguments('{{field.field_name}}', undefined)
-            {% else %}
-            params['{{field.field_name}}'] = self.get_argument('{{field.field_name}}', undefined)
-            {% endif %}
-            {% endfor %}
-            {{model.name | lower}} = {{ 'await ' if aio }}{{model.name | title}}.select(id={{model.name | lower}}_id)
-            {{model.name | lower}} = {{ 'await ' if aio }}{{model.name | lower}}.copy(**params)
+            params = {{model.name | lower}}_schema.load(self.arguments, partial=True)
+            old_{{model.name | lower}} = {{ 'await ' if aio }}{{model.name | title}}.select(id={{model.name | lower}}_id)
+            new_{{model.name | lower}} = {{ 'await ' if aio }}{{model.name | lower}}.copy(**params.data)
             return SuccessData(
-                {{model.name | lower}}.id
+                id=new_{{model.name | lower}}.id
             )
         else:
-            params = dict()
-            {# 如果存在继承， 添加父类字段 #}
-            {% if "parent" in model and model["parent"] %}
-            {% for field in apps_dict[app_name][model["parent"]].field_list %}
-            {% if field.field_type == "list" %}
-            params['{{field.field_name}}'] = self.get_arguments('{{field.field_name}}', [])
-            {% else %}
-            params['{{field.field_name}}'] = self.get_argument('{{field.field_name}}', None)
-            {% endif %}
-            {% endfor %}
-            {% endif %}
-            {# 添加字段 #}
-            {% for field in model.field_list %}
-            {% if field.field_type == "list" %}
-            params['{{field.field_name}}'] = self.get_arguments('{{field.field_name}}', [])
-            {% else %}
-            params['{{field.field_name}}'] = self.get_argument('{{field.field_name}}', None)
-            {% endif %}
-            {% endfor %}
-            {{model.name | lower}} = {{ 'await ' if aio }}{{model.name | title}}.create(**params)
+            params = {{model.name | lower}}_schema.load(self.arguments)
+            {{model.name | lower}} = {{ 'await ' if aio }}{{model.name | title}}.create(**params.data)
             return SuccessData(
-                {{model.name | lower}}.id
+                id={{model.name | lower}}.id
             )
 
     @render
     {{ 'async ' if aio }}def put(self, {{model.name | lower}}_id=None):
-        params = dict()
-        {# 如果存在继承， 添加父类字段 #}
-        {% if "parent" in model and model["parent"] %}
-        {% for field in apps_dict[app_name][model["parent"]].field_list %}
-        {% if field.field_type == "list" %}
-        params['{{field.field_name}}'] = self.get_arguments('{{field.field_name}}', [])
-        {% else %}
-        params['{{field.field_name}}'] = self.get_argument('{{field.field_name}}', None)
-        {% endif %}
-        {% endfor %}
-        {% endif %}
-        {# 添加字段 #}
-        {% for field in model.field_list %}
-        {% if field.field_type == "list" %}
-        params['{{field.field_name}}'] = self.get_arguments('{{field.field_name}}', [])
-        {% else %}
-        params['{{field.field_name}}'] = self.get_argument('{{field.field_name}}', None)
-        {% endif %}
-        {% endfor %}
-        {{model.name | lower}} = {{ 'await ' if aio }}{{model.name | title}}.select(id={{model.name | lower}}_id)
-        {{model.name | lower}} = {{ 'await ' if aio }}{{model.name | lower}}.update(**params)
+        params = {{model.name | lower}}_schema.load(self.arguments)
+        {{model.name | lower}} = {{ 'await ' if aio }}{{model.name | title}}.find_and_update(id={{model.name | lower}}_id, **params.data)
         return SuccessData(
-            {{model.name | lower}}.id
+            id={{model.name | lower}}.id
         )
 
     @render
     {{ 'async ' if aio }}def patch(self, {{model.name | lower}}_id=None):
-        params = dict()
-        {# 如果存在继承， 添加父类字段 #}
-        {% if "parent" in model and model["parent"] %}
-        {% for field in apps_dict[app_name][model["parent"]].field_list %}
-        {% if field.field_type == "list" %}
-        params['{{field.field_name}}'] = self.get_arguments('{{field.field_name}}', undefined)
-        {% else %}
-        params['{{field.field_name}}'] = self.get_argument('{{field.field_name}}', undefined)
-        {% endif %}
-        {% endfor %}
-        {% endif %}
-        {# 添加字段 #}
-        {% for field in model.field_list %}
-        {% if field.field_type == "list" %}
-        params['{{field.field_name}}'] = self.get_arguments('{{field.field_name}}', undefined)
-        {% else %}
-        params['{{field.field_name}}'] = self.get_argument('{{field.field_name}}', undefined)
-        {% endif %}
-        {% endfor %}
-        {{model.name | lower}} = {{ 'await ' if aio }}{{model.name | title}}.select(id={{model.name | lower}}_id)
-        {{model.name | lower}} = {{ 'await ' if aio }}{{model.name | lower}}.update(**params)
+        params = {{model.name | lower}}_schema.load(self.arguments, partial=True)
+        {{model.name | lower}} = {{ 'await ' if aio }}{{model.name | title}}.find_and_update(id={{model.name | lower}}_id, **params.data)
         return SuccessData(
-            {{model.name | lower}}.id
+            id={{model.name | lower}}.id
         )
 
     @render
     {{ 'async ' if aio }}def delete(self, {{model.name | lower}}_id=None):
-        {{model.name | lower}} = {{ 'await ' if aio }}{{model.name | title}}.select(id={{model.name | lower}}_id)
-        {{ 'await ' if aio }}{{model.name | lower}}.delete()
+        count = {{ 'await ' if aio }}{{model.name | title}}.find_and_delete(id={{model.name | lower}}_id)
         return SuccessData(
-            None
+            count=count
         )
 
     def set_default_headers(self):
