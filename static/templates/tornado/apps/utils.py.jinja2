@@ -2,8 +2,13 @@
 # @File    : {{model.name}}.py
 # @AUTH    : model_creater
 
+from ..models.{{model.name | title}} import {{model.name | title}} as {{model.name | title}}Model
 from ..dao.{{model.name | title}} import {{model.name | title}} as Base{{model.name | title}}
+from marshmallow import Schema, fields
 
+{{model.name | title}}Schema = {{model.name | title}}Model.schema.as_marshmallow_schema()
+
+{{model.name | lower}}_schema = {{model.name | title}}Schema()
 
 class {{model.name | title}}(Base{{model.name | title}}):
     def __init__(self, **kwargs):
