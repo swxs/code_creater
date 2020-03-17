@@ -10,10 +10,10 @@ import datetime
 class Maker(object, metaclass=abc.ABCMeta):
     name = 'base'
 
-    def __init__(self, env, apps_dict, params_dict, config):
+    def __init__(self, env, root, params_dict, config):
         self.env = env
         self.config = config
-        self.apps_dict = apps_dict
+        self.root = root
         self.params_dict = params_dict
         for conf in self.config:
             target_path = conf.get('target')
@@ -65,7 +65,7 @@ class Maker(object, metaclass=abc.ABCMeta):
 
     def render(self, tmpl, adict, dst_file):
         adict.update(dict(
-            apps_dict=self.apps_dict,
+            root=self.root,
         ))
         return self.base_render(tmpl, adict, dst_file)
 
@@ -73,7 +73,7 @@ class Maker(object, metaclass=abc.ABCMeta):
         if os.path.exists(dst_file):
             return
         adict.update(dict(
-            apps_dict=self.apps_dict,
+            root=self.root,
         ))
         return self.base_render(tmpl, adict, dst_file)
 

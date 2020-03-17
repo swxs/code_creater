@@ -38,9 +38,10 @@ def run(filename):
         app_filepath = os.path.join(script_path, "apps", task.get('input', ""))
         if not os.path.exists(config_filepath):
             continue
-        apps_dict = utils.dict2objectdict(parseModel(app_filepath))
+            
+        root = parseModel(app_filepath)
         params_dict = utils.dict2objectdict(task.get('params', {}))
-        factory.make_code(jinja_env, apps_dict, params_dict, task.get('output', []))
+        factory.make_code(jinja_env, root, params_dict, task.get('output', []))
 
 
 if __name__ == "__main__":

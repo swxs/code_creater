@@ -11,8 +11,7 @@ except Exception:
 class RegType:
     ALL = r'.*'
     APP = r'[Aa]pp'
-    COMMIT = r'#'
-    DESC = r"##"
+    DESC = r"#"
     META = r'meta'
     DEFAULT = r'default'
     REF = r'ref'
@@ -20,7 +19,7 @@ class RegType:
     ENUM = r'enum'
     ALLOW_INHERITANCE = r'allow_inheritance'
     PARENT = r'parent'
-    INDEX = r'index'
+    INDEX = r'indexes'
     UNIQ = r'uniq'
 
 
