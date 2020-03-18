@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-# @File    : {{model.name}}.py
+# @File    : {{klass.name}}.py
 # @AUTH    : model_creater
 
 import datetime
 from umongo import Instance, Document, fields
-from ..consts.{{model.name | title}} import *
-{% if "parent" in model and model["parent"] %}
-from .{{apps_dict[app_name][model["parent"]].name | title}} import {{apps_dict[app_name][model["parent"]].name | title}}
+from ..consts.{{klass.name}} import *
+{% if klass.meta.values.get("parent") %}
+from .{{klass.meta.values.get("parent") | title}} import {{klass.meta.values.get("parent") | title}}
 {% else %}
 from ...BaseModel import BaseModelDocument
 {% endif %}
@@ -14,36 +14,36 @@ from settings import instance
 
 
 @instance.register
-{% if "parent" in model and model["parent"] %}
-class {{model.name | title}}({{apps_dict[app_name][model["parent"]].name | title}}):
+{% if klass.meta.values.get("parent") %}
+class {{klass.name}}({{klass.meta.values.get("parent") | title}}):
 {% else %}
-class {{model.name | title}}(BaseModelDocument):
+class {{klass.name}}(BaseModelDocument):
 {% endif %}
-    {% for field in model.field_list %}
+    {% for field in klass.fields %}
     {% if field.field_type == "datetime" %}
-    {{field.field_name}} = fields.DateTimeField({{field|get_model_params(model)}})
+    {{field.name}} = fields.DateTimeField({{field|get_model_params(klass)}})
     {% elif field.field_type == "str" %}
-    {{field.field_name}} = fields.StringField({{field|get_model_params(model)}})
+    {{field.name}} = fields.StringField({{field|get_model_params(klass)}})
     {% elif field.field_type == "int" %}
-    {{field.field_name}} = fields.IntField({{field|get_model_params(model)}})
+    {{field.name}} = fields.IntField({{field|get_model_params(klass)}})
     {% elif field.field_type == "list" %}
-    {{field.field_name}} = fields.ListField({{field|get_model_params(model)}})
+    {{field.name}} = fields.ListField({{field|get_model_params(klass)}})
     {% elif field.field_type == "dict" %}
-    {{field.field_name}} = fields.DictField({{field|get_model_params(model)}})
+    {{field.name}} = fields.DictField({{field|get_model_params(klass)}})
     {% elif field.field_type == "boolean" %}
-    {{field.field_name}} = fields.BooleanField({{field|get_model_params(model)}})
+    {{field.name}} = fields.BooleanField({{field|get_model_params(klass)}})
     {% elif field.field_type == "objectid" %}
-    {{field.field_name}} = fields.ObjectIdField({{field|get_model_params(model)}})
+    {{field.name}} = fields.ObjectIdField({{field|get_model_params(klass)}})
     {% else %}
-    {{field.field_name}} = fields.StringField({{field|get_model_params(model)}})
+    {{field.name}} = fields.StringField({{field|get_model_params(klass)}})
     {% endif %}
     {% endfor %}
-    {% if "meta" is in(model) %}
+    {% if klass.meta.values %}
 
     class Meta:
-        {% if "index_list" is in(model["meta"]) and model["meta"]["index_list"] %}
+        {% if klass.meta.values.get("index_list") %}
         indexes = [
-            {% for index in model["meta"]["index_list"] %}
+            {% for index in klass.meta.values.get("index_list") %}
             {
                 'key': [{{index | get_index_params}}],
                 {% if index["is_uniq"] %}
@@ -53,7 +53,7 @@ class {{model.name | title}}(BaseModelDocument):
             {% endfor %}
         ]
         {% endif %}
-        {% if "allow_inheritance" is in(model["meta"]) and model["meta"]["allow_inheritance"] %}
+        {% if klass.meta.values.get("allow_inheritance") %}
         allow_inheritance = True
         {% endif %}
         pass

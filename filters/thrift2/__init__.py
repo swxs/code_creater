@@ -12,4 +12,4 @@ def get_ttype(field):
         'intlist': 'list<inting>',
         'objectid': 'string'
     }
-    return ttype_dict.get(field["field_type"], 'string')
+    return ttype_dict.get(field.field_type, 'string')

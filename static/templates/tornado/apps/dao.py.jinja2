@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# @File    : {{model.name}}.py
+# @File    : {{klass.name}}.py
 # @AUTH    : model_creater
 
 import datetime
@@ -8,70 +8,80 @@ from async_property import async_property
 {% endif %}
 import document_utils as model
 from document_utils.consts import NAME_DICT
-from ..models.{{model.name | title }} import {{model.name | title}} as {{model.name | title}}Model
-{% if "parent" in model and model["parent"] %}
-from .{{apps_dict[app_name][model["parent"]].name | title}} import {{apps_dict[app_name][model["parent"]].name | title}}
+from ..models.{{klass.name }} import {{klass.name}} as {{klass.name}}Model
+{% if klass.meta.values.get("parent") %}
+{% for _klass in app.klass %}
+{% if _klass.name == klass.meta.values.get("parent") %}
+from .{{_klass.name | title}} import {{_klass.name | title}}
+{% endif %}
+{% endfor %}
 {% else %}
 from ...BaseDAO import BaseDAO
 {% endif %}
 from common.Utils.log_utils import getLogger
 
-log = getLogger("utils/{{ model.name | lower }}")
+log = getLogger("utils/{{ klass.name | lower }}")
 
 
-{% if "parent" in model and model["parent"] %}
-class {{model.name | title}}({{apps_dict[app_name][model["parent"]].name | title}}):
-{% else %}
-class {{model.name | title}}(BaseDAO):
+{% if klass.meta.values.get("parent") %}
+{% for _klass in app.klass %}
+{% if _klass.name == klass.meta.values.get("parent") %}
+class {{klass.name}}({{_klass.name | title}}):
 {% endif %}
-{% for field in model.field_list %}
+{% endfor %}
+{% else %}
+class {{klass.name}}(BaseDAO):
+{% endif %}
+{% for field in klass.fields %}
     {% if field.field_type == "datetime" %}
-    {{field.field_name}} = model.DateTimeField({{field|get_utils_params(model)}})
+    {{field.name}} = model.DateTimeField({{field|get_utils_params(klass)}})
     {% elif field.field_type == "str" %}
-    {{field.field_name}} = model.StringField({{field|get_utils_params(model)}})
+    {{field.name}} = model.StringField({{field|get_utils_params(klass)}})
     {% elif field.field_type == "int" %}
-    {{field.field_name}} = model.IntField({{field|get_utils_params(model)}})
+    {{field.name}} = model.IntField({{field|get_utils_params(klass)}})
     {% elif field.field_type == "list" %}
-    {{field.field_name}} = model.ListField({{field|get_utils_params(model)}})
+    {{field.name}} = model.ListField({{field|get_utils_params(klass)}})
     {% elif field.field_type == "dict" %}
-    {{field.field_name}} = model.DictField({{field|get_utils_params(model)}})
+    {{field.name}} = model.DictField({{field|get_utils_params(klass)}})
     {% elif field.field_type == "boolean" %}
-    {{field.field_name}} = model.BooleanField({{field|get_utils_params(model)}})
+    {{field.name}} = model.BooleanField({{field|get_utils_params(klass)}})
     {% elif field.field_type == "objectid" %}
-    {{field.field_name}} = model.ObjectIdField({{field|get_utils_params(model)}})
+    {{field.name}} = model.ObjectIdField({{field|get_utils_params(klass)}})
     {% else %}
-    {{field.field_name}} = model.StringField({{field|get_utils_params(model)}})
+    {{field.name}} = model.StringField({{field|get_utils_params(klass)}})
     {% endif %}
 {% endfor %}
 
     def __init__(self, **kwargs):
-        super({{model.name | title}}, self).__init__(**kwargs)
+        super({{klass.name}}, self).__init__(**kwargs)
 
-{% for field in model.field_list %}
-    {% if "ref" is in(field) %}
-    {% set ref_model = apps_dict[app_name][field["ref"]] %}
+{% for field in klass.fields %}
+    {% if field.values.get("ref") %}
     {% if aio %}
     @async_property
     {% else %}
     @property
     {% endif %}
-    {{ 'async ' if aio }}def {{ref_model["name"] | lower}}(self):
-        from .{{ref_model["name"] | title}} import {{ref_model["name"] | title}}
-        return {{ 'await ' if aio }}{{ref_model["name"] | title}}.get_{{ref_model["name"] | lower}}_by_{{ref_model["name"] | lower}}_id(self.{{field.field_name}})
-
+    {% for _klass in app.klass %}
+    {% if _klass.name == field.values.get("ref") %}
+    {{ 'async ' if aio }}def {{_klass.name | lower}}(self):
+        from .{{_klass["name"] | title}} import {{_klass.name | title}}
+        return {{ 'await ' if aio }}{{_klass.name | title}}.get_{{_klass.name | lower}}_by_{{_klass.name | lower}}_id(self.{{field.name}})
+    {% endif %}
+    {% endfor %}
     {% endif %}
 {% endfor %}
     @classmethod
-    {{ 'async ' if aio }}def get_{{model.name | lower}}_by_{{model.name | lower}}_id(cls, {{model.name | lower}}_id):
-        return {{ 'await ' if aio }}cls.select(id={{model.name | lower}}_id)
+    {{ 'async ' if aio }}def get_{{klass.name | lower}}_by_{{klass.name | lower}}_id(cls, {{klass.name | lower}}_id):
+        return {{ 'await ' if aio }}cls.select(id={{klass.name | lower}}_id)
 
-{% if ("meta" is in(model)) and ("listorder") is in(model["meta"]) %}
+{% if klass.meta.values.get("listorder") %}
     {{ 'async ' if aio }}def create(self, **kwargs):
-    {% for field in model.field_list %}
-        {{field.field_name}} = {{model.name | title}}.first().{{field.field_name}} + 100000
+    {% for field in klass.fields %}
+        {{field.name}} = {{klass.name}}.first().{{field.name}} + 100000
     {% endfor %}
-        {{ 'await ' if aio }} super({{model.name | title}}, self).create(**kwargs)
+        {{ 'await ' if aio }} super({{klass.name}}, self).create(**kwargs)
 
 {% endif %}
 
-NAME_DICT[BaseDAO.__manager__]["{{model.name | title}}"] = {{model.name | title}}Model
+NAME_DICT[BaseDAO.__manager__]["{{klass.name}}"] = {{klass.name}}Model

@@ -16,61 +16,61 @@ struct DeleteResult {
     3: optional i32 count;
 }
 
-{% for model_name, model in models.items() %}
-struct {{model_name | title}} {
+{% for klass in app.klasses %}
+struct {{klass.name}} {
     1: optional string id;
-    {% for field in model.field_list %}
+    {% for field in klass.fields %}
         {% if field.field_type == "datetime" %}
-    {{loop.index + 1}}: optional string {{field.field_name}};
+    {{loop.index + 1}}: optional string {{field.name}};
         {% elif field.field_type == "str" %}
-    {{loop.index + 1}}: optional string {{field.field_name}};
+    {{loop.index + 1}}: optional string {{field.name}};
         {% elif field.field_type == "int" %}
-    {{loop.index + 1}}: optional i32 {{field.field_name}};
+    {{loop.index + 1}}: optional i32 {{field.name}};
         {% elif field.field_type == "list" %}
             {% if field.field_detail_type == "str" %}
-    {{loop.index + 1}}: optional list<string> {{field.field_name}};
+    {{loop.index + 1}}: optional list<string> {{field.name}};
             {% elif field.field_detail_type == "int" %}
-    {{loop.index + 1}}: optional list<inting> {{field.field_name}};
+    {{loop.index + 1}}: optional list<inting> {{field.name}};
             {% elif field.field_detail_type == "objectid" %}
-    {{loop.index + 1}}: optional list<string> {{field.field_name}};
+    {{loop.index + 1}}: optional list<string> {{field.name}};
             {% elif field.field_detail_type == "dict" %}
-    {{loop.index + 1}}: optional list<string> {{field.field_name}};
+    {{loop.index + 1}}: optional list<string> {{field.name}};
             {% else %}
-    {{loop.index + 1}}: optional list<string> {{field.field_name}};
+    {{loop.index + 1}}: optional list<string> {{field.name}};
             {% endif %}
         {% elif field.field_type == "dict" %}
-    {{loop.index + 1}}: optional string {{field.field_name}};
+    {{loop.index + 1}}: optional string {{field.name}};
         {% elif field.field_type == "boolean" %}
-    {{loop.index + 1}}: optional bool {{field.field_name}};
+    {{loop.index + 1}}: optional bool {{field.name}};
         {% elif field.field_type == "objectid" %}
-    {{loop.index + 1}}: optional string {{field.field_name}};
+    {{loop.index + 1}}: optional string {{field.name}};
         {% else %}
-    {{loop.index + 1}}: optional string {{field.field_name}};
+    {{loop.index + 1}}: optional string {{field.name}};
         {% endif %}
     {% endfor %}
 }
 
-typedef list<{{model_name | title}}> {{model_name | title}}List
+typedef list<{{klass.name}}> {{klass.name}}List
 
-struct Select{{model_name | title}}Result {
+struct Select{{klass.name}}Result {
     1: required i32 code;
     2: optional string msg;
-    3: optional {{model_name | title}} {{model_name | lower}};
+    3: optional {{klass.name}} {{klass.name | lower}};
 }
 
-struct Search{{model_name | title}}Result {
+struct Search{{klass.name}}Result {
     1: required i32 code;
     2: optional string msg;
-    3: optional {{model_name | title}}List {{model_name | lower}}_list;
+    3: optional {{klass.name}}List {{klass.name | lower}}_list;
 }
 
 {% endfor %}
-service {{app_name | title}}Service {
-    {% for model_name, model in models.items() %}
-    CreateResult create_{{app_name | lower}}_{{model_name | lower}}(1:{{model_name | title}} {{model_name | lower}}),
-    UpdateResult update_{{app_name | lower}}_{{model_name | lower}}(1:string id, 2:{{model_name| title}} {{model_name | lower}}),
-    DeleteResult delete_{{app_name | lower}}_{{model_name | lower}}(1:string id),
-    Select{{model_name | title}}Result select_{{app_name | lower}}_{{model_name | lower}}(1:string id),
-    Search{{model_name | title}}Result search_{{app_name | lower}}_{{model_name | lower}}(1:string search),
+service {{app.name | title}}Service {
+    {% for klass in app.klasses %}
+    CreateResult create_{{klass.name | lower}}_{{klass.name | lower}}(1:{{klass.name}} {{klass.name | lower}}),
+    UpdateResult update_{{klass.name | lower}}_{{klass.name | lower}}(1:string id, 2:{{klass.name| title}} {{klass.name | lower}}),
+    DeleteResult delete_{{klass.name | lower}}_{{klass.name | lower}}(1:string id),
+    Select{{klass.name}}Result select_{{klass.name | lower}}_{{klass.name | lower}}(1:string id),
+    Search{{klass.name}}Result search_{{klass.name | lower}}_{{klass.name | lower}}(1:string search),
     {% endfor %}
 }

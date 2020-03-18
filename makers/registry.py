@@ -12,10 +12,10 @@ class Factory(object):
         for task in config:
             maker = self.maker_dict[task.get('framework')](env, root, params_dict, config)
             for app in root.apps:
-                maker.total_make(app.name, app, task)
-                for klass in app.klass():
+                maker.total_make(app, task)
+                for klass in app.klasses:
                     try:
-                        maker.make(klass.name, klass, task)
+                        maker.make(app, klass, task)
                     except Exception as e:
                         print(e)
 

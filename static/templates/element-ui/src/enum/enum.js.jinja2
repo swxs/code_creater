@@ -1,18 +1,18 @@
-{% for field in model.field_list %}
-    {% if "enums" is in(field) %}
-export const {{field | get_enum_dict(model)}} = {
-        {% for enum in field["enums"] %}
-    {{enum["value"] | get_enum_upper(field, model) }}: {{ loop.index }}, // {{ enum['name'] }}
+{% for field in klass.fields %}
+    {% if field.values.get("enums") %}
+export const {{field | get_enum_dict(klass)}} = {
+        {% for enum in field.values.get("enums") %}
+    {{enum["key"] | get_enum_upper(field, klass) }}: {{ loop.index }}, // {{ enum.get("description", enum["value"]) }}
         {% endfor %}
 }
     {% endif %}
 {% endfor %}
 
-{% for field in model.field_list %}
-    {% if "enums" is in(field) %}
-export const {{field | get_enum_list(model)}} = [
-        {% for enum in field["enums"] %}
-    [{{field | get_enum_dict(model)}}.{{enum["value"] | get_enum_upper(field, model) }}, '{{ enum['name'] }}'],
+{% for field in klass.fields %}
+    {% if field.values.get("enums") %}
+export const {{field | get_enum_list(klass)}} = [
+        {% for enum in field.values.get("enums") %}
+    [{{field | get_enum_dict(klass)}}.{{enum["key"] | get_enum_upper(field, klass) }}, '{{ enum['key'] }}'],
         {% endfor %}
 ]
     {% endif %}

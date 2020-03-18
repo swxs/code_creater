@@ -9,14 +9,14 @@ from typing import (Dict, Any, List)
 re_letter = re.compile(r'[a-zA-Z]')
 
 
-def get_enum_upper(name, field, model):
+def get_enum_upper(name, field, klass):
     from .. import upper
-    return f"{upper(model.name)}_{upper(field.get('field_name'))}_{upper(name)}"
+    return f"{upper(klass.name)}_{upper(field.name)}_{upper(name)}"
 
 
-def get_enum_list(field, model):
+def get_enum_list(field, klass):
     from .. import upper
-    return f"{upper(model.name)}_{upper(field.get('field_name'))}_LIST"
+    return f"{upper(klass.name)}_{upper(field.name)}_LIST"
 
 
 def get_index_params(index):
@@ -26,46 +26,50 @@ def get_index_params(index):
     return ", ".join(params_list)
 
 
-def get_utils_params(field, model) -> str:
+def get_utils_params(field, klass) -> str:
     params_list = list()
-    if "no_create" in field:
+    if field.values.get("no_create"):
         params_list.append(f"create=False")
     return ", ".join(params_list)
 
 
-def get_model_params(field, model) -> str:
+def get_model_params(field, klass) -> str:
     params_list = list()
 
-    if field["field_type"] == "list":
-        if "field_detail_type" not in field:
+    field_type = field.field_type
+    field_detail_type = field.field_detail_type
+    enums = field.values.get("enums", None)
+    default = field.values.get("default", None)
+
+    if field_type == "list":
+        if field_detail_type == "str":
             params_list.append(f"fields.StringField()")
-        elif field["field_detail_type"] == "str":
+        elif field_detail_type == "int":
             params_list.append(f"fields.StringField()")
-        elif field["field_detail_type"] == "int":
-            params_list.append(f"fields.StringField()")
-        elif field["field_detail_type"] == "objectid":
+        elif field_detail_type == "objectid":
             params_list.append(f"fields.ObjectIdField()")
-        elif field["field_detail_type"] == "dict":
+        elif field_detail_type == "dict":
             params_list.append(f"fields.DictField()")
         else:
-            params_list.append(f"fields.StringField()")
+            pass
 
     params_list.append(f"allow_none=True")
-    if "enums" in field:
-        params_list.append(f"enums={get_enum_list(field, model)}")
-    if "default" in field:
-        if field["default"] in ('False', 'false'):
+
+    if enums:
+        params_list.append(f"enums={get_enum_list(field, klass)}")
+    if default is not None:
+        if default in ('False', 'false'):
             params_list.append(f"default=False")
-        elif field["default"] in ('True', 'true'):
+        elif default in ('True', 'true'):
             params_list.append(f"default=True")
-        elif "enums" in field:
-            params_list.append(f"default={get_enum_upper(field['default'], field, model)}")
-        elif field["field_type"] in ("int",):
-            params_list.append(f"default={int(field['default'])}")
-        elif field["field_type"] in ("float",):
-            params_list.append(f"default={float(field['default'])}")
+        elif enums:
+            params_list.append(f"default={get_enum_upper(default, field, klass)}")
+        elif field_type in ("int",):
+            params_list.append(f"default={int(default)}")
+        elif field_type in ("float",):
+            params_list.append(f"default={float(default)}")
         else:
-            params_list.append(f"default='{field['default']}'")
-    if "_description" in field:
-        params_list.append(f"helper_text='{field['_description']}'")
+            params_list.append(f"default='{default}'")
+    # if "_description" in field:
+    #     params_list.append(f"helper_text='{field['_description']}'")
     return ", ".join(params_list)

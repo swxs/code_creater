@@ -13,10 +13,10 @@ from utils.utils import get_dir_path
 class MakerElementUI(Maker):
     name = "element-ui"
 
-    def total_make(self, app_name, models, task):
+    def total_make(self, app, task):
         pass
 
-    def make(self, app_name, model, task):
+    def make(self, app, klass, task):
         # 创建基础文件
         dst_path = get_dir_path(task.get('target'))
 
@@ -47,16 +47,16 @@ class MakerElementUI(Maker):
         for filename in filenames:
             tmpl = os.path.join(task.get('framework'), filename)
             dst_file = os.path.join(dst_path, filename[:-7])
-            self.render_once(tmpl, {'model': model, 'app_name': app_name}, dst_file)
+            self.render_once(tmpl, {'klass': klass, 'app': app}, dst_file)
 
         # 创建 对应模块的 api.js 文件, 实现模块访问方法
         dst_path = get_dir_path(task.get('target'), 'src', 'api')
         tmpl = os.path.join(task.get('framework'), 'src', 'api', 'api.js.jinja2')
-        dst_file = os.path.join(dst_path, f'{model.name}.js')
-        self.render(tmpl, {'model': model, 'app_name': app_name}, dst_file)
+        dst_file = os.path.join(dst_path, f'{klass.name}.js')
+        self.render(tmpl, {'klass': klass, 'app': app}, dst_file)
 
         # 创建 对应模块的 enum.js 文件, 记录模块字段映射常量
         dst_path = get_dir_path(task.get('target'), 'src', 'enum')
         tmpl = os.path.join(task.get('framework'), 'src', 'enum', 'enum.js.jinja2')
-        dst_file = os.path.join(dst_path, f'{model.name}.js')
-        self.render(tmpl, {'model': model, 'app_name': app_name}, dst_file)
+        dst_file = os.path.join(dst_path, f'{klass.name}.js')
+        self.render(tmpl, {'klass': klass, 'app': app}, dst_file)

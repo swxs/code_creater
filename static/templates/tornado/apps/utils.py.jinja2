@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-# @File    : {{model.name}}.py
+# @File    : {{klass.name}}.py
 # @AUTH    : model_creater
 
-from ..models.{{model.name | title}} import {{model.name | title}} as {{model.name | title}}Model
-from ..dao.{{model.name | title}} import {{model.name | title}} as Base{{model.name | title}}
+from ..models.{{klass.name}} import {{klass.name}} as {{klass.name}}Model
+from ..dao.{{klass.name}} import {{klass.name}} as Base{{klass.name}}
 from marshmallow import Schema, fields
 
-{{model.name | title}}Schema = {{model.name | title}}Model.schema.as_marshmallow_schema()
+{{klass.name}}Schema = {{klass.name}}Model.schema.as_marshmallow_schema()
 
-{{model.name | lower}}_schema = {{model.name | title}}Schema()
+{{klass.name | lower}}_schema = {{klass.name}}Schema()
 
-class {{model.name | title}}(Base{{model.name | title}}):
+class {{klass.name}}(Base{{klass.name}}):
     def __init__(self, **kwargs):
-        super({{model.name | title}}, self).__init__(**kwargs)
+        super({{klass.name}}, self).__init__(**kwargs)

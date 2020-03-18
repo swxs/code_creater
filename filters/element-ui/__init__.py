@@ -1,13 +1,13 @@
-def get_enum_upper(name, field, model):
+def get_enum_upper(name, field, klass):
     from .. import upper
-    return f"{upper(model.name)}_{upper(field.get('field_name'))}_{upper(name)}"
+    return f"{upper(klass.name)}_{upper(field.name)}_{upper(name)}"
 
 
-def get_enum_dict(field, model):
+def get_enum_dict(field, klass):
     from .. import upper
-    return f"{upper(model.name)}_{upper(field.get('field_name'))}_DICT"
+    return f"{upper(klass.name)}_{upper(field.name)}_DICT"
 
 
-def get_enum_list(field, model):
+def get_enum_list(field, klass):
     from .. import upper
-    return f"{upper(model.name)}_{upper(field.get('field_name'))}_LIST"
+    return f"{upper(klass.name)}_{upper(field.name)}_LIST"

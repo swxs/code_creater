@@ -1,56 +1,56 @@
-const {{model.name | title}}Url = '/api/{{app_name | lower}}/{{model.name | lower}}/'
+const {{klass.name}}Url = '/api/{{klass.name | lower}}/{{klass.name | lower}}/'
 
-export const search{{model.name | title}} = (data) => {
+export const search{{klass.name}} = (data) => {
   return new Promise(function(resolve, reject) {
-    window.axios.get(`${{ '{' }}{{model.name | title}}Url{{ '}' }}`, { params: data }).then((response) => {
+    window.axios.get(`${{ '{' }}{{klass.name}}Url{{ '}' }}`, { params: data }).then((response) => {
       resolve(response)
     })
   })
 }
 
-export const select{{model.name | title}} = (id) => {
+export const select{{klass.name}} = (id) => {
   return new Promise(function(resolve, reject) {
-    window.axios.get(`${{ '{' }}{{model.name | title}}Url{{ '}' }}${id}/`).then((response) => {
+    window.axios.get(`${{ '{' }}{{klass.name}}Url{{ '}' }}${id}/`).then((response) => {
       resolve(response.data)
     })
   })
 }
 
-export const create{{model.name | title}} = (data) => {
+export const create{{klass.name}} = (data) => {
   return new Promise(function(resolve, reject) {
-    window.axios.post(`${{ '{' }}{{model.name | title}}Url{{ '}' }}`, data).then((response) => {
+    window.axios.post(`${{ '{' }}{{klass.name}}Url{{ '}' }}`, data).then((response) => {
       resolve(response.data)
     })
   })
 }
 
-export const copy{{model.name | title}} = (id, data) => {
+export const copy{{klass.name}} = (id, data) => {
   return new Promise(function(resolve, reject) {
-    window.axios.post(`${{ '{' }}{{model.name | title}}Url{{ '}' }}${id}/`, data).then((response) => {
+    window.axios.post(`${{ '{' }}{{klass.name}}Url{{ '}' }}${id}/`, data).then((response) => {
       resolve(response.data)
     })
   })
 }
 
-export const update{{model.name | title}} = (id, data) => {
+export const update{{klass.name}} = (id, data) => {
   return new Promise(function(resolve, reject) {
-    window.axios.put(`${{ '{' }}{{model.name | title}}Url{{ '}' }}${id}/`, data).then((response) => {
+    window.axios.put(`${{ '{' }}{{klass.name}}Url{{ '}' }}${id}/`, data).then((response) => {
       resolve(response.data)
     })
   })
 }
 
-export const modify{{model.name | title}} = (id, data) => {
+export const modify{{klass.name}} = (id, data) => {
   return new Promise(function(resolve, reject) {
-    window.axios.patch(`${{ '{' }}{{model.name | title}}Url{{ '}' }}${id}/`, data).then((response) => {
+    window.axios.patch(`${{ '{' }}{{klass.name}}Url{{ '}' }}${id}/`, data).then((response) => {
       resolve(response.data)
     })
   })
 }
 
-export const delete{{model.name | title}} = (id) => {
+export const delete{{klass.name}} = (id) => {
   return new Promise(function(resolve, reject) {
-    window.axios.delete(`${{ '{' }}{{model.name | title}}Url{{ '}' }}${id}/`).then((response) => {
+    window.axios.delete(`${{ '{' }}{{klass.name}}Url{{ '}' }}${id}/`).then((response) => {
       resolve(response.data)
     })
   })

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# @File    : {{model.name}}.py
+# @File    : {{klass.name}}.py
 # @AUTH    : model
 
 import json
@@ -10,18 +10,18 @@ from common.Helpers.Helper_pagenate import Page
 from result import SuccessData
 from ...BaseConsts import *
 from ...BaseViews import BaseHandler
-from ..utils.{{model.name | title}} import {{model.name | title}}, {{model.name | lower}}_schema
+from ..utils.{{klass.name}} import {{klass.name}}, {{klass.name | lower}}_schema
 
-log = getLogger("views/{{model.name | lower}}")
+log = getLogger("views/{{klass.name | lower}}")
 
 
-class {{model.name | title}}Handler(BaseHandler):
+class {{klass.name}}Handler(BaseHandler):
     @render
-    {{ 'async ' if aio }}def get(self, {{model.name | lower}}_id=None):
-        if {{model.name | lower}}_id:
-            {{model.name | lower}} = {{ 'await ' if aio }}{{model.name | title}}.select(id={{model.name | lower}}_id)
+    {{ 'async ' if aio }}def get(self, {{klass.name | lower}}_id=None):
+        if {{klass.name | lower}}_id:
+            {{klass.name | lower}} = {{ 'await ' if aio }}{{klass.name}}.select(id={{klass.name | lower}}_id)
             return SuccessData(
-                data={{ 'await ' if aio }}{{model.name | lower}}.to_front()
+                data={{ 'await ' if aio }}{{klass.name | lower}}.to_front()
             )
         else:
             search_params = json.loads(self.get_argument("search", '{}'))
@@ -30,15 +30,15 @@ class {{model.name | title}}Handler(BaseHandler):
             page = int(self.get_argument("page", 1))
             items_per_page = int(self.get_argument("items_per_page", 20))
 
-            item_count = {{ 'await ' if aio }}{{model.name | title}}.count(**search_params)
+            item_count = {{ 'await ' if aio }}{{klass.name}}.count(**search_params)
             if use_pager:
                 search_params.update({
                     "limit": items_per_page,
                     "skip": (page - 1) * items_per_page
                 })
             order_by = [o for o in order_by.split(";") if bool(o)]
-            {{model.name | lower}}_cursor = {{model.name | title}}.search(**search_params).order_by(order_by)
-            data = [{{ 'await ' if aio }} {{model.name | lower}}.to_front() {{ 'async ' if aio }}for {{model.name | lower}} in {{model.name | lower}}_cursor]
+            {{klass.name | lower}}_cursor = {{klass.name}}.search(**search_params).order_by(order_by)
+            data = [{{ 'await ' if aio }} {{klass.name | lower}}.to_front() {{ 'async ' if aio }}for {{klass.name | lower}} in {{klass.name | lower}}_cursor]
             pager = Page(data, use_pager=use_pager, page=page, items_per_page=items_per_page, item_count=item_count)
             return SuccessData(
                 data=pager.items, 
@@ -47,40 +47,40 @@ class {{model.name | title}}Handler(BaseHandler):
 
 
     @render
-    {{ 'async ' if aio }}def post(self, {{model.name | lower}}_id=None):
-        if {{model.name | lower}}_id:
-            params = {{model.name | lower}}_schema.load(self.arguments, partial=True)
-            old_{{model.name | lower}} = {{ 'await ' if aio }}{{model.name | title}}.select(id={{model.name | lower}}_id)
-            new_{{model.name | lower}} = {{ 'await ' if aio }}{{model.name | lower}}.copy(**params.data)
+    {{ 'async ' if aio }}def post(self, {{klass.name | lower}}_id=None):
+        if {{klass.name | lower}}_id:
+            params = {{klass.name | lower}}_schema.load(self.arguments, partial=True)
+            old_{{klass.name | lower}} = {{ 'await ' if aio }}{{klass.name}}.select(id={{klass.name | lower}}_id)
+            new_{{klass.name | lower}} = {{ 'await ' if aio }}{{klass.name | lower}}.copy(**params.data)
             return SuccessData(
-                id=new_{{model.name | lower}}.id
+                id=new_{{klass.name | lower}}.id
             )
         else:
-            params = {{model.name | lower}}_schema.load(self.arguments)
-            {{model.name | lower}} = {{ 'await ' if aio }}{{model.name | title}}.create(**params.data)
+            params = {{klass.name | lower}}_schema.load(self.arguments)
+            {{klass.name | lower}} = {{ 'await ' if aio }}{{klass.name}}.create(**params.data)
             return SuccessData(
-                id={{model.name | lower}}.id
+                id={{klass.name | lower}}.id
             )
 
     @render
-    {{ 'async ' if aio }}def put(self, {{model.name | lower}}_id=None):
-        params = {{model.name | lower}}_schema.load(self.arguments)
-        {{model.name | lower}} = {{ 'await ' if aio }}{{model.name | title}}.find_and_update(id={{model.name | lower}}_id, **params.data)
+    {{ 'async ' if aio }}def put(self, {{klass.name | lower}}_id=None):
+        params = {{klass.name | lower}}_schema.load(self.arguments)
+        {{klass.name | lower}} = {{ 'await ' if aio }}{{klass.name}}.find_and_update(id={{klass.name | lower}}_id, **params.data)
         return SuccessData(
-            id={{model.name | lower}}.id
+            id={{klass.name | lower}}.id
         )
 
     @render
-    {{ 'async ' if aio }}def patch(self, {{model.name | lower}}_id=None):
-        params = {{model.name | lower}}_schema.load(self.arguments, partial=True)
-        {{model.name | lower}} = {{ 'await ' if aio }}{{model.name | title}}.find_and_update(id={{model.name | lower}}_id, **params.data)
+    {{ 'async ' if aio }}def patch(self, {{klass.name | lower}}_id=None):
+        params = {{klass.name | lower}}_schema.load(self.arguments, partial=True)
+        {{klass.name | lower}} = {{ 'await ' if aio }}{{klass.name}}.find_and_update(id={{klass.name | lower}}_id, **params.data)
         return SuccessData(
-            id={{model.name | lower}}.id
+            id={{klass.name | lower}}.id
         )
 
     @render
-    {{ 'async ' if aio }}def delete(self, {{model.name | lower}}_id=None):
-        count = {{ 'await ' if aio }}{{model.name | title}}.find_and_delete(id={{model.name | lower}}_id)
+    {{ 'async ' if aio }}def delete(self, {{klass.name | lower}}_id=None):
+        count = {{ 'await ' if aio }}{{klass.name}}.find_and_delete(id={{klass.name | lower}}_id)
         return SuccessData(
             count=count
         )

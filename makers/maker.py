@@ -78,14 +78,14 @@ class Maker(object, metaclass=abc.ABCMeta):
         return self.base_render(tmpl, adict, dst_file)
 
     @abc.abstractmethod
-    def make(self, name, app, task):
+    def make(self, app, task):
         """
         具体的渲染机制实现
         :return:
         """
 
     @abc.abstractmethod
-    def total_make(self, name, app, task):
+    def total_make(self, app, klass, task):
         """
         具体的渲染机制实现
         :return:

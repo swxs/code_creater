@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-# @File    : {{model.name}}.py
+# @File    : {{klass.name}}.py
 # @AUTH    : model_creater
 
 from tornado.web import url
-from ..views.{{model.name | title}} import {{model.name | title}}Handler
+from ..views.{{klass.name}} import {{klass.name}}Handler
 
 url_mapping = [
-    url(r"/api/{{app_name | lower}}/{{model.name | lower}}/(?:([a-zA-Z0-9&%\.~-]+)/)?", {{model.name | title}}Handler),
+    url(r"/api/{{app.name | lower}}/{{klass.name | lower}}/(?:([a-zA-Z0-9&%\.~-]+)/)?", {{klass.name}}Handler),
 ]
