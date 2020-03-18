@@ -1,4 +1,13 @@
 tasks:
+  - input: "机构.xmind"
+    params:
+      aio: true
+    output:
+    - framework: tornado
+      target: D:\codehouse\home\apps
+    - framework: markfile
+      target: D:\codehouse\home\docs
+
   - input: "密码控制.xmind"
     params:
       aio: true
