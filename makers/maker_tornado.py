@@ -47,12 +47,6 @@ class MakerTornado(Maker):
         dst_file = os.path.join(dst_path, f'__init__.py')
         self.render_once(tmpl, {'klass': klass, 'app': app}, dst_file)
 
-        # 创建 app/urls 下的 __init__.py 文件, 只创建一次
-        dst_path = get_dir_path(task.get('target'), app.name, 'urls')
-        tmpl = os.path.join(task.get('framework'), 'apps', '__init__.py.jinja2')
-        dst_file = os.path.join(dst_path, f'__init__.py')
-        self.render_once(tmpl, {'klass': klass, 'app': app}, dst_file)
-
         # 创建 app/utils 下的 __init__.py 文件, 只创建一次
         dst_path = get_dir_path(task.get('target'), app.name, 'utils')
         tmpl = os.path.join(task.get('framework'), 'apps', '__init__.py.jinja2')
@@ -80,12 +74,6 @@ class MakerTornado(Maker):
         # 创建 app/models 下的 models.py 文件, 记录模块信息
         dst_path = get_dir_path(task.get('target'), app.name, 'models')
         tmpl = os.path.join(task.get('framework'), 'apps', 'models.py.jinja2')
-        dst_file = os.path.join(dst_path, f'{klass.name}.py')
-        self.render(tmpl, {'klass': klass, 'app': app}, dst_file)
-
-        # 创建 app/urls 下的 urls.py 文件, 记录路由信息
-        dst_path = get_dir_path(task.get('target'), app.name, 'urls')
-        tmpl = os.path.join(task.get('framework'), 'apps', 'urls.py.jinja2')
         dst_file = os.path.join(dst_path, f'{klass.name}.py')
         self.render(tmpl, {'klass': klass, 'app': app}, dst_file)
 
