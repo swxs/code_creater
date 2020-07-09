@@ -4,10 +4,9 @@
 # @Time    : 2019/2/26 16:25
 
 import os
-
-from utils.utils import get_dir_path
 from .maker import Maker
 from .registry import factory
+from utils.utils import get_dir_path
 
 
 @factory.add_makers
