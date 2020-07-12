@@ -1,4 +1,4 @@
-const {{klass.name}}Url = '/api/{{klass.name | lower}}/{{klass.name | lower}}/'
+const {{klass.name}}Url = '/api/{{app.name | lower}}/{{klass.name | lower}}/'
 
 export const search{{klass.name}} = (data) => {
   return new Promise(function(resolve, reject) {
