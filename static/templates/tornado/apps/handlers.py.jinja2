@@ -48,7 +48,6 @@ class {{klass.name}}Handler(BaseHandler):
                 info=pager.info
             )
 
-
     @render
     {{ 'async ' if aio }}def post(self, {{klass.name | lower}}_id=None):
         if {{klass.name | lower}}_id:

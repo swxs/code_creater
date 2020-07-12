@@ -34,7 +34,7 @@ class MakerElementUI(Maker):
             os.path.join("src", "App.vue.jinja2"),
             os.path.join("src", "views", "404.vue.jinja2"),
             os.path.join("src", "views", "index.vue.jinja2"),
-            os.path.join("src", "views", "home.vue.jinja2"),
+            # os.path.join("src", "views", "home.vue.jinja2"),
             os.path.join("src", "plugins", "axios.js.jinja2"),
             os.path.join("src", "plugins", "element.js.jinja2"),
             os.path.join("src", "assets", "js", "bus.js.jinja2"),
@@ -48,6 +48,12 @@ class MakerElementUI(Maker):
             tmpl = os.path.join(task.get('framework'), filename)
             dst_file = os.path.join(dst_path, filename[:-7])
             self.render_once(tmpl, {'klass': klass, 'app': app}, dst_file)
+
+        #
+        dst_path = get_dir_path(task.get('target'), 'src', 'views')
+        tmpl = os.path.join(task.get('framework'), 'src', 'views', 'home.vue.jinja2')
+        dst_file = os.path.join(dst_path, f'home.vue')
+        self.render(tmpl, {'klass': klass, 'app': app}, dst_file)
 
         # 创建 对应模块的 api.js 文件, 实现模块访问方法
         dst_path = get_dir_path(task.get('target'), 'src', 'api')

@@ -63,12 +63,14 @@
 </template>
 
 <script>
+{% for klass in app.klasses %}
 import {
-  searchWord,
-  selectWord,
-  createWord,
-  deleteWord,
-} from '../api/Word.js'
+  search{{klass.name}},
+  select{{klass.name}},
+  create{{klass.name}},
+  delete{{klass.name}},
+} from '../api/{{klass.name}}.js'
+{% endfor %}
 import { MessageBox } from 'element-ui'
 
 export default {
@@ -90,7 +92,7 @@ export default {
   components: {},
   created() {},
   async mounted() {
-    let result = await searchWord({ order_by: '-created' })
+    let result = await search{{klass.name}}({ order_by: '-created' })
     this.tableData = result.data
   },
   methods: {
@@ -110,7 +112,7 @@ export default {
       
     },
     async deleteRow(index, rows) {
-      const result = await deleteWord(rows[index].id)
+      const result = await delete{{klass.name}}(rows[index].id)
       rows.splice(index, 1)
     },
   },
