@@ -2,8 +2,8 @@
 # @File    : {{klass.name}}.py
 # @AUTH    : model_creater
 
-from ..models.{{klass.name}} import {{klass.name}} as {{klass.name}}Model
-from ..dao.{{klass.name}} import {{klass.name}} as Base{{klass.name}}
+from ..models import {{klass.name}} as {{klass.name}}Model
+from ..dao import {{klass.name}} as Base{{klass.name}}
 from marshmallow import Schema, fields
 
 {{klass.name}}Schema = {{klass.name}}Model.schema.as_marshmallow_schema()

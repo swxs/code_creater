@@ -9,6 +9,7 @@ from xmindparser import xmind_to_dict
 from filters import title, lower, upper
 from utils.Helper_validate import RegType, Validate
 
+TASK = None
 
 class Node(object):
     def __init__(self, topic):
@@ -50,7 +51,7 @@ class App(object):
         for child in node.children:
             if Validate.start_with(child.name, RegType.DESC):
                 self.descriptions.append(Desc(child))
-            elif child.name == "meta":
+            elif Validate.check(child.name, RegType.META):
                 self.meta = Meta(child)
             else:
                 self.klasses.append(Klass(child))
@@ -78,6 +79,11 @@ class Desc(object):
 
 class Meta(object):
     def __init__(self, node=None):
+        """[summary]
+
+        Args:
+            node ([type], optional): [description]. Defaults to None.
+        """
         self.values = {}
         self.descriptions = []
 
@@ -89,6 +95,13 @@ class Meta(object):
                     self.values["allow_inheritance"] = True
                 elif Validate.check(child.name, RegType.PARENT):
                     self.values["parent"] = child.children[0].name
+                elif Validate.check(child.name, RegType.IMPORT):
+                    self.values["import_list"] = []
+                    for import_child in child.children:
+                        _import = dict(
+                            name=import_child.name,
+                        )
+                        self.values["import_list"].append(_import)
                 elif Validate.check(child.name, RegType.INDEX):
                     self.values["index_list"] = []
                     for index_child in child.children:
@@ -117,7 +130,7 @@ class Klass(object):
         for child in node.children:
             if Validate.start_with(child.name, RegType.DESC):
                 self.descriptions.append(Desc(child))
-            elif child.name == "meta":
+            elif Validate.check(child.name, RegType.META):
                 self.meta = Meta(child)
             else:
                 self.fields.append(Field(child))
@@ -154,6 +167,16 @@ class Field(object):
     }
 
     def __init__(self, node):
+        """
+        简介
+        ----------
+        
+        
+        参数
+        ----------
+        node : 
+            节点
+        """
         self.name = lower(node.name)
         if node.sub:
             self.ttype = lower(node.sub[0])
@@ -176,10 +199,17 @@ class Field(object):
             elif Validate.start_with(child.name, RegType.ENUM):
                 enum_list = []
                 for enum_child in child.children:
-                    enum_list.append({
-                        "key": enum_child.sub[0],
-                        "value": enum_child.name,
-                    })
+                    if Validate.start_with(enum_child.name, RegType.START_KEY) and Validate.end_with(enum_child.name, RegType.END_KEY):
+                        for enum_child in TASK['key'][enum_child.name[2:-2]]:
+                            enum_list.append({
+                                "key": enum_child['key'],
+                                "value": enum_child['value'],
+                            })
+                    else:
+                        enum_list.append({
+                            "key": enum_child.sub[0],
+                            "value": enum_child.name,
+                        })
                 self.values["enums"] = enum_list
             elif Validate.start_with(child.name, f"from_jwt"):
                 field_node = child.children[0]
@@ -205,9 +235,11 @@ class Field(object):
                                     其属性为: {self.values}"""
 
 
-def parseModel(filename):
+def parseModel(filename, task=None):
     xminddict = xmind_to_dict(filename)
 
+    global TASK
+    TASK = task
     xmindtopic = Node(xminddict[0]["topic"])
     root = Root(xmindtopic)
     pprint(root)

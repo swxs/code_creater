@@ -39,7 +39,7 @@ def run(filename):
         if not os.path.exists(config_filepath):
             continue
             
-        root = parseModel(app_filepath)
+        root = parseModel(app_filepath, task)
         params_dict = utils.dict2objectdict(task.get('params', {}))
         factory.make_code(jinja_env, root, params_dict, task.get('output', []))
 

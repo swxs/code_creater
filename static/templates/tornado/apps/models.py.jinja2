@@ -1,60 +1,69 @@
 # -*- coding: utf-8 -*-
-# @File    : {{klass.name}}.py
+# @FILE    : models.py
 # @AUTH    : model_creater
 
 import datetime
-from umongo import Instance, Document, fields
-from ..consts.{{klass.name}} import *
-{% if klass.meta.values.get("parent") %}
-from .{{klass.meta.values.get("parent") | title}} import {{klass.meta.values.get("parent") | title}}
-{% else %}
-from ...BaseModel import BaseModelDocument
+{% if app.meta.values.get("import_list") %}
+    {% for import in app.meta.values.get("import_list") %}
+import {{import.name}}
+    {% endfor %}
 {% endif %}
+from umongo import Instance, Document, fields
+from dao.manager.manager_umongo_motor import NAME_DICT
+from ..BaseModel import BaseModelDocument
+from . import consts
 from settings import instance
 
+{% for klass in app.klasses %}
 
 @instance.register
-{% if klass.meta.values.get("parent") %}
+    {% if klass.meta.values.get("parent") %}
 class {{klass.name}}({{klass.meta.values.get("parent") | title}}):
-{% else %}
-class {{klass.name}}(BaseModelDocument):
-{% endif %}
-    {% for field in klass.fields %}
-    {% if field.field_type == "datetime" %}
-    {{field.name}} = fields.DateTimeField({{field|get_model_params(klass)}})
-    {% elif field.field_type == "str" %}
-    {{field.name}} = fields.StringField({{field|get_model_params(klass)}})
-    {% elif field.field_type == "int" %}
-    {{field.name}} = fields.IntField({{field|get_model_params(klass)}})
-    {% elif field.field_type == "list" %}
-    {{field.name}} = fields.ListField({{field|get_model_params(klass)}})
-    {% elif field.field_type == "dict" %}
-    {{field.name}} = fields.DictField({{field|get_model_params(klass)}})
-    {% elif field.field_type == "boolean" %}
-    {{field.name}} = fields.BooleanField({{field|get_model_params(klass)}})
-    {% elif field.field_type == "objectid" %}
-    {{field.name}} = fields.ObjectIdField({{field|get_model_params(klass)}})
     {% else %}
-    {{field.name}} = fields.StringField({{field|get_model_params(klass)}})
+class {{klass.name}}(BaseModelDocument):
     {% endif %}
-    {% endfor %}
-    {% if klass.meta.values %}
+        {% for field in klass.fields %}
+        {% if field.field_type == "datetime" %}
+    {{field.name}} = fields.DateTimeField({{field|get_model_params(klass)}})
+        {% elif field.field_type == "str" %}
+    {{field.name}} = fields.StringField({{field|get_model_params(klass)}})
+        {% elif field.field_type == "int" %}
+    {{field.name}} = fields.IntField({{field|get_model_params(klass)}})
+        {% elif field.field_type == "list" %}
+    {{field.name}} = fields.ListField({{field|get_model_params(klass)}})
+        {% elif field.field_type == "dict" %}
+    {{field.name}} = fields.DictField({{field|get_model_params(klass)}})
+        {% elif field.field_type == "boolean" %}
+    {{field.name}} = fields.BooleanField({{field|get_model_params(klass)}})
+        {% elif field.field_type == "objectid" %}
+    {{field.name}} = fields.ObjectIdField({{field|get_model_params(klass)}})
+        {% else %}
+    {{field.name}} = fields.StringField({{field|get_model_params(klass)}})
+        {% endif %}
+        {% endfor %}
+        {% if klass.meta.values %}
 
     class Meta:
-        {% if klass.meta.values.get("index_list") %}
+            {% if klass.meta.values.get("index_list") %}
         indexes = [
-            {% for index in klass.meta.values.get("index_list") %}
+                {% for index in klass.meta.values.get("index_list") %}
             {
                 'key': [{{index | get_index_params}}],
-                {% if index["is_uniq"] %}
+                    {% if index["is_uniq"] %}
                 'unique': True,
-                {% endif %}
+                    {% endif %}
             },
-            {% endfor %}
+                {% endfor %}
         ]
-        {% endif %}
-        {% if klass.meta.values.get("allow_inheritance") %}
+            {% endif %}
+            {% if klass.meta.values.get("allow_inheritance") %}
         allow_inheritance = True
-        {% endif %}
+            {% endif %}
         pass
-    {% endif %}
+        {% endif %}
+
+{% endfor %}
+
+{% for klass in app.klasses %}
+NAME_DICT["{{klass.name}}"] = {{klass.name}}
+{% endfor %}

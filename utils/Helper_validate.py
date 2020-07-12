@@ -21,6 +21,9 @@ class RegType:
     PARENT = r'parent'
     INDEX = r'indexes'
     UNIQ = r'uniq'
+    IMPORT = r'import'
+    START_KEY = r'{{'
+    END_KEY = r'}}'
 
 
 class Validate:

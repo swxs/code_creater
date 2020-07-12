@@ -1,7 +1,11 @@
 tasks:
-  - input: "机构.xmind"
+  - input: "用户.xmind"
     params:
       aio: true
+    key:
+      USERAUTHTTYPE:
+        - key: 手机号
+          value: phone
     output:
     - framework: tornado
       target: D:\codehouse\home\apps
