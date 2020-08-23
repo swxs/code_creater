@@ -73,7 +73,7 @@ class {{klass.name}}Handler(BaseAuthedHanlder):
             data = [{{ 'await ' if aio }} {{klass.name | lower}}.to_front() {{ 'async ' if aio }}for {{klass.name | lower}} in {{klass.name | lower}}_cursor]
             pager = Page(data, use_pager=use_pager, page=page, items_per_page=items_per_page, item_count=item_count)
             return SuccessData(
-                data=pager.items, 
+                data=pager.items,
                 info=pager.info
             )
 
@@ -83,10 +83,10 @@ class {{klass.name}}Handler(BaseAuthedHanlder):
             finds = await self.add_tokens({
                 "id": {{klass.name | lower}}_id
             })
-            copys = {{klass.name | lower}}_schema.load(await self.add_tokens(self.arguments), partial=True).data
-            new_{{klass.name | lower}} = {{ 'await ' if aio }}{{klass.name}}.find_and_copy(finds, copys)
+            copys = {{klass.name | lower}}_schema.load(self.arguments, partial=True).data
+            {{klass.name | lower}} = {{ 'await ' if aio }}{{klass.name}}.find_and_copy(finds, copys)
             return SuccessData(
-                id=new_{{klass.name | lower}}.id
+                id={{klass.name | lower}}.id
             )
         else:
             creates = await self.add_tokens(
@@ -102,7 +102,7 @@ class {{klass.name}}Handler(BaseAuthedHanlder):
         finds = await self.add_tokens({
             "id": {{klass.name | lower}}_id
         })
-        updates = {{klass.name | lower}}_schema.load(await self.add_tokens(self.arguments), partial=True).data
+        updates = {{klass.name | lower}}_schema.load(self.arguments, partial=True).data
         {{klass.name | lower}} = {{ 'await ' if aio }}{{klass.name}}.find_and_update(finds, updates)
         return SuccessData(
             id={{klass.name | lower}}.id
@@ -112,7 +112,7 @@ class {{klass.name}}Handler(BaseAuthedHanlder):
     {{ 'async ' if aio }}def delete(self, {{klass.name | lower}}_id=None):
         finds = await self.add_tokens({
             "id": {{klass.name | lower}}_id
-        })    
+        })
         count = {{ 'await ' if aio }}{{klass.name}}.find_and_delete(finds)
         return SuccessData(
             count=count
@@ -124,7 +124,7 @@ class {{klass.name}}Handler(BaseAuthedHanlder):
 
     def set_default_headers(self):
         self._headers.add("version", "1")
-        
+
 {% endfor %}
 
 URL_MAPPING_LIST = [

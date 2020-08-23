@@ -62,14 +62,6 @@ class {{klass.name}}(BaseDAO):
     {% endfor %}
     @classmethod
     {{ 'async ' if aio }}def get_{{klass.name | lower}}_by_{{klass.name | lower}}_id(cls, {{klass.name | lower}}_id):
-        return {{ 'await ' if aio }}cls.select(id={{klass.name | lower}}_id)
+        return {{ 'await ' if aio }}cls.find(dict(id={{klass.name | lower}}_id))
 
-    {% if klass.meta.values.get("listorder") %}
-    {{ 'async ' if aio }}def create(self, **kwargs):
-        {% for field in klass.fields %}
-        {{field.name}} = {{klass.name}}.first().{{field.name}} + 100000
-        {% endfor %}
-        {{ 'await ' if aio }} super({{klass.name}}, self).create(**kwargs)
-
-    {% endif %}
 {% endfor %}
