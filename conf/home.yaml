@@ -47,4 +47,4 @@ tasks:
     - framework: markfile
       target: D:\codehouse\home\docs
     - framework: element-ui
-      target: D:\codehouse\openapi_words
+      target: D:\codehouse\openapi_wordbook

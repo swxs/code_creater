@@ -102,6 +102,19 @@ class Meta(object):
                             name=import_child.name,
                         )
                         self.values["import_list"].append(_import)
+                elif Validate.check(child.name, RegType.TOKEN):
+                    self.values["tokens"] = []
+                    for token_children in child.children:
+                        token = {
+                            "field": token_children.name,
+                            "name": token_children.children[0].name,
+                            "func": []
+                        }
+                        _current_token = token_children.children[0]
+                        while _current_token.children:
+                            token["func"].append(_current_token.children[0].name)
+                            _current_token = _current_token.children[0]
+                        self.values["tokens"].append(token)
                 elif Validate.check(child.name, RegType.INDEX):
                     self.values["index_list"] = []
                     for index_child in child.children:

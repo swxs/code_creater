@@ -2,6 +2,11 @@
 # @File    : {{klass.name}}.py
 # @AUTH    : model_creater
 
+{% if app.meta.values.get("import_list") %}
+    {% for import in app.meta.values.get("import_list") %}
+import {{import.name}}
+    {% endfor %}
+{% endif %}
 from ..models import {{klass.name}} as {{klass.name}}Model
 from ..dao import {{klass.name}} as Base{{klass.name}}
 from marshmallow import Schema, fields

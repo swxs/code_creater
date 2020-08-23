@@ -62,5 +62,3 @@ class MakerTornado(Maker):
         tmpl = os.path.join(task.get('framework'), 'apps', 'utils.py.jinja2')
         dst_file = os.path.join(dst_path, f'{klass.name}.py')
         self.render_once(tmpl, {'klass': klass, 'app': app}, dst_file)
-
-        if 

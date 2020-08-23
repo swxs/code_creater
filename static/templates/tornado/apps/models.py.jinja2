@@ -2,12 +2,12 @@
 # @FILE    : models.py
 # @AUTH    : model_creater
 
-import datetime
 {% if app.meta.values.get("import_list") %}
     {% for import in app.meta.values.get("import_list") %}
 import {{import.name}}
     {% endfor %}
 {% endif %}
+import datetime
 from umongo import Instance, Document, fields
 from dao.manager.manager_umongo_motor import NAME_DICT
 from ..BaseModel import BaseModelDocument

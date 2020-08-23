@@ -95,3 +95,9 @@ def get_model_params(field, klass) -> str:
     # if "_description" in field:
     #     params_list.append(f"helper_text='{field['_description']}'")
     return ", ".join(params_list)
+
+def get_token(token):
+    value = f'self.tokens.get("{token["name"]}")'
+    for f in token['func'][::-1]:
+        value = f"{f}({value})"
+    return value

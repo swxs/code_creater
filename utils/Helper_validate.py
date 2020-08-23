@@ -22,6 +22,7 @@ class RegType:
     INDEX = r'indexes'
     UNIQ = r'uniq'
     IMPORT = r'import'
+    TOKEN = r'tokens'
     START_KEY = r'{{'
     END_KEY = r'}}'
 
