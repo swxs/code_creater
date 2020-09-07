@@ -6,10 +6,11 @@
 import re
 from pprint import pprint
 from xmindparser import xmind_to_dict
-from filters import title, lower, upper
-from utils.Helper_validate import RegType, Validate
+from .filters import title, lower, upper
+from .utils.Helper_validate import RegType, Validate
 
 TASK = None
+
 
 class Node(object):
     def __init__(self, topic):
@@ -36,7 +37,7 @@ class Root(object):
                 self.descriptions.append(Desc(child))
             elif Validate.has(child.name, RegType.APP):
                 self.apps.append(App(child))
-    
+
     def __repr__(self):
         return f"""{self.apps}"""
 
@@ -74,7 +75,7 @@ class Desc(object):
             self.group.append(Desc(child))
 
     def __repr__(self):
-            return f"{self.name}"
+        return f"{self.name}"
 
 
 class Meta(object):
@@ -183,8 +184,8 @@ class Field(object):
         """
         简介
         ----------
-        
-        
+
+
         参数
         ----------
         node : 
@@ -239,7 +240,6 @@ class Field(object):
                 }
             else:
                 self.values[child.name] = Meta(child).values
-
 
     def __repr__(self):
         return f"""

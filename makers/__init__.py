@@ -3,10 +3,10 @@
 # @AUTH    : swxs
 # @Time    : 2019/2/26 15:07
 
-from makers.maker import Maker
-from makers.registry import factory
+from .maker import Maker
+from .registry import factory
 
-from makers import maker_tornado
-from makers import maker_markfile
-from makers import maker_thrift2
-from makers import maker_element_ui
+from . import maker_tornado
+from . import maker_markfile
+from . import maker_thrift2
+from . import maker_element_ui

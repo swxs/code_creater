@@ -6,7 +6,7 @@
 import os
 from .maker import Maker
 from .registry import factory
-from utils.utils import get_dir_path
+from ..utils.utils import get_dir_path
 
 
 @factory.add_makers

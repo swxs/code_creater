@@ -1,12 +1,22 @@
 import os
-from tornado.util import ObjectDict
+from typing import (
+    Any,
+    Dict,
+)
 
 
-def get_dir_path(path, *paths):
-    dir_path = os.path.join(path, *paths)
-    if not os.path.exists(dir_path):
-        os.makedirs(dir_path)
-    return dir_path
+class ObjectDict(Dict[str, Any]):
+    """Makes a dictionary behave like an object, with attribute-style access.
+    """
+
+    def __getattr__(self, name: str) -> Any:
+        try:
+            return self[name]
+        except KeyError:
+            raise AttributeError(name)
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        self[name] = value
 
 
 def dict2objectdict(adict):
@@ -16,3 +26,10 @@ def dict2objectdict(adict):
             adict[key] = new_value
     obj = ObjectDict(adict)
     return obj
+
+
+def get_dir_path(path, *paths):
+    dir_path = os.path.join(path, *paths)
+    if not os.path.exists(dir_path):
+        os.makedirs(dir_path)
+    return dir_path
