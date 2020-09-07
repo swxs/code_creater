@@ -12,11 +12,11 @@ from umongo import Instance, Document, fields
 from dao.manager.manager_umongo_motor import NAME_DICT
 from ..BaseModel import BaseModelDocument
 from . import consts
-from settings import instance
+from settings import MONGO_INSTANCE
 
 {% for klass in app.klasses %}
 
-@instance.register
+@MONGO_INSTANCE.register
     {% if klass.meta.values.get("parent") %}
 class {{klass.name}}({{klass.meta.values.get("parent") | title}}):
     {% else %}

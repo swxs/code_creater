@@ -49,7 +49,7 @@ class {{klass.name}}Handler(BaseAuthedHanlder):
             search = self.arguments.get('search', "")
             orderby = self.arguments.get("orderby", "")
 
-            searches = await self.add_tokens(
+            searches = {{ 'await ' if aio }}self.add_tokens(
                 {{klass.name | lower}}_schema.load(self.arguments, partial=True).data
             )
             if search:
@@ -80,7 +80,7 @@ class {{klass.name}}Handler(BaseAuthedHanlder):
     @render
     {{ 'async ' if aio }}def post(self, {{klass.name | lower}}_id=None):
         if {{klass.name | lower}}_id:
-            finds = await self.add_tokens({
+            finds = {{ 'await ' if aio }}self.add_tokens({
                 "id": {{klass.name | lower}}_id
             })
             copys = {{klass.name | lower}}_schema.load(self.arguments, partial=True).data
@@ -89,7 +89,7 @@ class {{klass.name}}Handler(BaseAuthedHanlder):
                 id={{klass.name | lower}}.id
             )
         else:
-            creates = await self.add_tokens(
+            creates = {{ 'await ' if aio }}self.add_tokens(
                 {{klass.name | lower}}_schema.load(self.arguments).data
             )
             {{klass.name | lower}} = {{ 'await ' if aio }}{{klass.name}}.create(creates)
@@ -99,7 +99,7 @@ class {{klass.name}}Handler(BaseAuthedHanlder):
 
     @render
     {{ 'async ' if aio }}def put(self, {{klass.name | lower}}_id=None):
-        finds = await self.add_tokens({
+        finds = {{ 'await ' if aio }}self.add_tokens({
             "id": {{klass.name | lower}}_id
         })
         updates = {{klass.name | lower}}_schema.load(self.arguments, partial=True).data
@@ -110,7 +110,7 @@ class {{klass.name}}Handler(BaseAuthedHanlder):
 
     @render
     {{ 'async ' if aio }}def delete(self, {{klass.name | lower}}_id=None):
-        finds = await self.add_tokens({
+        finds = {{ 'await ' if aio }}self.add_tokens({
             "id": {{klass.name | lower}}_id
         })
         count = {{ 'await ' if aio }}{{klass.name}}.find_and_delete(finds)
@@ -120,7 +120,43 @@ class {{klass.name}}Handler(BaseAuthedHanlder):
 
     @render
     {{ 'async ' if aio }}def patch(self, {{klass.name | lower}}_id=None):
-        pass
+        create_list = []
+        for __create in self.arguments.get("create", []):
+            creates = {{ 'await ' if aio }}self.add_tokens(
+                {{klass.name | lower}}_schema.load(__create).data
+            )
+            {{klass.name | lower}} = {{ 'await ' if aio }}{{klass.name}}.create(creates)
+            create_list.append({{klass.name | lower}}.id)
+
+        update_list = []
+        for __update in self.arguments.get("update", []):
+            if "find" in __update:
+                finds = {{ 'await ' if aio }}self.add_tokens(__update.pop("find", {}))
+                updates = {{klass.name | lower}}_schema.load(__update, partial=True).data
+                {{klass.name | lower}} = {{ 'await ' if aio }}{{klass.name}}.find_and_update(finds, updates)
+                update_list.append({{klass.name | lower}}.id)
+            elif "search" in __update:
+                searches = {{ 'await ' if aio }}self.add_tokens(__update.pop("search", {}))
+                updates = {{klass.name | lower}}_schema.load(__update, partial=True).data
+                {{klass.name | lower}}_list = {{ 'await ' if aio }}{{klass.name}}.search_and_update(searches, updates)
+                update_list.append({{klass.name | lower}}_list)
+
+        delete_list = []
+        for __delete in self.arguments.get("delete", []):
+            if "find" in __delete:
+                finds = {{ 'await ' if aio }}self.add_tokens(__delete.pop("find", {}))
+                count = {{ 'await ' if aio }}{{klass.name}}.find_and_delete(finds)
+                delete_list.append(count)
+            elif "search" in __delete:
+                searches = {{ 'await ' if aio }}self.add_tokens(__delete.pop("search", {}))
+                count = {{ 'await ' if aio }}{{klass.name}}.search_and_delete(searches)
+                delete_list.append(count)
+
+        return SuccessData(
+            create_list=create_list,
+            update_list=update_list,
+            delete_list=delete_list,
+        )
 
     def set_default_headers(self):
         self._headers.add("version", "1")
