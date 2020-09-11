@@ -6,38 +6,20 @@
 import os
 import abc
 import datetime
+from ..utils.utils import dict2objectdict
 
 
 class Maker(object, metaclass=abc.ABCMeta):
-    name = 'base'
-
-    def __init__(self, env, root, params_dict, config):
+    def __init__(self, env, root, task, output):
         self.env = env
-        self.config = config
         self.root = root
-        self.params_dict = params_dict
-        for conf in self.config:
-            target_path = conf.get('target')
-            if not os.path.exists(target_path):
-                os.makedirs(target_path)
+        self.task = task
+        self.output = output
+        self.params_dict = dict2objectdict(self.task.get('params', {}))
+        self.target = os.path.join(self.output.get('target'))
+        if not os.path.exists(self.target):
+            os.makedirs(self.target)
         self.register_filters()
-
-    def base_render(self, tmpl, adict, dst_file, overwrite=True):
-        if not overwrite:
-            if os.path.exists(dst_file):
-                print('Skipped. Target file: %s exists!' % dst_file)
-                return
-
-        # 添加部分常用方法
-        adict.update(dict(
-            current_time=f"{datetime.datetime.now():%Y-%m-%d %H:%M:%S}"
-        ))
-        adict.update(**self.params_dict)
-        tmpl = tmpl.replace('\\', '/')
-        code = self.env.get_template(tmpl).render(**adict)
-        if not os.path.exists(os.path.dirname(dst_file)):
-            os.makedirs(os.path.dirname(dst_file))
-        open(dst_file, 'w', encoding='utf-8').write(code)
 
     def register_filters(self):
         from importlib import import_module
@@ -64,6 +46,32 @@ class Maker(object, metaclass=abc.ABCMeta):
                     print(f'Filter loaded: {name}')
                 self.env.filters[name] = func
 
+    def run(self):
+        for app in self.root.apps:
+            self.total_make(app)
+            for klass in app.klasses:
+                try:
+                    self.make(app, klass)
+                except Exception as e:
+                    print(e)
+
+    def base_render(self, tmpl, adict, dst_file, overwrite=True):
+        if not overwrite:
+            if os.path.exists(dst_file):
+                print('Skipped. Target file: %s exists!' % dst_file)
+                return
+
+        # 添加部分常用方法
+        adict.update(dict(
+            current_time=f"{datetime.datetime.now():%Y-%m-%d %H:%M:%S}"
+        ))
+        adict.update(**self.params_dict)
+        tmpl = tmpl.replace('\\', '/')
+        code = self.env.get_template(tmpl).render(**adict)
+        if not os.path.exists(os.path.dirname(dst_file)):
+            os.makedirs(os.path.dirname(dst_file))
+        open(dst_file, 'w', encoding='utf-8').write(code)
+
     def render(self, tmpl, adict, dst_file):
         adict.update(dict(
             root=self.root,
@@ -78,16 +86,16 @@ class Maker(object, metaclass=abc.ABCMeta):
         ))
         return self.base_render(tmpl, adict, dst_file)
 
-    @abc.abstractmethod
-    def make(self, app, task):
+    def make(self, app, klass):
         """
         具体的渲染机制实现
         :return:
         """
+        raise NotImplementedError()
 
-    @abc.abstractmethod
-    def total_make(self, app, klass, task):
+    def total_make(self, app):
         """
         具体的渲染机制实现
         :return:
         """
+        raise NotImplementedError()

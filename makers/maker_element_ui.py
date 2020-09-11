@@ -5,20 +5,18 @@
 
 import os
 from .maker import Maker
-from .registry import factory
 from ..utils.utils import get_dir_path
 
 
-@factory.add_makers
 class MakerElementUI(Maker):
     name = "element-ui"
 
-    def total_make(self, app, task):
+    def total_make(self, app):
         pass
 
-    def make(self, app, klass, task):
+    def make(self, app, klass):
         # 创建基础文件
-        dst_path = get_dir_path(task.get('target'))
+        dst_path = get_dir_path(self.target)
 
         filenames = [
             "vue.config.js.jinja2",
@@ -45,24 +43,24 @@ class MakerElementUI(Maker):
             # os.path.join("src", "assets", "fonts", "Cemicons.woff.jinja2"),
         ]
         for filename in filenames:
-            tmpl = os.path.join(task.get('framework'), filename)
+            tmpl = os.path.join(self.output.get('framework'), filename)
             dst_file = os.path.join(dst_path, filename[:-7])
             self.render_once(tmpl, {'klass': klass, 'app': app}, dst_file)
 
         #
-        dst_path = get_dir_path(task.get('target'), 'src', 'views')
-        tmpl = os.path.join(task.get('framework'), 'src', 'views', 'home.vue.jinja2')
+        dst_path = get_dir_path(self.target, 'src', 'views')
+        tmpl = os.path.join(self.output.get('framework'), 'src', 'views', 'home.vue.jinja2')
         dst_file = os.path.join(dst_path, f'home.vue')
         self.render(tmpl, {'klass': klass, 'app': app}, dst_file)
 
         # 创建 对应模块的 api.js 文件, 实现模块访问方法
-        dst_path = get_dir_path(task.get('target'), 'src', 'api')
-        tmpl = os.path.join(task.get('framework'), 'src', 'api', 'api.js.jinja2')
+        dst_path = get_dir_path(self.target, 'src', 'api')
+        tmpl = os.path.join(self.output.get('framework'), 'src', 'api', 'api.js.jinja2')
         dst_file = os.path.join(dst_path, f'{klass.name}.js')
         self.render(tmpl, {'klass': klass, 'app': app}, dst_file)
 
         # 创建 对应模块的 enum.js 文件, 记录模块字段映射常量
-        dst_path = get_dir_path(task.get('target'), 'src', 'enum')
-        tmpl = os.path.join(task.get('framework'), 'src', 'enum', 'enum.js.jinja2')
+        dst_path = get_dir_path(self.target, 'src', 'enum')
+        tmpl = os.path.join(self.output.get('framework'), 'src', 'enum', 'enum.js.jinja2')
         dst_file = os.path.join(dst_path, f'{klass.name}.js')
         self.render(tmpl, {'klass': klass, 'app': app}, dst_file)

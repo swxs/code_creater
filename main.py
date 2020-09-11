@@ -4,13 +4,16 @@
 # @Time    : 2019/2/27 10:59
 
 import os
+import time
 import yaml
 import click
+import multiprocessing
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from jinja2 import Environment, PackageLoader, select_autoescape
 
 from .core import parseModel
-from .makers import factory
-from .utils.utils import dict2objectdict
+from .makers import productor
+from .utils.timeit import timeit
 
 script_path = os.path.dirname(os.path.abspath(__file__))
 
@@ -26,6 +29,7 @@ jinja_env = Environment(
 
 @click.command()
 @click.argument('filename')
+@timeit
 def run(filename):
     """
     简介
@@ -42,14 +46,24 @@ def run(filename):
         exit("文件不存在")
     config = yaml.safe_load(open(config_filepath, encoding='utf8'))
 
+    def run_task(root, task, output):
+        maker = productor[output.get('framework')](jinja_env, root, task, output)
+        maker.run()
+        return True
+
+    core_number = multiprocessing.cpu_count()
+    executor = ThreadPoolExecutor(max_workers=3)  # core_number * 2
+
+    all_futures = {}
     for task in config.get('tasks', []):
         app_filepath = os.path.join(script_path, "apps", task.get('input', ""))
-        if not os.path.exists(config_filepath):
-            continue
+        if os.path.exists(config_filepath):
+            root = parseModel(app_filepath, task)
+            for output in task.get('output', []):
+                future = executor.submit(run_task, root, task, output)
+                all_futures[future] = False
 
-        root = parseModel(app_filepath, task)
-        params_dict = dict2objectdict(task.get('params', {}))
-        factory.make_code(jinja_env, root, params_dict, task.get('output', []))
-
+    for future in as_completed(all_futures):
+        print(future.result())
 
 run()
