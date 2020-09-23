@@ -4,18 +4,20 @@
 # @Time    : 2019/2/26 16:38
 
 import re
-from typing import (Dict, Any, List)
+from typing import Dict, Any, List
 
 re_letter = re.compile(r'[a-zA-Z]')
 
 
 def get_enum_upper(name, field, klass):
     from .. import upper
+
     return f"{upper(klass.name)}_{upper(field.name)}_{upper(name)}"
 
 
 def get_enum_list(field, klass):
     from .. import upper
+
     return f"{upper(klass.name)}_{upper(field.name)}_LIST"
 
 
@@ -40,9 +42,9 @@ def get_utils_params(field, klass) -> str:
     if enums:
         params_list.append(f"enums=consts.{get_enum_list(field, klass)}")
     if default is not None:
-        if default in ('False', 'false') and field_type in ("bool", ):
+        if default in ('False', 'false') and field_type in ("bool",):
             params_list.append(f"default=False")
-        elif default in ('True', 'true') and field_type in ("bool", ):
+        elif default in ('True', 'true') and field_type in ("bool",):
             params_list.append(f"default=True")
         elif enums:
             params_list.append(f"default=consts.{get_enum_upper(default, field, klass)}")
@@ -80,9 +82,9 @@ def get_model_params(field, klass) -> str:
     if enums:
         params_list.append(f"enums=consts.{get_enum_list(field, klass)}")
     if default is not None:
-        if default in ('False', 'false') and field_type in ("bool", ):
+        if default in ('False', 'false') and field_type in ("bool",):
             params_list.append(f"default=False")
-        elif default in ('True', 'true') and field_type in ("bool", ):
+        elif default in ('True', 'true') and field_type in ("bool",):
             params_list.append(f"default=True")
         elif enums:
             params_list.append(f"default=consts.{get_enum_upper(default, field, klass)}")

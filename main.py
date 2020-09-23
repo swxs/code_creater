@@ -23,7 +23,7 @@ jinja_env = Environment(
     trim_blocks=True,
     lstrip_blocks=True,
     keep_trailing_newline=True,
-    extensions=['jinja2.ext.loopcontrols']
+    extensions=['jinja2.ext.loopcontrols'],
 )
 
 
@@ -65,5 +65,6 @@ def run(filename):
 
     for future in as_completed(all_futures):
         print(future.result())
+
 
 run()

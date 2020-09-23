@@ -17,7 +17,7 @@ class MakerProductor(Productor):
         start_dir: object,
         base_module: object = None,
         temp_module: object = None,
-        pattern: object = '*.py'
+        pattern: object = '*.py',
     ):
         super().__init__(root_dir, start_dir, base_module=base_module, temp_module=temp_module, pattern=pattern)
 

@@ -9,42 +9,50 @@ tasks:
         - key: 邮箱
           value: email
     output:
-    - framework: tornado
-      target: D:\codehouse\home\apps
-    - framework: markfile
-      target: D:\codehouse\home\docs
-    - framework: element-ui
-      target: D:\codehouse\openapi_system
+      - framework: tornado
+        target: D:\codehouse\home\apps
+      - framework: markfile
+        target: D:\codehouse\home\docs
+      - framework: element-ui
+        target: D:\codehouse\openapi_system
+    formatter:
+      - black
 
   - input: "密码控制.xmind"
     params:
       aio: true
     output:
-    - framework: tornado
-      target: D:\codehouse\home\apps
-    - framework: markfile
-      target: D:\codehouse\home\docs
-    - framework: element-ui
-      target: D:\codehouse\openapi_passwordlock
+      - framework: tornado
+        target: D:\codehouse\home\apps
+      - framework: markfile
+        target: D:\codehouse\home\docs
+      - framework: element-ui
+        target: D:\codehouse\openapi_passwordlock
+    formatter:
+      - black
 
   - input: "备忘录.xmind"
     params:
       aio: true
     output:
-    - framework: tornado
-      target: D:\codehouse\home\apps
-    - framework: markfile
-      target: D:\codehouse\home\docs
-    - framework: element-ui
-      target: D:\codehouse\openapi_memo
+      - framework: tornado
+        target: D:\codehouse\home\apps
+      - framework: markfile
+        target: D:\codehouse\home\docs
+      - framework: element-ui
+        target: D:\codehouse\openapi_memo
+    formatter:
+      - black
 
   - input: "单词本.xmind"
     params:
       aio: true
     output:
-    - framework: tornado
-      target: D:\codehouse\home\apps
-    - framework: markfile
-      target: D:\codehouse\home\docs
-    - framework: element-ui
-      target: D:\codehouse\openapi_wordbook
+      - framework: tornado
+        target: D:\codehouse\home\apps
+      - framework: markfile
+        target: D:\codehouse\home\docs
+      - framework: element-ui
+        target: D:\codehouse\openapi_wordbook
+    formatter:
+      - black

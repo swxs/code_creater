@@ -13,8 +13,8 @@ from web.web import BaseHandler, BaseAuthedHanlder
 from web.consts import undefined
 from web.result import SuccessData
 from web.decorator.render import render
-from common.Helpers.Helper_pagenate import Page
-from common.Utils.log_utils import getLogger
+from commons.Helpers.Helper_pagenate import Page
+from commons.Utils.log_utils import getLogger
 {% for klass in app.klasses %}
 from .utils.{{klass.name}} import {{klass.name}}, {{klass.name | lower}}_schema
 {% endfor %}

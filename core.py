@@ -16,8 +16,7 @@ class Node(object):
     def __init__(self, topic):
         self.topic = topic
 
-        title_parts = [part.strip() for part in topic.get(
-            "title").replace("：", ":").split(":")]
+        title_parts = [part.strip() for part in topic.get("title").replace("：", ":").split(":")]
         self.name = title_parts[0]
         self.sub = title_parts[1:]
 
@@ -106,11 +105,7 @@ class Meta(object):
                 elif Validate.check(child.name, RegType.TOKEN):
                     self.values["tokens"] = []
                     for token_children in child.children:
-                        token = {
-                            "field": token_children.name,
-                            "name": token_children.children[0].name,
-                            "func": []
-                        }
+                        token = {"field": token_children.name, "name": token_children.children[0].name, "func": []}
                         _current_token = token_children.children[0]
                         while _current_token.children:
                             token["func"].append(_current_token.children[0].name)
@@ -171,7 +166,6 @@ class Field(object):
         "object_id": ("objectid", "objectid"),
         "datetime": ("datetime", "datetime"),
         "dict": ("dict", "dict"),
-
         "list": ("list", None),
         "strlist": ("list", "str"),
         "intlist": ("list", "int"),
@@ -188,7 +182,7 @@ class Field(object):
 
         参数
         ----------
-        node : 
+        node :
             节点
         """
         self.name = lower(node.name)
@@ -213,17 +207,23 @@ class Field(object):
             elif Validate.start_with(child.name, RegType.ENUM):
                 enum_list = []
                 for enum_child in child.children:
-                    if Validate.start_with(enum_child.name, RegType.START_KEY) and Validate.end_with(enum_child.name, RegType.END_KEY):
+                    if Validate.start_with(enum_child.name, RegType.START_KEY) and Validate.end_with(
+                        enum_child.name, RegType.END_KEY
+                    ):
                         for enum_child in TASK['key'][enum_child.name[2:-2]]:
-                            enum_list.append({
-                                "key": enum_child['key'],
-                                "value": enum_child['value'],
-                            })
+                            enum_list.append(
+                                {
+                                    "key": enum_child['key'],
+                                    "value": enum_child['value'],
+                                }
+                            )
                     else:
-                        enum_list.append({
-                            "key": enum_child.sub[0],
-                            "value": enum_child.name,
-                        })
+                        enum_list.append(
+                            {
+                                "key": enum_child.sub[0],
+                                "value": enum_child.name,
+                            }
+                        )
                 self.values["enums"] = enum_list
             elif Validate.start_with(child.name, f"from_jwt"):
                 field_node = child.children[0]
@@ -234,10 +234,7 @@ class Field(object):
                     changes.append(current_node.children[0].name)
                     current_node = current_node.children[0]
 
-                self.values["from_jwt"] = {
-                    "name": field_node.name,
-                    "changes": changes
-                }
+                self.values["from_jwt"] = {"name": field_node.name, "changes": changes}
             else:
                 self.values[child.name] = Meta(child).values
 
