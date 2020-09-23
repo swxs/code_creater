@@ -1,10 +1,20 @@
 # -*- coding: utf-8 -*-
-# @File    : {{model.name}}.py
+# @File    : {{klass.name}}.py
 # @AUTH    : model_creater
 
-from ..dao.{{model.name | title}} import {{model.name | title}} as Base{{model.name | title}}
+{% if app.meta.values.get("import_list") %}
+    {% for import in app.meta.values.get("import_list") %}
+import {{import.name}}
+    {% endfor %}
+{% endif %}
+from ..models import {{klass.name}} as {{klass.name}}Model
+from ..dao import {{klass.name}} as Base{{klass.name}}
+from marshmallow import Schema, fields
 
+{{klass.name}}Schema = {{klass.name}}Model.schema.as_marshmallow_schema()
 
-class {{model.name | title}}(Base{{model.name | title}}):
+{{klass.name | lower}}_schema = {{klass.name}}Schema()
+
+class {{klass.name}}(Base{{klass.name}}):
     def __init__(self, **kwargs):
-        super({{model.name | title}}, self).__init__(**kwargs)
+        super({{klass.name}}, self).__init__(**kwargs)

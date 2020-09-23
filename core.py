@@ -4,173 +4,253 @@
 # @Time    : 2019/3/25 14:13
 
 import re
+from pprint import pprint
 from xmindparser import xmind_to_dict
-from filters import title as title_filter
-from utils.Helper_validate import RegType, Validate
+from .filters import title, lower, upper
+from .utils.Helper_validate import RegType, Validate
+
+TASK = None
 
 
-def parseModel(filename):
-    apps = dict()
-    tmp_apps = dict()
+class Node(object):
+    def __init__(self, topic):
+        self.topic = topic
 
-    adict = xmind_to_dict(filename)
-    root = adict[0]["topic"]
-    print(f"正在生成{root.get('title')}相关内容")
-    for topic in root.get("topics", []):
-        title = topic.get("title").strip()
-        # APP描述
-        if Validate.start_with(title, RegType.DESC):
-            apps["_description"] = title[2:].strip()
-        elif Validate.start_with(title, RegType.COMMIT):
-            continue
-        elif Validate.has(title, RegType.APP):
-            parts = title.replace("：", ":").split(":")
-            app_name = title_filter(parts[1].strip())
-            tmp_apps[app_name] = topic
+        title_parts = [part.strip() for part in topic.get("title").replace("：", ":").split(":")]
+        self.name = title_parts[0]
+        self.sub = title_parts[1:]
 
-    for app_name, app_node in tmp_apps.items():
-        apps_dict = dict()
-        for topic in app_node.get("topics", []):
-            title = topic.get("title").strip()
-            if Validate.start_with(title, RegType.DESC):
-                apps_dict["_description"] = title[2:].strip()
-            elif Validate.start_with(title, RegType.COMMIT):
-                continue
+        self.children = []
+        for topic in topic.get("topics", []):
+            self.children.append(Node(topic))
+
+
+class Root(object):
+    def __init__(self, node):
+        self.apps = []
+        self.meta = None
+        self.descriptions = []
+
+        for child in node.children:
+            if Validate.start_with(child.name, RegType.DESC):
+                self.descriptions.append(Desc(child))
+            elif Validate.has(child.name, RegType.APP):
+                self.apps.append(App(child))
+
+    def __repr__(self):
+        return f"""{self.apps}"""
+
+
+class App(object):
+    def __init__(self, node):
+        self.name = title(node.sub[0])
+        self.klasses = []
+        self.meta = Meta(None)
+        self.descriptions = []
+
+        for child in node.children:
+            if Validate.start_with(child.name, RegType.DESC):
+                self.descriptions.append(Desc(child))
+            elif Validate.check(child.name, RegType.META):
+                self.meta = Meta(child)
             else:
-                name = title_filter(title)
-                app = dict(name=name, field_list=[], parent=None)
-                for field_topic in topic.get("topics", []):
-                    field_name = field_topic.get("title").strip()
+                self.klasses.append(Klass(child))
 
-                    if Validate.check(field_name, RegType.META):
-                        meta = parseMeta(app, field_topic)
-                        if meta:
-                            app["meta"] = meta
-                    else:
-                        field = parseField(app, field_topic)
-                        if field:
-                            app["field_list"].append(field)
-                apps_dict[name] = app
-        print(apps_dict)
-        apps[app_name] = apps_dict
-    return apps
+    def __repr__(self):
+        return f"""
+            {self.name}模块:
+                其描述为：{self.descriptions}
+                其属性为：{self.meta}
+                包含下列类:
+                    {self.klasses}"""
 
 
-def parseField(app, topic):
-    parts = topic.get("title").strip().replace("：", ":").split(":")
-    if len(parts) == 0:
-        return None
-    elif len(parts) == 1:
-        parts.append("str")
-    else:
-        pass
+class Desc(object):
+    def __init__(self, node):
+        self.name = ":".join([node.name.lstrip("#").strip(), *node.sub])
+        self.group = []
 
-    if Validate.start_with(parts[0], RegType.COMMIT):
-        return None
+        for child in node.children:
+            self.group.append(Desc(child))
 
-    field_name = parts[0].strip()
-    ttype = parts[1].strip().lower()
+    def __repr__(self):
+        return f"{self.name}"
 
-    field_type = "str"
-    field_detail_type = None
 
-    if ttype in ("int",):
-        field_type = "int"
-    elif ttype in ("float", "Float"):
-        field_type = "float"
-    elif ttype in ("bool", "boolean"):
-        field_type = "boolean"
-    elif ttype in ("id", "objectid", "object_id"):
-        field_type = "objectid"
-    elif ttype in ("strlist",):
-        field_type = "list"
-        field_detail_type = "str"
-    elif ttype in ("intlist",):
-        field_type = "list"
-        field_detail_type = "int"
-    elif ttype in ("objectidlist", "idlist"):
-        field_type = "list"
-        field_detail_type = "objectid"
-    elif ttype in ("dictlist",):
-        field_type = "list"
-        field_detail_type = "dict"
-    elif ttype in ("list",):
-        field_type = "list"
-    elif ttype in ("str", "string"):
-        field_type = "str"
-    elif ttype in ("datetime",):
-        field_type = "datetime"
-    elif ttype in ("dict",):
-        field_type = "dict"
-    else:
-        print("unknown field type: %s" % ttype)
+class Meta(object):
+    def __init__(self, node=None):
+        """[summary]
 
-    field_dict = dict(field_name=field_name, field_type=field_type, struct=field_detail_type)
-    for info in topic.get("topics", []):
-        title = info.get("title").strip()
-        if Validate.start_with(title, RegType.DESC):
-            field_dict["_description"] = title[2:].strip()
-        elif Validate.start_with(title, RegType.COMMIT):
-            continue
-        elif Validate.start_with(title, RegType.DEFAULT):
-            default_parts = title.replace("：", ":").split(":")
-            if len(default_parts) > 1:
-                field_dict["default"] = default_parts[1].strip()
-            else:
-                pass
-        elif Validate.start_with(title, RegType.REF):
-            ref_parts = title.replace("：", ":").split(":")
-            if len(ref_parts) > 1:
-                field_dict["ref"] = title_filter(ref_parts[1].strip())
-            else:
-                pass
-        elif Validate.start_with(title, RegType.NOCREATE):
-            field_dict["no_create"] = True
-        elif Validate.start_with(title, RegType.ENUM):
-            enum_list = list()
-            for enum in info.get("topics", []):
-                enum_dict = dict()
-                enum_parts = enum.get("title").strip().replace("：", ":").split(":")
-                if len(enum_parts) < 2:
-                    pass
+        Args:
+            node ([type], optional): [description]. Defaults to None.
+        """
+        self.values = {}
+        self.descriptions = []
+
+        if node:
+            for child in node.children:
+                if Validate.start_with(child.name, RegType.DESC):
+                    self.descriptions.append(Desc(child))
+                elif Validate.check(child.name, RegType.ALLOW_INHERITANCE):
+                    self.values["allow_inheritance"] = True
+                elif Validate.check(child.name, RegType.PARENT):
+                    self.values["parent"] = child.children[0].name
+                elif Validate.check(child.name, RegType.IMPORT):
+                    self.values["import_list"] = []
+                    for import_child in child.children:
+                        _import = dict(
+                            name=import_child.name,
+                        )
+                        self.values["import_list"].append(_import)
+                elif Validate.check(child.name, RegType.TOKEN):
+                    self.values["tokens"] = []
+                    for token_children in child.children:
+                        token = {"field": token_children.name, "name": token_children.children[0].name, "func": []}
+                        _current_token = token_children.children[0]
+                        while _current_token.children:
+                            token["func"].append(_current_token.children[0].name)
+                            _current_token = _current_token.children[0]
+                        self.values["tokens"].append(token)
+                elif Validate.check(child.name, RegType.INDEX):
+                    self.values["index_list"] = []
+                    for index_child in child.children:
+                        index = dict(
+                            field_name_list=[index_child.name, *index_child.sub],
+                            uniq=False,
+                        )
+                        for params in index_child.children:
+                            if Validate.check(params.name, f"uniq"):
+                                index["uniq"] = True
+                        self.values["index_list"].append(index)
                 else:
-                    enum_dict["value"] = enum_parts[0].strip()
-                    enum_dict["name"] = enum_parts[1].strip()
-                enum_list.append(enum_dict)
-            field_dict["enums"] = enum_list
-        else:
-            print(field_name, title)
-    return field_dict
+                    self.values[child.name] = Meta(child).values
+
+    def __repr__(self):
+        return f"{self.values}"
 
 
-def parseMeta(app, topic):
-    meta_dict = dict(
-        allow_inheritance=False,
-        index_list=[],
-    )
-    for info in topic.get("topics", []):
-        title = info.get("title").strip()
-        if Validate.check(title, RegType.ALLOW_INHERITANCE):
-            meta_dict["allow_inheritance"] = True
-        elif Validate.check(title, RegType.PARENT):
-            parent_info = info.get("topics", [])
-            if len(parent_info) > 0:
-                parent_name = parent_info[0].get("title").strip()
-                app["parent"] = parent_name
-        elif Validate.start_with(title, RegType.INDEX):
-            index_list = info.get("topics", [])
-            for index in index_list:
-                deep_index = index.get("topics", [])
-                is_uniq = False
-                if len(deep_index) > 0:
-                    deep_index_info = deep_index[0].get("title").strip()
-                    if Validate.start_with(deep_index_info, RegType.UNIQ):
-                        is_uniq = True
-                index_info = dict(
-                    field_name_list=[field_name.strip() for field_name in index.get("title").strip().replace("，", ",").split(",")],
-                    is_uniq=is_uniq
-                )
-                meta_dict["index_list"].append(index_info)
+class Klass(object):
+    def __init__(self, node):
+        self.name = title(node.name)
+        self.fields = []
+        self.meta = Meta(None)
+        self.descriptions = []
+
+        for child in node.children:
+            if Validate.start_with(child.name, RegType.DESC):
+                self.descriptions.append(Desc(child))
+            elif Validate.check(child.name, RegType.META):
+                self.meta = Meta(child)
+            else:
+                self.fields.append(Field(child))
+
+    def __repr__(self):
+        return f"""
+                        {self.name}
+                            其描述为：{self.descriptions}
+                            其属性为：{self.meta}
+                            包含下列字段：
+                                {self.fields}"""
+
+
+class Field(object):
+    CONVERTS = {
+        "str": ("str", "str"),
+        "string": ("str", "str"),
+        "int": ("int", "int"),
+        "float": ("float", "float"),
+        "bool": ("boolean", "boolean"),
+        "boolean": ("boolean", "boolean"),
+        "id": ("objectid", "objectid"),
+        "objectid": ("objectid", "objectid"),
+        "object_id": ("objectid", "objectid"),
+        "datetime": ("datetime", "datetime"),
+        "dict": ("dict", "dict"),
+        "list": ("list", None),
+        "strlist": ("list", "str"),
+        "intlist": ("list", "int"),
+        "idlist": ("list", "objectid"),
+        "objectidlist": ("list", "objectid"),
+        "dictlist": ("list", "dict"),
+    }
+
+    def __init__(self, node):
+        """
+        简介
+        ----------
+
+
+        参数
+        ----------
+        node :
+            节点
+        """
+        self.name = lower(node.name)
+        if node.sub:
+            self.ttype = lower(node.sub[0])
         else:
-            print(title)
-    return meta_dict
+            self.ttype = "str"
+        self.field_type = self.CONVERTS[self.ttype][0]
+        self.field_detail_type = self.CONVERTS[self.ttype][1]
+        self.values = {}
+        self.descriptions = []
+
+        for child in node.children:
+            if Validate.start_with(child.name, RegType.DESC):
+                self.descriptions.append(Desc(child))
+            elif Validate.start_with(child.name, RegType.DEFAULT):
+                self.values["default"] = child.sub[0]
+            elif Validate.start_with(child.name, RegType.REF):
+                self.values["ref"] = child.sub[0]
+            elif Validate.start_with(child.name, RegType.NOCREATE):
+                self.values["no_create"] = True
+            elif Validate.start_with(child.name, RegType.ENUM):
+                enum_list = []
+                for enum_child in child.children:
+                    if Validate.start_with(enum_child.name, RegType.START_KEY) and Validate.end_with(
+                        enum_child.name, RegType.END_KEY
+                    ):
+                        for enum_child in TASK['key'][enum_child.name[2:-2]]:
+                            enum_list.append(
+                                {
+                                    "key": enum_child['key'],
+                                    "value": enum_child['value'],
+                                }
+                            )
+                    else:
+                        enum_list.append(
+                            {
+                                "key": enum_child.sub[0],
+                                "value": enum_child.name,
+                            }
+                        )
+                self.values["enums"] = enum_list
+            elif Validate.start_with(child.name, f"from_jwt"):
+                field_node = child.children[0]
+                changes = list()
+
+                current_node = field_node
+                while current_node.children:
+                    changes.append(current_node.children[0].name)
+                    current_node = current_node.children[0]
+
+                self.values["from_jwt"] = {"name": field_node.name, "changes": changes}
+            else:
+                self.values[child.name] = Meta(child).values
+
+    def __repr__(self):
+        return f"""
+                                {self.name}:
+                                    其描述为：{self.descriptions}
+                                    其属性为: {self.values}"""
+
+
+def parseModel(filename, task=None):
+    xminddict = xmind_to_dict(filename)
+
+    global TASK
+    TASK = task
+    xmindtopic = Node(xminddict[0]["topic"])
+    root = Root(xmindtopic)
+    pprint(root)
+    return root

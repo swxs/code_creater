@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import unittest
-
-from utils.Helper_validate import Validate, RegType
+from ..utils.Helper_validate import Validate, RegType
 
 
 class ValidateHelperTestCase(unittest.TestCase):

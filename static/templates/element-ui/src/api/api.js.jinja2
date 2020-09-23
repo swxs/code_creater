@@ -1,0 +1,57 @@
+const {{klass.name}}Url = '/api/{{app.name | lower}}/{{klass.name | lower}}/'
+
+export const search{{klass.name}} = (data) => {
+  return new Promise(function(resolve, reject) {
+    window.axios.get(`${{ '{' }}{{klass.name}}Url{{ '}' }}`, { params: data }).then((response) => {
+      resolve(response)
+    })
+  })
+}
+
+export const select{{klass.name}} = (id) => {
+  return new Promise(function(resolve, reject) {
+    window.axios.get(`${{ '{' }}{{klass.name}}Url{{ '}' }}${id}/`).then((response) => {
+      resolve(response)
+    })
+  })
+}
+
+export const create{{klass.name}} = (data) => {
+  return new Promise(function(resolve, reject) {
+    window.axios.post(`${{ '{' }}{{klass.name}}Url{{ '}' }}`, data).then((response) => {
+      resolve(response)
+    })
+  })
+}
+
+export const copy{{klass.name}} = (id, data) => {
+  return new Promise(function(resolve, reject) {
+    window.axios.post(`${{ '{' }}{{klass.name}}Url{{ '}' }}${id}/`, data).then((response) => {
+      resolve(response)
+    })
+  })
+}
+
+export const update{{klass.name}} = (id, data) => {
+  return new Promise(function(resolve, reject) {
+    window.axios.put(`${{ '{' }}{{klass.name}}Url{{ '}' }}${id}/`, data).then((response) => {
+      resolve(response)
+    })
+  })
+}
+
+export const modify{{klass.name}} = (id, data) => {
+  return new Promise(function(resolve, reject) {
+    window.axios.patch(`${{ '{' }}{{klass.name}}Url{{ '}' }}${id}/`, data).then((response) => {
+      resolve(response)
+    })
+  })
+}
+
+export const delete{{klass.name}} = (id) => {
+  return new Promise(function(resolve, reject) {
+    window.axios.delete(`${{ '{' }}{{klass.name}}Url{{ '}' }}${id}/`).then((response) => {
+      resolve(response)
+    })
+  })
+}

@@ -1,13 +1,170 @@
 # -*- coding: utf-8 -*-
-# @File    : {{app_name}}.py
-# @AUTH    : model_creater
+# @File    : views.py
+# @AUTH    : model
 
+{% if app.meta.values.get("import_list") %}
+    {% for import in app.meta.values.get("import_list") %}
+import {{import.name}}
+    {% endfor %}
+{% endif %}
+import json
 from tornado.web import url
-from base import BaseHandler
-from ..BaseConsts import *
-from common.Utils.log_utils import getLogger
+from web.web import BaseHandler, BaseAuthedHanlder
+from web.consts import undefined
+from web.result import SuccessData
+from web.decorator.render import render
+from commons.Helpers.Helper_pagenate import Page
+from commons.Utils.log_utils import getLogger
+{% for klass in app.klasses %}
+from .utils.{{klass.name}} import {{klass.name}}, {{klass.name | lower}}_schema
+{% endfor %}
 
-log = getLogger("handlers")
+log = getLogger("views")
 
-url_mapping = [
+{% for klass in app.klasses %}
+
+class {{klass.name}}Handler(BaseAuthedHanlder):
+    async def add_tokens(self, params):
+    {% if klass.meta.values.get("tokens") %}
+        {% for token in klass.meta.values.get("tokens") %}
+        params['{{token["field"]}}'] = {{token | get_token}}
+        {% endfor %}
+    {% endif %}
+        return params
+
+    @render
+    {{ 'async ' if aio }}def get(self, {{klass.name | lower}}_id=None):
+        if {{klass.name | lower}}_id:
+            finds = {{ 'await ' if aio }}self.add_tokens({
+                "id": {{klass.name | lower}}_id
+            })
+            {{klass.name | lower}} = {{ 'await ' if aio }}{{klass.name}}.find(finds)
+            return SuccessData(
+                data={{ 'await ' if aio }}{{klass.name | lower}}.to_front()
+            )
+        else:
+            use_pager = int(self.get_argument("use_pager", 1))
+            page = int(self.get_argument("page", 1))
+            items_per_page = int(self.get_argument("items_per_page", 20))
+            search = self.arguments.get('search', "")
+            orderby = self.arguments.get("orderby", "")
+
+            searches = {{ 'await ' if aio }}self.add_tokens(
+                {{klass.name | lower}}_schema.load(self.arguments, partial=True).data
+            )
+            if search:
+                searches.update({
+                    "search": search
+                })
+
+            keys = []
+            for _order in orderby.split(";"):
+                if _order:
+                    keys.append(_order)
+
+            item_count = {{ 'await ' if aio }}{{klass.name}}.count(searches)
+            if use_pager:
+                limit = items_per_page
+                skip = (page - 1) * items_per_page
+            else:
+                limit = 0
+                skip = 0
+            {{klass.name | lower}}_cursor = {{klass.name}}.search(searches, limit=limit, skip=skip).order_by(keys)
+            data = [{{ 'await ' if aio }} {{klass.name | lower}}.to_front() {{ 'async ' if aio }}for {{klass.name | lower}} in {{klass.name | lower}}_cursor]
+            pager = Page(data, use_pager=use_pager, page=page, items_per_page=items_per_page, item_count=item_count)
+            return SuccessData(
+                data=pager.items,
+                info=pager.info
+            )
+
+    @render
+    {{ 'async ' if aio }}def post(self, {{klass.name | lower}}_id=None):
+        if {{klass.name | lower}}_id:
+            finds = {{ 'await ' if aio }}self.add_tokens({
+                "id": {{klass.name | lower}}_id
+            })
+            copys = {{klass.name | lower}}_schema.load(self.arguments, partial=True).data
+            {{klass.name | lower}} = {{ 'await ' if aio }}{{klass.name}}.find_and_copy(finds, copys)
+            return SuccessData(
+                id={{klass.name | lower}}.id
+            )
+        else:
+            creates = {{ 'await ' if aio }}self.add_tokens(
+                {{klass.name | lower}}_schema.load(self.arguments).data
+            )
+            {{klass.name | lower}} = {{ 'await ' if aio }}{{klass.name}}.create(creates)
+            return SuccessData(
+                id={{klass.name | lower}}.id
+            )
+
+    @render
+    {{ 'async ' if aio }}def put(self, {{klass.name | lower}}_id=None):
+        finds = {{ 'await ' if aio }}self.add_tokens({
+            "id": {{klass.name | lower}}_id
+        })
+        updates = {{klass.name | lower}}_schema.load(self.arguments, partial=True).data
+        {{klass.name | lower}} = {{ 'await ' if aio }}{{klass.name}}.find_and_update(finds, updates)
+        return SuccessData(
+            id={{klass.name | lower}}.id
+        )
+
+    @render
+    {{ 'async ' if aio }}def delete(self, {{klass.name | lower}}_id=None):
+        finds = {{ 'await ' if aio }}self.add_tokens({
+            "id": {{klass.name | lower}}_id
+        })
+        count = {{ 'await ' if aio }}{{klass.name}}.find_and_delete(finds)
+        return SuccessData(
+            count=count
+        )
+
+    @render
+    {{ 'async ' if aio }}def patch(self, {{klass.name | lower}}_id=None):
+        create_list = []
+        for __create in self.arguments.get("create", []):
+            creates = {{ 'await ' if aio }}self.add_tokens(
+                {{klass.name | lower}}_schema.load(__create).data
+            )
+            {{klass.name | lower}} = {{ 'await ' if aio }}{{klass.name}}.create(creates)
+            create_list.append({{klass.name | lower}}.id)
+
+        update_list = []
+        for __update in self.arguments.get("update", []):
+            if "find" in __update:
+                finds = {{ 'await ' if aio }}self.add_tokens(__update.pop("find", {}))
+                updates = {{klass.name | lower}}_schema.load(__update, partial=True).data
+                {{klass.name | lower}} = {{ 'await ' if aio }}{{klass.name}}.find_and_update(finds, updates)
+                update_list.append({{klass.name | lower}}.id)
+            elif "search" in __update:
+                searches = {{ 'await ' if aio }}self.add_tokens(__update.pop("search", {}))
+                updates = {{klass.name | lower}}_schema.load(__update, partial=True).data
+                {{klass.name | lower}}_list = {{ 'await ' if aio }}{{klass.name}}.search_and_update(searches, updates)
+                update_list.append({{klass.name | lower}}_list)
+
+        delete_list = []
+        for __delete in self.arguments.get("delete", []):
+            if "find" in __delete:
+                finds = {{ 'await ' if aio }}self.add_tokens(__delete.pop("find", {}))
+                count = {{ 'await ' if aio }}{{klass.name}}.find_and_delete(finds)
+                delete_list.append(count)
+            elif "search" in __delete:
+                searches = {{ 'await ' if aio }}self.add_tokens(__delete.pop("search", {}))
+                count = {{ 'await ' if aio }}{{klass.name}}.search_and_delete(searches)
+                delete_list.append(count)
+
+        return SuccessData(
+            create_list=create_list,
+            update_list=update_list,
+            delete_list=delete_list,
+        )
+
+    def set_default_headers(self):
+        self._headers.add("version", "1")
+
+{% endfor %}
+
+URL_MAPPING_LIST = [
+{% for klass in app.klasses %}
+    url(r"/api/{{app.name | lower}}/{{klass.name | lower}}/(?:([a-zA-Z0-9&%\.~-]+)/)?", {{klass.name}}Handler),
+{% endfor %}
 ]

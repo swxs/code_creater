@@ -1,0 +1,67 @@
+# -*- coding: utf-8 -*-
+# @FILE    : dao.py
+# @AUTH    : model_creater
+
+{% if app.meta.values.get("import_list") %}
+    {% for import in app.meta.values.get("import_list") %}
+import {{import.name}}
+    {% endfor %}
+{% endif %}
+from dao import fields
+from ..BaseDAO import BaseDAO
+from . import consts
+from commons.Utils.log_utils import getLogger
+
+log = getLogger("dao")
+
+{% for klass in app.klasses %}
+
+    {% if klass.meta.values.get("parent") %}
+class {{klass.name}}({{klass.meta.values.get("parent") | title}}):
+    {% else %}
+class {{klass.name}}(BaseDAO):
+    {% endif %}
+    {% for field in klass.fields %}
+        {% if field.field_type == "datetime" %}
+    {{field.name}} = fields.DateTimeField({{field|get_utils_params(klass)}})
+        {% elif field.field_type == "str" %}
+    {{field.name}} = fields.StringField({{field|get_utils_params(klass)}})
+        {% elif field.field_type == "int" %}
+    {{field.name}} = fields.IntField({{field|get_utils_params(klass)}})
+        {% elif field.field_type == "list" %}
+    {{field.name}} = fields.ListField({{field|get_utils_params(klass)}})
+        {% elif field.field_type == "dict" %}
+    {{field.name}} = fields.DictField({{field|get_utils_params(klass)}})
+        {% elif field.field_type == "boolean" %}
+    {{field.name}} = fields.BooleanField({{field|get_utils_params(klass)}})
+        {% elif field.field_type == "objectid" %}
+    {{field.name}} = fields.ObjectIdField({{field|get_utils_params(klass)}})
+        {% else %}
+    {{field.name}} = fields.StringField({{field|get_utils_params(klass)}})
+        {% endif %}
+    {% endfor %}
+
+    def __init__(self, **kwargs):
+        super({{klass.name}}, self).__init__(**kwargs)
+
+    {% for field in klass.fields %}
+        {% if field.values.get("ref") %}
+            {% if aio %}
+    @async_property
+            {% else %}
+    @property
+            {% endif %}
+            {% for _klass in app.klass %}
+                {% if _klass.name == field.values.get("ref") %}
+    {{ 'async ' if aio }}def {{_klass.name | lower}}(self):
+        from .{{_klass["name"] | title}} import {{_klass.name | title}}
+        return {{ 'await ' if aio }}{{_klass.name | title}}.get_{{_klass.name | lower}}_by_{{_klass.name | lower}}_id(self.{{field.name}})
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endfor %}
+    @classmethod
+    {{ 'async ' if aio }}def get_{{klass.name | lower}}_by_{{klass.name | lower}}_id(cls, {{klass.name | lower}}_id):
+        return {{ 'await ' if aio }}cls.find(dict(id={{klass.name | lower}}_id))
+
+{% endfor %}

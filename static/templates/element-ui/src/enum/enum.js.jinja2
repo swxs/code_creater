@@ -1,0 +1,19 @@
+{% for field in klass.fields %}
+    {% if field.values.get("enums") %}
+export const {{field | get_enum_dict(klass)}} = {
+        {% for enum in field.values.get("enums") %}
+    {{enum["key"] | get_enum_upper(field, klass) }}: {{ loop.index }}, // {{ enum.get("description", enum["value"]) }}
+        {% endfor %}
+}
+    {% endif %}
+{% endfor %}
+
+{% for field in klass.fields %}
+    {% if field.values.get("enums") %}
+export const {{field | get_enum_list(klass)}} = [
+        {% for enum in field.values.get("enums") %}
+    [{{field | get_enum_dict(klass)}}.{{enum["key"] | get_enum_upper(field, klass) }}, '{{ enum['key'] }}'],
+        {% endfor %}
+]
+    {% endif %}
+{% endfor %}

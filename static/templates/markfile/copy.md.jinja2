@@ -1,10 +1,10 @@
 ### **简要描述：**
 
-复制{{model.name}}
+复制{{klass.name}}
 
 ### **请求URL：**
 
-`/api/{{app_name | lower}}/{{model.name}}/<{{model.name}}_id>/`
+`/api/{{klass.name | lower}}/{{klass.name}}/<{{klass.name}}_id>/`
 
 ### **请求方式：**
 
@@ -12,14 +12,14 @@ POST
 
 ### **类型：**
 
-{% for field in model.field_list %}
-{% if "enums" is in(field) %}
+{% for field in klass.fields %}
+{% if field.values.get("enums") %}
 ---
-#### {{field.field_name}}
+#### {{field.name}}
 |值|原名|备注|
 |:--|:--|:--|
-{% for enum in field["enums"] %}
-|{{ loop.index }}|{{enum["name"]}}||
+{% for enum in field.values.get("enums") %}
+|{{ loop.index }}|{{enum["key"]}}||
 {% endfor %}
 
 {% endif %}
@@ -29,13 +29,17 @@ POST
 
 |参数名|参数类型|备注|
 |:--|:--|:--|
-{% if "parent" in model and model["parent"] %}
-{% for field in apps_dict[app_name][model["parent"]].field_list %}
-|{{field.field_name}}|{{field.field_type}}|{{field.get("_description", "")}}|
+{% if klass.meta.values.get("parent") %}
+{% for _klass in app.klass %}
+{% if _klass.name == klass.meta.values.get("parent") %}
+{% for _field in _klass.fields %}
+|{{_field.name}}|{{_field.field_type}}|{{_field.descriptions}}|
 {% endfor %}
 {% endif %}
-{% for field in model.field_list %}
-|{{field.field_name}}|{{field.field_type}}|{{field.get("_description", "")}}|
+{% endfor %}
+{% endif %}
+{% for field in klass.fields %}
+|{{field.name}}|{{field.field_type}}|{{field.descriptions}}|
 {% endfor %}
 
 [返回目录](../base.md)
