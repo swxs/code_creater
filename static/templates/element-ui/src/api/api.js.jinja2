@@ -40,14 +40,6 @@ export const update{{klass.name}} = (id, data) => {
   })
 }
 
-export const modify{{klass.name}} = (id, data) => {
-  return new Promise(function(resolve, reject) {
-    window.axios.patch(`${{ '{' }}{{klass.name}}Url{{ '}' }}${id}/`, data).then((response) => {
-      resolve(response)
-    })
-  })
-}
-
 export const delete{{klass.name}} = (id) => {
   return new Promise(function(resolve, reject) {
     window.axios.delete(`${{ '{' }}{{klass.name}}Url{{ '}' }}${id}/`).then((response) => {

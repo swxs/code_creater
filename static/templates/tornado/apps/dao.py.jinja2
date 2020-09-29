@@ -7,12 +7,12 @@
 import {{import.name}}
     {% endfor %}
 {% endif %}
+import logging
 from dao import fields
 from ..BaseDAO import BaseDAO
 from . import consts
-from commons.Utils.log_utils import getLogger
 
-log = getLogger("dao")
+logger = logging.getLogger("dao")
 
 {% for klass in app.klasses %}
 

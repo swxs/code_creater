@@ -68,6 +68,7 @@ import {
   search{{klass.name}},
   select{{klass.name}},
   create{{klass.name}},
+  update{{klass.name}},
   delete{{klass.name}},
 } from '../api/{{klass.name}}.js'
 {% endfor %}
@@ -92,7 +93,7 @@ export default {
   components: {},
   created() {},
   async mounted() {
-    let result = await search{{klass.name}}({ order_by: '-created' })
+    let result = await search{{klass.name}}({ orderby: '-created' })
     this.tableData = result.data
   },
   methods: {

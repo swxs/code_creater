@@ -8,18 +8,18 @@ import {{import.name}}
     {% endfor %}
 {% endif %}
 import json
+import logging
 from tornado.web import url
 from web.web import BaseHandler, BaseAuthedHanlder
 from web.consts import undefined
 from web.result import SuccessData
 from web.decorator.render import render
 from commons.Helpers.Helper_pagenate import Page
-from commons.Utils.log_utils import getLogger
 {% for klass in app.klasses %}
 from .utils.{{klass.name}} import {{klass.name}}, {{klass.name | lower}}_schema
 {% endfor %}
 
-log = getLogger("views")
+logger = logging.getLogger("views")
 
 {% for klass in app.klasses %}
 
