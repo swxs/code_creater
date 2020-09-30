@@ -19,7 +19,7 @@ from commons.Helpers.Helper_pagenate import Page
 from .utils.{{klass.name}} import {{klass.name}}, {{klass.name | lower}}_schema
 {% endfor %}
 
-logger = logging.getLogger("views")
+logger = logging.getLogger("main.{{app.name | lower}}.views")
 
 {% for klass in app.klasses %}
 
