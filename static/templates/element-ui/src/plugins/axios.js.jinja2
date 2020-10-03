@@ -2,10 +2,7 @@
 
 import Vue from 'vue'
 import axios from 'axios'
-
-const token =
-  'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1NTg1OTY2MjcsImlhdCI6MTU1ODU4OTQyNywiaXNzIjoiSURZOk1YIiwibmJmIjoxNTU4NTg5NDI3LCJvcmdfY29kZSI6ImlkeSIsIm9yZ19uYW1lIjoiXHU4MmNmXHU1ZGRlXHU0ZjE3XHU4YTAwXHU3ZjUxXHU3ZWRjXHU3OWQxXHU2MjgwXHU4MGExXHU0ZWZkXHU2NzA5XHU5NjUwXHU1MTZjXHU1M2Y4IiwidWlkIjoiNWNlMzZjZTZhNmM0OTBmY2UzMDA4MDc3IiwidW5hbWUiOiJcdThkODVcdTdlYTdcdTdiYTFcdTc0MDZcdTU0NTgiLCJhdmF0YXIiOm51bGwsInN1cGVyIjoxfQ.z6ikNmH8U3TB5XFNLtJxWo0l79_JnA-jctdabd6GsPE'
-window.token = token
+import { getToken, setToken, removeToken } from '../utils/auth'
 
 // Full config:  https://github.com/axios/axios#request-config
 // axios.defaults.baseURL = process.env.baseURL || process.env.apiUrl || '';
@@ -18,38 +15,87 @@ let config = {
   // withCredentials: true, // Check cross-site Access-Control
 }
 
-const _axios = axios.create(config)
+const service = axios.create(config)
 
-_axios.interceptors.request.use(
+// 声明一个 Map 用于存储每个请求的标识 和 取消函数
+const pending = new Map()
+/**
+ * 添加请求
+ * @param {Object} config
+ */
+const addPending = (config) => {
+  const url = config.url + '&' + config.params.type
+  config.cancelToken = new axios.CancelToken((cancel) => {
+    if (!pending.has(url)) {
+      // 如果 pending 中不存在当前请求，则添加进去
+      pending.set(url, cancel)
+    }
+  })
+}
+/**
+ * 移除请求
+ * @param {Object} config
+ */
+const removePending = (config) => {
+  const url = config.url + '&' + config.params.type
+  if (pending.has(url)) {
+    // 如果在 pending 中存在当前请求标识，需要取消当前请求，并且移除
+    const cancel = pending.get(url)
+    cancel(url)
+    pending.delete(url)
+  }
+}
+
+service.interceptors.request.use(
   (config) => {
     // do something before request is sent
-    const tem = config.url.indexOf('?') !== -1 ? '&' : '?'
-
-    if (token) {
-      config.headers = {
-        Authorization: 'Bearer ' + token
-      }
-    }
-
     if (config.method === 'get') {
-      config.url += tem + 'time_stamp=' + new Date().getTime()
+      config.params = config.params || {}
+      config.params._ = new Date().getTime()
     }
 
+    const token = getToken()
+    if (token) {
+      config.headers.common['Authorization'] = `Bearer ${token}`
+    } else {
+      // todo 没有token时暂存请求， 等待响应后调用
+      window.postMessage(
+        {
+          cmd: 'getToken',
+          params: {},
+        },
+        '*'
+      )
+    }
     return config
   },
   (error) => {
-    console.log(error)
     return Promise.reject(error)
   }
 )
 
 // Add a response interceptor
-_axios.interceptors.response.use(
-  (data) => {
-    if (data.data.code === 0) {
-      return data.data.data
+service.interceptors.response.use(
+  (response) => {
+    if (response.config.responseType == 'blob') {
+      return Promise.resolve(response)
     } else {
-      return Promise.reject(data.data.code)
+      let data = response.data
+      if (data.code === 0) {
+        return Promise.resolve(data)
+      } else if ([101, 111, 112, 113].includes(data.code)) {
+        // todo 没有token时暂存请求， 等待响应后调用
+        window.postMessage(
+          {
+            cmd: 'getToken',
+            params: {},
+          },
+          '*'
+        )
+      } else {
+        console.log(data)
+        return Promise.resolve(data)
+      }
     }
   },
   (error) => {
@@ -59,19 +105,18 @@ _axios.interceptors.response.use(
 )
 
 Plugin.install = function(Vue, options) {
-  Vue.axios = _axios
-  window.axios = _axios
+  Vue.axios = service
   Object.defineProperties(Vue.prototype, {
     axios: {
       get() {
-        return _axios
-      }
+        return service
+      },
     },
     $axios: {
       get() {
-        return _axios
-      }
-    }
+        return service
+      },
+    },
   })
 }
 
