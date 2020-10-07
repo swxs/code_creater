@@ -2,49 +2,11 @@
 
 import Vue from 'vue'
 import axios from 'axios'
-import { getToken, setToken, removeToken } from '../utils/auth'
+import { getToken, setToken, removeToken, requests } from '../utils/auth'
 
-// Full config:  https://github.com/axios/axios#request-config
-// axios.defaults.baseURL = process.env.baseURL || process.env.apiUrl || '';
-// axios.defaults.headers.common['Authorization'] = AUTH_TOKEN;
-// axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
-
-let config = {
-  // baseURL: process.env.baseURL || process.env.apiUrl || ""
-  // timeout: 60 * 1000, // Timeout
-  // withCredentials: true, // Check cross-site Access-Control
-}
+let config = {}
 
 const service = axios.create(config)
-
-// 声明一个 Map 用于存储每个请求的标识 和 取消函数
-const pending = new Map()
-/**
- * 添加请求
- * @param {Object} config
- */
-const addPending = (config) => {
-  const url = config.url + '&' + config.params.type
-  config.cancelToken = new axios.CancelToken((cancel) => {
-    if (!pending.has(url)) {
-      // 如果 pending 中不存在当前请求，则添加进去
-      pending.set(url, cancel)
-    }
-  })
-}
-/**
- * 移除请求
- * @param {Object} config
- */
-const removePending = (config) => {
-  const url = config.url + '&' + config.params.type
-  if (pending.has(url)) {
-    // 如果在 pending 中存在当前请求标识，需要取消当前请求，并且移除
-    const cancel = pending.get(url)
-    cancel(url)
-    pending.delete(url)
-  }
-}
 
 service.interceptors.request.use(
   (config) => {
@@ -56,9 +18,9 @@ service.interceptors.request.use(
 
     const token = getToken()
     if (token) {
-      config.headers.common['Authorization'] = `Bearer ${token}`
+      config.headers.Authorization = `Bearer ${token}`
+      return config
     } else {
-      // todo 没有token时暂存请求， 等待响应后调用
       window.postMessage(
         {
           cmd: 'getToken',
@@ -66,8 +28,14 @@ service.interceptors.request.use(
         },
         '*'
       )
+      return new Promise((resolve) => {
+        requests.push(() => {
+          const token = getToken()
+          config.headers.Authorization = `Bearer ${token}`
+          resolve(config)
+        })
+      })
     }
-    return config
   },
   (error) => {
     return Promise.reject(error)
@@ -83,6 +51,7 @@ service.interceptors.response.use(
       let data = response.data
       if (data.code === 0) {
         return Promise.resolve(data)
+        // return Promise.resolve(data)
       } else if ([101, 111, 112, 113].includes(data.code)) {
         // todo 没有token时暂存请求， 等待响应后调用
         window.postMessage(
@@ -92,14 +61,21 @@ service.interceptors.response.use(
           },
           '*'
         )
+        removeToken()
+        return new Promise((resolve) => {
+          requests.push(() => {
+            const token = getToken()
+            response.config.headers.Authorization = `Bearer ${token}`
+            resolve(service(response.config))
+          })
+        })
       } else {
-        console.log(data)
+        console.log('data: ', data)
         return Promise.resolve(data)
       }
     }
   },
   (error) => {
-    console.log(error)
     return Promise.reject(error)
   }
 )

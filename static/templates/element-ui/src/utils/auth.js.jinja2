@@ -29,3 +29,11 @@ export function base2obj(str) {
   }
   return JSON.parse(window.atob(baseStr))
 }
+
+export const requests = []
+
+export function cleanRequests() {
+  while (requests.length) {
+    requests.shift()()
+  }
+}

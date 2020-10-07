@@ -10,10 +10,7 @@ import {{import.name}}
 import json
 import logging
 from tornado.web import url
-from web.web import BaseHandler, BaseAuthedHanlder
-from web.consts import undefined
-from web.result import SuccessData
-from web.decorator.render import render
+from web import BaseHandler, BaseAuthedHanlder, SuccessData, render, undefined
 from commons.Helpers.Helper_pagenate import Page
 {% for klass in app.klasses %}
 from .utils.{{klass.name}} import {{klass.name}}, {{klass.name | lower}}_schema

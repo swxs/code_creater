@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import { getToken, setToken } from './utils/auth'
+import { getToken, setToken, cleanRequests } from './utils/auth'
 
 export default {
   name: 'App',
@@ -75,6 +75,7 @@ export default {
           if (token) {
             setToken(token)
             this.login = true
+            cleanRequests()
           } else {
             this.login = false
           }
