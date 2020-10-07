@@ -74,8 +74,8 @@ export default {
           let token = data.params.token
           if (token) {
             setToken(token)
+            cleanRequests(token)
             this.login = true
-            cleanRequests()
           } else {
             this.login = false
           }

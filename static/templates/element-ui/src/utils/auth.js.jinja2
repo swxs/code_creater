@@ -32,8 +32,8 @@ export function base2obj(str) {
 
 export const requests = []
 
-export function cleanRequests() {
+export function cleanRequests(token) {
   while (requests.length) {
-    requests.shift()()
+    requests.shift()(token)
   }
 }

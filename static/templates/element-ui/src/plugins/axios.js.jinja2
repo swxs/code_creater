@@ -29,8 +29,7 @@ service.interceptors.request.use(
         '*'
       )
       return new Promise((resolve) => {
-        requests.push(() => {
-          const token = getToken()
+        requests.push((token) => {
           config.headers.Authorization = `Bearer ${token}`
           resolve(config)
         })
@@ -63,8 +62,7 @@ service.interceptors.response.use(
         )
         removeToken()
         return new Promise((resolve) => {
-          requests.push(() => {
-            const token = getToken()
+          requests.push((token) => {
             response.config.headers.Authorization = `Bearer ${token}`
             resolve(service(response.config))
           })
