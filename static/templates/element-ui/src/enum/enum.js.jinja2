@@ -2,7 +2,7 @@
     {% if field.values.get("enums") %}
 export const {{field | get_enum_dict(klass)}} = {
         {% for enum in field.values.get("enums") %}
-    {{enum["key"] | get_enum_upper(field, klass) }}: {{ loop.index }}, // {{ enum.get("description", enum["value"]) }}
+    {{enum["value"] | get_enum_upper(field, klass) }}: {{ loop.index }}, // {{ enum.get("description", enum["key"]) }}
         {% endfor %}
 }
     {% endif %}
@@ -12,7 +12,7 @@ export const {{field | get_enum_dict(klass)}} = {
     {% if field.values.get("enums") %}
 export const {{field | get_enum_list(klass)}} = [
         {% for enum in field.values.get("enums") %}
-    [{{field | get_enum_dict(klass)}}.{{enum["key"] | get_enum_upper(field, klass) }}, '{{ enum['key'] }}'],
+    [{{field | get_enum_dict(klass)}}.{{enum["value"] | get_enum_upper(field, klass) }}, '{{ enum['key'] }}'],
         {% endfor %}
 ]
     {% endif %}
