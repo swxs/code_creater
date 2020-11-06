@@ -11,12 +11,9 @@ tasks:
     output:
       - framework: tornado
         target: D:\codehouse\home\apps
+        formatter: black
       - framework: markfile
         target: D:\codehouse\home\docs
-      - framework: element-ui
-        target: D:\codehouse\openapi_system
-    formatter:
-      - black
 
   - input: "密码控制.xmind"
     params:
@@ -24,12 +21,11 @@ tasks:
     output:
       - framework: tornado
         target: D:\codehouse\home\apps
+        formatter: black
       - framework: markfile
         target: D:\codehouse\home\docs
       - framework: element-ui
         target: D:\codehouse\openapi_passwordlock
-    formatter:
-      - black
 
   - input: "备忘录.xmind"
     params:
@@ -37,12 +33,11 @@ tasks:
     output:
       - framework: tornado
         target: D:\codehouse\home\apps
+        formatter: black
       - framework: markfile
         target: D:\codehouse\home\docs
       - framework: element-ui
         target: D:\codehouse\openapi_memo
-    formatter:
-      - black
 
   - input: "单词本.xmind"
     params:
@@ -50,9 +45,8 @@ tasks:
     output:
       - framework: tornado
         target: D:\codehouse\home\apps
+        formatter: black
       - framework: markfile
         target: D:\codehouse\home\docs
       - framework: element-ui
         target: D:\codehouse\openapi_wordbook
-    formatter:
-      - black
