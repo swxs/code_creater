@@ -9,7 +9,7 @@ tasks:
         - key: 邮箱
           value: email
     output:
-      - framework: tornado
+      - framework: fastapi
         target: D:\codehouse\home\apps
         formatter: black
       - framework: markfile
@@ -19,7 +19,7 @@ tasks:
     params:
       aio: true
     output:
-      - framework: tornado
+      - framework: fastapi
         target: D:\codehouse\home\apps
         formatter: black
       - framework: markfile
@@ -31,7 +31,7 @@ tasks:
     params:
       aio: true
     output:
-      - framework: tornado
+      - framework: fastapi
         target: D:\codehouse\home\apps
         formatter: black
       - framework: markfile
@@ -43,7 +43,7 @@ tasks:
     params:
       aio: true
     output:
-      - framework: tornado
+      - framework: fastapi
         target: D:\codehouse\home\apps
         formatter: black
       - framework: markfile
