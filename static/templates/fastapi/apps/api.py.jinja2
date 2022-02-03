@@ -1,0 +1,110 @@
+# -*- coding: utf-8 -*-
+# @File    : api/{{klass.name | lower}}.py
+# @AUTH    : code_creater
+
+import logging
+from fastapi import APIRouter, Path, Query, Body
+from fastapi.param_functions import Depends
+
+from web.dependencies.pagination import get_pagination
+from ..schemas.{{klass.name | lower}} import {{klass.name}}Schema
+from ..dao.{{klass.name | lower}} import {{klass.name}}
+
+
+router = APIRouter()
+
+logger = logging.getLogger("main.apps.{{klass.name | lower}}.api.{{klass.name | lower}}")
+
+
+@router.get("/{{{klass.name | lower}}_id}")
+async def get_{{klass.name | lower}}(
+    {{klass.name | lower}}_id: str = Path(...),
+):
+    {{klass.name | lower}} = await {{klass.name}}.find(
+        finds={{klass.name | lower}}_id,
+    )
+    return {
+        "data": await {{klass.name | lower}}.to_front(),
+    }
+
+
+@router.get("/")
+async def get_{{klass.name | lower}}_list(
+    {{klass.name | lower}}_schema=Query(...),
+    pagination=Depends(get_pagination),
+):
+    {{klass.name | lower}}_list = await {{klass.name}}.search(
+        searches={{klass.name | lower}}_schema.dict(exclude_unset=True),
+        skip=pagination.skip,
+        limit=pagination.limit,
+    )
+    return {
+        "data": await {{klass.name | lower}}_list.to_front(),
+        "pagination": await {{klass.name | lower}}_list.get_pagination(),
+    }
+
+
+@router.post("/")
+async def create_{{klass.name | lower}}(
+    {{klass.name | lower}}_schema: {{klass.name}}Schema = Body(...),
+):
+    {{klass.name | lower}} = await {{klass.name}}.create(
+        params={{klass.name | lower}}_schema.dict(),
+    )
+    return {
+        "data": await {{klass.name | lower}}.to_front(),
+    }
+
+
+@router.post("/{{{klass.name | lower}}_id}")
+async def copy_{{klass.name | lower}}(
+    {{klass.name | lower}}_id: str = Path(...),
+    {{klass.name | lower}}_schema: {{klass.name}}Schema = Body(...),
+):
+    {{klass.name | lower}} = await {{klass.name}}.copy(
+        finds={{klass.name | lower}}_id,
+        params={{klass.name | lower}}_schema.dict(exclude_defaults=True),
+    )
+    return {
+        "data": await {{klass.name | lower}}.to_front(),
+    }
+
+
+@router.put("/{{{klass.name | lower}}_id}")
+async def change_{{klass.name | lower}}(
+    {{klass.name | lower}}_id: str = Path(...),
+    {{klass.name | lower}}_schema: {{klass.name}}Schema = Body(...),
+):
+    {{klass.name | lower}} = await {{klass.name}}.update(
+        find={{klass.name | lower}}_id,
+        params={{klass.name | lower}}_schema.dict(),
+    )
+    return {
+        "data": await {{klass.name | lower}}.to_front(),
+    }
+
+
+@router.delete("/{{{klass.name | lower}}_id}")
+async def delete_{{klass.name | lower}}(
+    {{klass.name | lower}}_id: str = Path(...),
+):
+    count = await {{klass.name}}.delete(
+        find={{klass.name | lower}}_id,
+    )
+    return {
+        "count": count,
+    }
+
+
+@router.patch("/{{{{klass.name | lower}}_id}")
+async def modify_{{{klass.name | lower}}(
+    {{{klass.name | lower}}_id: str = Path(...),
+    {{{klass.name | lower}}_schema: {{klass.name}}Schema = Body(...),
+):
+    {{{klass.name | lower}} = await {{klass.name}}.update(
+        find={{{klass.name | lower}}_id,
+        params={{{klass.name | lower}}_schema.dict(exclude_defaults=True),
+    )
+    return {
+        "data": await {{{klass.name | lower}}.to_front(),
+    }

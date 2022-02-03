@@ -1,0 +1,43 @@
+# -*- coding: utf-8 -*-
+# @File    : models/{{klass.name | lower}}.py
+# @AUTH    : code_creater
+
+import bson
+import datetime
+import logging
+
+from dao import BaseDocument, fields
+from .. import consts
+from ..models.{{klass.name | lower}} import {{klass.name}} as {{klass.name}}Model
+
+logger = logging.getLogger("main.apps.{{apps.name | lower}}.dao.{{klass.name | lower}}")
+
+
+class {{klass.name}}(BaseDocument):
+{% for field in klass.fields %}
+    {% if field.field_type == "datetime" %}
+    {{field.name}} = fields.DateTimeField({{field|get_model_params(klass)}})
+    {% elif field.field_type == "str" %}
+    {{field.name}} = fields.StringField({{field|get_model_params(klass)}})
+    {% elif field.field_type == "int" %}
+    {{field.name}} = fields.IntField({{field|get_model_params(klass)}})
+    {% elif field.field_type == "list" %}
+    {{field.name}} = fields.ListField({{field|get_model_params(klass)}})
+    {% elif field.field_type == "dict" %}
+    {{field.name}} = fields.DictField({{field|get_model_params(klass)}})
+    {% elif field.field_type == "boolean" %}
+    {{field.name}} = fields.BooleanField({{field|get_model_params(klass)}})
+    {% elif field.field_type == "objectid" %}
+    {{field.name}} = fields.ObjectIdField({{field|get_model_params(klass)}})
+    {% else %}
+    {{field.name}} = fields.StringField({{field|get_model_params(klass)}})
+    {% endif %}
+{% endfor %}
+
+    class Meta:
+        model = {{klass.name}}Model
+        manager = "umongo_motor"
+        memorizer = "none"
+
+    def __init__(self, **kwargs):
+        super({{klass.name}}, self).__init__(**kwargs)
