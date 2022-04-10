@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
-# @FILE    : models.py
+# @FILE    : models/{{klass.name | lower}}.py
 # @AUTH    : code_creater
 
-import bson
 import datetime
+
+import bson
 from umongo import Document, fields
 
 import core
-from ..consts import common_enum
+
+# 本模块方法
+from .. import consts
 
 
 @core.mongodb_instance.register
@@ -47,3 +50,4 @@ class {{klass.name}}(Document):
         ]
         {% endif %}
         pass
+{% endif %}

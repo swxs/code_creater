@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# @File    : core.py
+# @File    : parser.py
 # @AUTH    : swxs
 # @Time    : 2019/3/25 14:13
 
@@ -44,6 +44,7 @@ class Root(object):
 class App(object):
     def __init__(self, node):
         self.name = title(node.sub[0])
+        self.name_lower = lower(node.sub[0])
         self.klasses = []
         self.meta = Meta(None)
         self.descriptions = []
@@ -132,6 +133,7 @@ class Meta(object):
 class Klass(object):
     def __init__(self, node):
         self.name = title(node.name)
+        self.name_lower = lower(node.name)
         self.fields = []
         self.meta = Meta(None)
         self.descriptions = []

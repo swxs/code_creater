@@ -3,20 +3,22 @@
 # @AUTH    : code_creater
 
 import logging
-from fastapi import APIRouter, Path, Query, Body
+
+from fastapi import Body, Path, Query, APIRouter
 from fastapi.param_functions import Depends
 
 from web.dependencies.pagination import get_pagination
-from ..schemas.{{klass.name | lower}} import {{klass.name}}Schema
-from ..dao.{{klass.name | lower}} import {{klass.name}}
 
+# 本模块方法
+from ..dao.{{klass.name | lower}} import {{klass.name}}
+from ..schemas.{{klass.name | lower}} import {{klass.name}}Schema
 
 router = APIRouter()
 
 logger = logging.getLogger("main.apps.{{klass.name | lower}}.api.{{klass.name | lower}}")
 
 
-@router.get("/{{{klass.name | lower}}_id}")
+@router.get("/{{'{'}}{{klass.name | lower}}_id{{'}'}}")
 async def get_{{klass.name | lower}}(
     {{klass.name | lower}}_id: str = Path(...),
 ):
@@ -26,6 +28,7 @@ async def get_{{klass.name | lower}}(
     return {
         "data": await {{klass.name | lower}}.to_front(),
     }
+
 
 
 @router.get("/")
@@ -56,7 +59,7 @@ async def create_{{klass.name | lower}}(
     }
 
 
-@router.post("/{{{klass.name | lower}}_id}")
+@router.post("/{{'{'}}{{klass.name | lower}}_id{{'}'}}")
 async def copy_{{klass.name | lower}}(
     {{klass.name | lower}}_id: str = Path(...),
     {{klass.name | lower}}_schema: {{klass.name}}Schema = Body(...),
@@ -70,7 +73,7 @@ async def copy_{{klass.name | lower}}(
     }
 
 
-@router.put("/{{{klass.name | lower}}_id}")
+@router.put("/{{'{'}}{{klass.name | lower}}_id{{'}'}}")
 async def change_{{klass.name | lower}}(
     {{klass.name | lower}}_id: str = Path(...),
     {{klass.name | lower}}_schema: {{klass.name}}Schema = Body(...),
@@ -84,7 +87,7 @@ async def change_{{klass.name | lower}}(
     }
 
 
-@router.delete("/{{{klass.name | lower}}_id}")
+@router.delete("/{{'{'}}{{klass.name | lower}}_id{{'}'}}")
 async def delete_{{klass.name | lower}}(
     {{klass.name | lower}}_id: str = Path(...),
 ):
@@ -96,15 +99,15 @@ async def delete_{{klass.name | lower}}(
     }
 
 
-@router.patch("/{{{{klass.name | lower}}_id}")
-async def modify_{{{klass.name | lower}}(
-    {{{klass.name | lower}}_id: str = Path(...),
-    {{{klass.name | lower}}_schema: {{klass.name}}Schema = Body(...),
+@router.patch("/{{'{'}}{{klass.name | lower}}_id{{'}'}}")
+async def modify_{{klass.name | lower}}(
+    {{klass.name | lower}}_id: str = Path(...),
+    {{klass.name | lower}}_schema: {{klass.name}}Schema = Body(...),
 ):
-    {{{klass.name | lower}} = await {{klass.name}}.update(
-        find={{{klass.name | lower}}_id,
-        params={{{klass.name | lower}}_schema.dict(exclude_defaults=True),
+    {{klass.name | lower}} = await {{klass.name}}.update(
+        find={{klass.name | lower}}_id,
+        params={{klass.name | lower}}_schema.dict(exclude_defaults=True),
     )
     return {
-        "data": await {{{klass.name | lower}}.to_front(),
+        "data": await {{klass.name | lower}}.to_front(),
     }

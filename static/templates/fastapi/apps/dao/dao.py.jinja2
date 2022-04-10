@@ -1,16 +1,19 @@
 # -*- coding: utf-8 -*-
-# @File    : models/{{klass.name | lower}}.py
+# @File    : dao/{{klass.name | lower}}.py
 # @AUTH    : code_creater
 
-import bson
-import datetime
 import logging
+import datetime
+
+import bson
 
 from dao import BaseDocument, fields
+
+# 本模块方法
 from .. import consts
 from ..models.{{klass.name | lower}} import {{klass.name}} as {{klass.name}}Model
 
-logger = logging.getLogger("main.apps.{{apps.name | lower}}.dao.{{klass.name | lower}}")
+logger = logging.getLogger("main.apps.{{app.name | lower}}.dao.{{klass.name | lower}}")
 
 
 class {{klass.name}}(BaseDocument):

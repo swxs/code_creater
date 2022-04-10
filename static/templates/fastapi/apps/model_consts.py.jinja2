@@ -1,0 +1,22 @@
+# -*- coding: utf-8 -*-
+# @FILE    : model_consts.py
+# @AUTH    : model_creater
+
+
+from enum import Enum
+{% for klass in app.klasses %}
+    {% for field in klass.fields %}
+        {% if field.values.get("enums") %}
+
+            {% for enum in field.values.get("enums") %}
+{{enum["value"] | get_enum_upper(field, klass) }} = {{ loop.index }}
+            {% endfor %}
+
+{{field | get_enum_list(klass)}} = [
+            {% for enum in field.values.get("enums") %}
+    ({{enum["value"] | get_enum_upper(field, klass) }}, '{{enum["key"]}}'),
+            {% endfor %}
+]
+        {% endif %}
+    {% endfor %}
+{% endfor %}

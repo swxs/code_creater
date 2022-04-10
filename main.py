@@ -11,8 +11,8 @@ import multiprocessing
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from jinja2 import Environment, PackageLoader, select_autoescape
 
-from .core import parseModel
-from .makers import productor
+from .parser import parseModel
+from .makers import maker_productor
 from .utils.timeit import timeit
 
 script_path = os.path.dirname(os.path.abspath(__file__))
@@ -47,7 +47,7 @@ def run(filename):
     config = yaml.safe_load(open(config_filepath, encoding='utf8'))
 
     def run_task(root, task, output):
-        maker = productor[output.get('framework')](jinja_env, root, task, output)
+        maker = maker_productor[output.get('framework')](jinja_env, root, task, output)
         maker.run()
         return True
 
@@ -66,5 +66,5 @@ def run(filename):
     for future in as_completed(all_futures):
         print(future.result())
 
-
-run()
+if __name__ == "__main__":
+    run()
