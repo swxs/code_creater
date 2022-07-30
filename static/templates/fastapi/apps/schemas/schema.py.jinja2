@@ -3,15 +3,47 @@
 # @AUTH    : model_creater
 
 from typing import Dict, List, Optional
+from bson import ObjectId
+import pydantic
 
-from pydantic import BaseModel
 
+class {{klass.name}}Schema(pydantic.BaseModel):
+    class Config:
+        arbitrary_types_allowed = True
 
-class PasswordLockSchema(BaseModel):
-    name: Optional[str] = None
-    key: Optional[str] = None
-    website: Optional[str] = None
-    user_id: Optional[str] = None
-    used: Optional[int] = 0
-    ttype: Optional[int] = 0
-    custom: Optional[Dict] = None
+{% for field in klass.fields %}
+    {% if field.field_type == "datetime" %}
+    {{field.name}}: Optional[datetime] = None
+    {% elif field.field_type == "str" %}
+    {{field.name}}: Optional[str] = None
+    {% elif field.field_type == "int" %}
+    {{field.name}}: Optional[int] = 0
+    {% elif field.field_type == "list" %}
+    {{field.name}}: Optional[List] = None
+    {% elif field.field_type == "dict" %}
+    {{field.name}}:Optional[Dict] = None
+    {% elif field.field_type == "boolean" %}
+    {{field.name}}: Optional[bool] = None
+    {% elif field.field_type == "objectid" %}
+    {{field.name}}: Optional[str] = None
+    {% else %}
+    {{field.name}}: Optional[str] = None
+    {% endif %}
+{% endfor %}
+
+{% for field in klass.fields %}
+    {% if field.field_type == "datetime" %}
+    {% elif field.field_type == "str" %}
+    {% elif field.field_type == "int" %}
+    {% elif field.field_type == "list" %}
+    {% elif field.field_type == "dict" %}
+    {% elif field.field_type == "boolean" %}
+    {% elif field.field_type == "objectid" %}
+    @pydantic.validator('{{field.name}}')
+    def {{field.name}}_objectid(cls, v):
+        if isinstance(v, str):
+            return ObjectId(v)
+        return ObjectId(v)
+    {% else %}
+    {% endif %}
+{% endfor %}

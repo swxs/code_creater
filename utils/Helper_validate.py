@@ -14,6 +14,7 @@ class RegType:
     DESC = r"#"
     META = r'meta'
     DEFAULT = r'default'
+    REQUIREMENT = r'requirement'
     REF = r'ref'
     NOCREATE = r'no_create'
     ENUM = r'enum'

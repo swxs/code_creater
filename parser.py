@@ -194,12 +194,16 @@ class Field(object):
             self.ttype = "str"
         self.field_type = self.CONVERTS[self.ttype][0]
         self.field_detail_type = self.CONVERTS[self.ttype][1]
-        self.values = {}
+        self.values = {
+            "requirement": False,
+        }
         self.descriptions = []
 
         for child in node.children:
             if Validate.start_with(child.name, RegType.DESC):
                 self.descriptions.append(Desc(child))
+            elif Validate.start_with(child.name, RegType.REQUIREMENT):
+                self.values["requirement"] = True
             elif Validate.start_with(child.name, RegType.DEFAULT):
                 self.values["default"] = child.sub[0]
             elif Validate.start_with(child.name, RegType.REF):
