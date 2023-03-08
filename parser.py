@@ -204,6 +204,10 @@ class Field(object):
                 self.descriptions.append(Desc(child))
             elif Validate.start_with(child.name, RegType.REQUIREMENT):
                 self.values["requirement"] = True
+            elif Validate.start_with(child.name, RegType.DEFAULT_CREATE):
+                self.values["default_create"] = child.sub[0]
+            elif Validate.start_with(child.name, RegType.DEFAULT_UPDATE):
+                self.values["default_update"] = child.sub[0]
             elif Validate.start_with(child.name, RegType.DEFAULT):
                 self.values["default"] = child.sub[0]
             elif Validate.start_with(child.name, RegType.REF):

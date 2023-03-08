@@ -4,47 +4,52 @@
 
 import logging
 
+from bson import ObjectId
 from fastapi import Body, Path, Query, APIRouter
 from fastapi.param_functions import Depends
 
-from web.dependencies.pagination import get_pagination
+from web.response import success
+from web.custom_types import OID
+from web.dependencies.pagination import PageSchema, get_pagination
 
 # 本模块方法
 from ..dao.{{klass.name | lower}} import {{klass.name}}
-from ..schemas.{{klass.name | lower}} import {{klass.name}}Schema
+from ..schemas.{{klass.name | lower}} import {{klass.name}}Schema, get_{{klass.name | lower}}_schema
 
 router = APIRouter()
 
 logger = logging.getLogger("main.apps.{{klass.name | lower}}.api.{{klass.name | lower}}")
 
 
-@router.get("/{{'{'}}{{klass.name | lower}}_id{{'}'}}")
-async def get_{{klass.name | lower}}(
-    {{klass.name | lower}}_id: str = Path(...),
-):
-    {{klass.name | lower}} = await {{klass.name}}.find(
-        finds={{klass.name | lower}}_id,
-    )
-    return {
-        "data": await {{klass.name | lower}}.to_front(),
-    }
-
-
-
 @router.get("/")
 async def get_{{klass.name | lower}}_list(
-    {{klass.name | lower}}_schema=Query(...),
-    pagination=Depends(get_pagination),
+    {{klass.name | lower}}_schema: {{klass.name}}Schema = Depends(get_{{klass.name | lower}}_schema),
+    pagination: PageSchema = Depends(get_pagination),
 ):
     {{klass.name | lower}}_list = await {{klass.name}}.search(
         searches={{klass.name | lower}}_schema.dict(exclude_unset=True),
         skip=pagination.skip,
         limit=pagination.limit,
     )
-    return {
-        "data": await {{klass.name | lower}}_list.to_front(),
-        "pagination": await {{klass.name | lower}}_list.get_pagination(),
-    }
+    return success(
+        {
+            "data": await {{klass.name | lower}}_list.to_dict(),
+        }
+    )
+
+
+@router.get("/{{'{'}}{{klass.name | lower}}_id{{'}'}}")
+async def get_{{klass.name | lower}}(
+    {{klass.name | lower}}_id: OID = Path(..., regex="[0-9a-f]{{'{'}}24{{'}'}}"),
+):
+    {{klass.name | lower}} = await {{klass.name}}.find_one(
+        finds={{'{'}}"id": ObjectId({{klass.name | lower}}_id){{'}'}},
+    )
+    return success(
+        {
+            "data": {{klass.name | lower}},
+        }
+    )
 
 
 @router.post("/")
@@ -54,60 +59,38 @@ async def create_{{klass.name | lower}}(
     {{klass.name | lower}} = await {{klass.name}}.create(
         params={{klass.name | lower}}_schema.dict(),
     )
-    return {
-        "data": await {{klass.name | lower}}.to_front(),
-    }
-
-
-@router.post("/{{'{'}}{{klass.name | lower}}_id{{'}'}}")
-async def copy_{{klass.name | lower}}(
-    {{klass.name | lower}}_id: str = Path(...),
-    {{klass.name | lower}}_schema: {{klass.name}}Schema = Body(...),
-):
-    {{klass.name | lower}} = await {{klass.name}}.copy(
-        finds={{klass.name | lower}}_id,
-        params={{klass.name | lower}}_schema.dict(exclude_defaults=True),
+    return success(
+        {
+            "data": {{klass.name | lower}},
+        }
     )
-    return {
-        "data": await {{klass.name | lower}}.to_front(),
-    }
 
 
 @router.put("/{{'{'}}{{klass.name | lower}}_id{{'}'}}")
-async def change_{{klass.name | lower}}(
-    {{klass.name | lower}}_id: str = Path(...),
+async def modify_{{klass.name | lower}}(
+    {{klass.name | lower}}_id: OID = Path(..., regex="[0-9a-f]{{'{'}}24{{'}'}}"),
     {{klass.name | lower}}_schema: {{klass.name}}Schema = Body(...),
 ):
-    {{klass.name | lower}} = await {{klass.name}}.update(
-        find={{klass.name | lower}}_id,
-        params={{klass.name | lower}}_schema.dict(),
+    {{klass.name | lower}} = await {{klass.name}}.update_one(
+        finds={{'{'}}"id": ObjectId({{klass.name | lower}}_id){{'}'}},
+        params={{klass.name | lower}}_schema.dict(exclude_defaults=True),
     )
-    return {
-        "data": await {{klass.name | lower}}.to_front(),
-    }
+    return success(
+        {
+            "data": {{klass.name | lower}},
+        }
+    )
 
 
 @router.delete("/{{'{'}}{{klass.name | lower}}_id{{'}'}}")
 async def delete_{{klass.name | lower}}(
-    {{klass.name | lower}}_id: str = Path(...),
+    {{klass.name | lower}}_id: OID = Path(..., regex="[0-9a-f]{{'{'}}24{{'}'}}"),
 ):
-    count = await {{klass.name}}.delete(
-        find={{klass.name | lower}}_id,
+    count = await {{klass.name}}.delete_one(
+        finds={{'{'}}"id": ObjectId({{klass.name | lower}}_id){{'}'}},
     )
-    return {
-        "count": count,
-    }
-
-
-@router.patch("/{{'{'}}{{klass.name | lower}}_id{{'}'}}")
-async def modify_{{klass.name | lower}}(
-    {{klass.name | lower}}_id: str = Path(...),
-    {{klass.name | lower}}_schema: {{klass.name}}Schema = Body(...),
-):
-    {{klass.name | lower}} = await {{klass.name}}.update(
-        find={{klass.name | lower}}_id,
-        params={{klass.name | lower}}_schema.dict(exclude_defaults=True),
+    return success(
+        {
+            "count": count,
+        }
     )
-    return {
-        "data": await {{klass.name | lower}}.to_front(),
-    }

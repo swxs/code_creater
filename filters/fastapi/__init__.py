@@ -28,13 +28,15 @@ def get_index_params(index):
     return ", ".join(params_list)
 
 
-def get_utils_params(field, klass) -> str:
+def get_dao_params(field, klass) -> str:
     params_list = list()
 
     field_type = field.field_type
     field_detail_type = field.field_detail_type
     enums = field.values.get("enums", None)
     default = field.values.get("default", None)
+    default_create = field.values.get("default_create", None)
+    default_update = field.values.get("default_update", None)
 
     if field.values.get("no_create"):
         params_list.append(f"create=False")
@@ -54,6 +56,10 @@ def get_utils_params(field, klass) -> str:
             params_list.append(f"default={float(default)}")
         else:
             params_list.append(f"default={default}")
+    if default_create is not None:
+        params_list.append(f"default_create={default_create}")
+    if default_update is not None:
+        params_list.append(f"default_update={default_update}")
     return ", ".join(params_list)
 
 
@@ -114,6 +120,8 @@ def get_model_params(field, klass) -> str:
     requirement = field.values.get("requirement", False)
     enums = field.values.get("enums", None)
     default = field.values.get("default", None)
+    default_create = field.values.get("default_create", None)
+    default_update = field.values.get("default_update", None)
 
     if field_type == "list":
         if field_detail_type == "str":
@@ -147,6 +155,7 @@ def get_model_params(field, klass) -> str:
             params_list.append(f"default={float(default)}")
         else:
             params_list.append(f"default={default}")
+
     # if "_description" in field:
     #     params_list.append(f"helper_text='{field['_description']}'")
     if params_list:

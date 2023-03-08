@@ -13,6 +13,8 @@ class RegType:
     APP = r'[Aa]pp'
     DESC = r"#"
     META = r'meta'
+    DEFAULT_CREATE = r'default_create'
+    DEFAULT_UPDATE = r'default_update'
     DEFAULT = r'default'
     REQUIREMENT = r'requirement'
     REF = r'ref'
