@@ -29,11 +29,6 @@ class MakerFastapi(Maker):
         dst_file = os.path.join(dst_path, 'dao', f'__init__.py')
         self.render_once(tmpl, {'app': app}, dst_file)
 
-        # 创建 app/utils 下的 __init__.py 文件, 只创建一次
-        tmpl = os.path.join(self.output.get('framework'), 'apps', '__init__.py.jinja2')
-        dst_file = os.path.join(dst_path, 'utils', f'__init__.py')
-        self.render_once(tmpl, {'app': app}, dst_file)
-
         # 创建 app/schemas 下的 __init__.py 文件, 只创建一次
         tmpl = os.path.join(self.output.get('framework'), 'apps', '__init__.py.jinja2')
         dst_file = os.path.join(dst_path, 'schemas', f'__init__.py')
@@ -47,12 +42,8 @@ class MakerFastapi(Maker):
         # 创建 app 下的 consts.py 文件, 记录映射信息
         tmpl = os.path.join(self.output.get('framework'), 'apps', 'consts.py.jinja2')
         dst_file = os.path.join(dst_path, 'consts.py')
-        self.render_once(tmpl, {'app': app}, dst_file)
-
-        # 创建 app 下的 model_consts.py 文件, 记录映射信息
-        tmpl = os.path.join(self.output.get('framework'), 'apps', 'model_consts.py.jinja2')
-        dst_file = os.path.join(dst_path, 'model_consts.py')
         self.render(tmpl, {'app': app}, dst_file)
+
 
     def make(self, app, klass):
         dst_path = get_dir_path(self.target, app.name_lower)
@@ -69,7 +60,7 @@ class MakerFastapi(Maker):
 
         # 创建 app/utils 下的 {app}.py 文件, 记录模块自定义操作信息, 只创建一次
         tmpl = os.path.join(self.output.get('framework'), 'apps', 'utils', 'util.py.jinja2')
-        dst_file = os.path.join(dst_path, 'utils', f'{klass.name_lower}.py')
+        dst_file = os.path.join(dst_path, f'{klass.name_lower}_utils.py')
         self.render_once(tmpl, {'app': app, 'klass': klass}, dst_file)
 
         # 创建 app/schemas 下的 {app}.py 文件, 记录模块自定义操作信息

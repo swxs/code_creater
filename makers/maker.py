@@ -9,6 +9,10 @@ import black
 import datetime
 from ..utils.utils import dict2objectdict
 
+import logging
+
+logger = logging.getLogger("main")
+
 
 class Maker(object, metaclass=abc.ABCMeta):
     def __init__(self, env, root, task, output):
@@ -63,17 +67,22 @@ class Maker(object, metaclass=abc.ABCMeta):
                 return
 
         # 添加部分常用方法
-        adict.update(dict(current_time=f"{datetime.datetime.now():%Y-%m-%d %H:%M:%S}"))
-        adict.update(**self.params_dict)
-        tmpl = tmpl.replace('\\', '/')
-        code = self.env.get_template(tmpl).render(**adict)
-        if not os.path.exists(os.path.dirname(dst_file)):
-            os.makedirs(os.path.dirname(dst_file))
-        # 这边通过判断文件类型，决定应用哪个formatter到代码上
-        _, ext = os.path.splitext(dst_file)
-        if ext == ".py":
-            code = black.format_str(code, mode=black.Mode(line_length=120, string_normalization=False, is_pyi=False))
-        open(dst_file, 'w', encoding='utf-8').write(code)
+        try:
+            adict.update(dict(current_time=f"{datetime.datetime.now():%Y-%m-%d %H:%M:%S}"))
+            adict.update(**self.params_dict)
+            tmpl = tmpl.replace('\\', '/')
+            code = self.env.get_template(tmpl).render(**adict)
+            if not os.path.exists(os.path.dirname(dst_file)):
+                os.makedirs(os.path.dirname(dst_file))
+            # 这边通过判断文件类型，决定应用哪个formatter到代码上
+            _, ext = os.path.splitext(dst_file)
+            if ext == ".py":
+                code = black.format_str(
+                    code, mode=black.Mode(line_length=120, string_normalization=False, is_pyi=False)
+                )
+            open(dst_file, 'w', encoding='utf-8').write(code)
+        except Exception as e:
+            logger.exception(f"创建异常!")
 
     def render(self, tmpl, adict, dst_file):
         adict.update(

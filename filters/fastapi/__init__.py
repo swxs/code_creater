@@ -34,43 +34,8 @@ def get_dao_params(field, klass) -> str:
     field_type = field.field_type
     field_detail_type = field.field_detail_type
     enums = field.values.get("enums", None)
-    default = field.values.get("default", None)
     default_create = field.values.get("default_create", None)
     default_update = field.values.get("default_update", None)
-
-    if field.values.get("no_create"):
-        params_list.append(f"create=False")
-
-    if enums:
-        params_list.append(f"enums=consts.{get_enum_list(field, klass)}")
-    if default is not None:
-        if default in ('False', 'false') and field_type in ("bool",):
-            params_list.append(f"default=False")
-        elif default in ('True', 'true') and field_type in ("bool",):
-            params_list.append(f"default=True")
-        elif enums:
-            params_list.append(f"default=consts.{get_enum_upper(default, field, klass)}")
-        elif field_type in ("int",):
-            params_list.append(f"default={int(default)}")
-        elif field_type in ("float",):
-            params_list.append(f"default={float(default)}")
-        else:
-            params_list.append(f"default={default}")
-    if default_create is not None:
-        params_list.append(f"default_create={default_create}")
-    if default_update is not None:
-        params_list.append(f"default_update={default_update}")
-    return ", ".join(params_list)
-
-
-def get_dao_params(field, klass) -> str:
-    params_list = list()
-
-    field_type = field.field_type
-    field_detail_type = field.field_detail_type
-    requirement = field.values.get("requirement", False)
-    enums = field.values.get("enums", None)
-    default = field.values.get("default", None)
 
     if field_type == "list":
         if field_detail_type == "str":
@@ -84,26 +49,41 @@ def get_dao_params(field, klass) -> str:
         else:
             pass
 
-    if requirement:
-        params_list.append(f"allow_none=False")
-    else:
-        params_list.append(f"allow_none=True")
-
     if enums:
         params_list.append(f"enums=consts.{get_enum_list(field, klass)}")
-    if default is not None:
-        if default in ('False', 'false') and field_type in ("bool",):
-            params_list.append(f"default=False")
-        elif default in ('True', 'true') and field_type in ("bool",):
-            params_list.append(f"default=True")
+
+    if default_create is not None:
+        if default_create in ('False', 'false') and field_type in ("bool",):
+            params_list.append(f"default_create=False")
+        elif default_create in ('True', 'true') and field_type in ("bool",):
+            params_list.append(f"default_create=True")
+        elif "{" in default_create and "}" in default_create:
+            params_list.append(f"default_create={default_create[1:-1]}")
         elif enums:
-            params_list.append(f"default=consts.{get_enum_upper(default, field, klass)}")
+            params_list.append(f"default_create=consts.{get_enum_upper(default_create, field, klass)}")
         elif field_type in ("int",):
-            params_list.append(f"default={int(default)}")
+            params_list.append(f"default_create={int(default_create)}")
         elif field_type in ("float",):
-            params_list.append(f"default={float(default)}")
+            params_list.append(f"default_create={float(default_create)}")
         else:
-            params_list.append(f"default={default}")
+            params_list.append(f"default_create={default_create}")
+
+    if default_update is not None:
+        if default_update in ('False', 'false') and field_type in ("bool",):
+            params_list.append(f"default_update=False")
+        elif default_update in ('True', 'true') and field_type in ("bool",):
+            params_list.append(f"default_update=True")
+        elif "{" in default_update and "}" in default_update:
+            params_list.append(f"default_update={default_update[1:-1]}")
+        elif enums:
+            params_list.append(f"default_update=consts.{get_enum_upper(default_update, field, klass)}")
+        elif field_type in ("int",):
+            params_list.append(f"default_update={int(default_update)}")
+        elif field_type in ("float",):
+            params_list.append(f"default_update={float(default_update)}")
+        else:
+            params_list.append(f"default_update={default_update}")
+
     # if "_description" in field:
     #     params_list.append(f"helper_text='{field['_description']}'")
     if params_list:
@@ -117,11 +97,25 @@ def get_model_params(field, klass) -> str:
 
     field_type = field.field_type
     field_detail_type = field.field_detail_type
-    requirement = field.values.get("requirement", False)
-    enums = field.values.get("enums", None)
-    default = field.values.get("default", None)
-    default_create = field.values.get("default_create", None)
-    default_update = field.values.get("default_update", None)
+
+    required = field.values.get("required", False)
+    unique = field.values.get("unique", False)
+    nullable = field.values.get("nullable", False)
+
+    if required:
+        params_list.append(f"required=True")
+    else:
+        params_list.append(f"required=False")
+
+    if unique:
+        params_list.append(f"unique=True")
+    else:
+        params_list.append(f"unique=False")
+
+    if nullable:
+        params_list.append(f"allow_none=True")
+    else:
+        params_list.append(f"allow_none=False")
 
     if field_type == "list":
         if field_detail_type == "str":
@@ -135,29 +129,6 @@ def get_model_params(field, klass) -> str:
         else:
             pass
 
-    if requirement:
-        params_list.append(f"requirement=True")
-    else:
-        params_list.append(f"requirement=False")
-
-    if enums:
-        params_list.append(f"enums=consts.{get_enum_list(field, klass)}")
-    if default is not None:
-        if default in ('False', 'false') and field_type in ("bool",):
-            params_list.append(f"default=False")
-        elif default in ('True', 'true') and field_type in ("bool",):
-            params_list.append(f"default=True")
-        elif enums:
-            params_list.append(f"default=consts.{get_enum_upper(default, field, klass)}")
-        elif field_type in ("int",):
-            params_list.append(f"default={int(default)}")
-        elif field_type in ("float",):
-            params_list.append(f"default={float(default)}")
-        else:
-            params_list.append(f"default={default}")
-
-    # if "_description" in field:
-    #     params_list.append(f"helper_text='{field['_description']}'")
     if params_list:
         return ", ".join(params_list) + ","
     else:

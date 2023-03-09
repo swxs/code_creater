@@ -163,6 +163,7 @@ class Field(object):
         "float": ("float", "float"),
         "bool": ("boolean", "boolean"),
         "boolean": ("boolean", "boolean"),
+        "primary": ("primary", "objectid"),
         "id": ("objectid", "objectid"),
         "objectid": ("objectid", "objectid"),
         "object_id": ("objectid", "objectid"),
@@ -188,6 +189,7 @@ class Field(object):
             节点
         """
         self.name = lower(node.name)
+        self.virtual = 0
         if node.sub:
             self.ttype = lower(node.sub[0])
         else:
@@ -195,25 +197,31 @@ class Field(object):
         self.field_type = self.CONVERTS[self.ttype][0]
         self.field_detail_type = self.CONVERTS[self.ttype][1]
         self.values = {
-            "requirement": False,
+            "required": False,
+            "unique": False,
+            "nullable": False,
         }
         self.descriptions = []
 
         for child in node.children:
             if Validate.start_with(child.name, RegType.DESC):
                 self.descriptions.append(Desc(child))
-            elif Validate.start_with(child.name, RegType.REQUIREMENT):
-                self.values["requirement"] = True
+            elif Validate.start_with(child.name, RegType.REQUIRED):
+                self.values["required"] = True
+            elif Validate.start_with(child.name, RegType.UNIQUE):
+                self.values["unique"] = True
+            elif Validate.start_with(child.name, RegType.NULLABLE):
+                self.values["nullable"] = True
+            elif Validate.start_with(child.name, RegType.VIRTUAL):
+                self.virtual = int(child.sub[0])
+            elif Validate.start_with(child.name, RegType.CONVART):
+                self.values["convert"] = child.sub[0]
             elif Validate.start_with(child.name, RegType.DEFAULT_CREATE):
                 self.values["default_create"] = child.sub[0]
             elif Validate.start_with(child.name, RegType.DEFAULT_UPDATE):
                 self.values["default_update"] = child.sub[0]
-            elif Validate.start_with(child.name, RegType.DEFAULT):
-                self.values["default"] = child.sub[0]
             elif Validate.start_with(child.name, RegType.REF):
                 self.values["ref"] = child.sub[0]
-            elif Validate.start_with(child.name, RegType.NOCREATE):
-                self.values["no_create"] = True
             elif Validate.start_with(child.name, RegType.ENUM):
                 enum_list = []
                 for enum_child in child.children:
