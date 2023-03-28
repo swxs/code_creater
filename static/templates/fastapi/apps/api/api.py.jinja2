@@ -10,6 +10,7 @@ from fastapi.param_functions import Depends
 
 from web.response import success
 from web.custom_types import OID
+from web.dependencies.token import TokenSchema, get_token
 from web.dependencies.pagination import PageSchema, get_pagination
 
 # 本模块方法
@@ -23,6 +24,7 @@ logger = logging.getLogger("main.apps.{{klass.name | lower}}.api.{{klass.name | 
 
 @router.get("/")
 async def get_{{klass.name | lower}}_list(
+    token_schema: TokenSchema = Depends(get_token),
     {{klass.name | lower}}_schema: {{klass.name}}Schema = Depends(get_{{klass.name | lower}}_schema),
     pagination: PageSchema = Depends(get_pagination),
 ):
@@ -40,6 +42,7 @@ async def get_{{klass.name | lower}}_list(
 
 @router.get("/{{'{'}}{{klass.name | lower}}_id{{'}'}}")
 async def get_{{klass.name | lower}}(
+    token_schema: TokenSchema = Depends(get_token),
     {{klass.name | lower}}_id: OID = Path(..., regex="[0-9a-f]{{'{'}}24{{'}'}}"),
 ):
     {{klass.name | lower}} = await {{klass.name}}.find_one(
@@ -54,10 +57,11 @@ async def get_{{klass.name | lower}}(
 
 @router.post("/")
 async def create_{{klass.name | lower}}(
+    token_schema: TokenSchema = Depends(get_token),
     {{klass.name | lower}}_schema: {{klass.name}}Schema = Body(...),
 ):
     {{klass.name | lower}} = await {{klass.name}}.create(
-        params={{klass.name | lower}}_schema.dict(),
+        params={{klass.name | lower}}_schema.dict(exclude_defaults=True),
     )
     return success(
         {
@@ -68,6 +72,7 @@ async def create_{{klass.name | lower}}(
 
 @router.put("/{{'{'}}{{klass.name | lower}}_id{{'}'}}")
 async def modify_{{klass.name | lower}}(
+    token_schema: TokenSchema = Depends(get_token),
     {{klass.name | lower}}_id: OID = Path(..., regex="[0-9a-f]{{'{'}}24{{'}'}}"),
     {{klass.name | lower}}_schema: {{klass.name}}Schema = Body(...),
 ):
@@ -84,6 +89,7 @@ async def modify_{{klass.name | lower}}(
 
 @router.delete("/{{'{'}}{{klass.name | lower}}_id{{'}'}}")
 async def delete_{{klass.name | lower}}(
+    token_schema: TokenSchema = Depends(get_token),
     {{klass.name | lower}}_id: OID = Path(..., regex="[0-9a-f]{{'{'}}24{{'}'}}"),
 ):
     count = await {{klass.name}}.delete_one(
