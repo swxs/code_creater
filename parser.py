@@ -116,12 +116,15 @@ class Meta(object):
                     self.values["index_list"] = []
                     for index_child in child.children:
                         index = dict(
-                            field_name_list=[index_child.name, *index_child.sub],
-                            uniq=False,
+                            field_name_list=index_child.name,
+                            is_unique=False,
+                            is_sparse=False,
                         )
                         for params in index_child.children:
-                            if Validate.check(params.name, f"uniq"):
-                                index["uniq"] = True
+                            if Validate.check(params.name, f"unique"):
+                                index["is_unique"] = True
+                            if Validate.check(params.name, f"sparse"):
+                                index["is_sparse"] = True
                         self.values["index_list"].append(index)
                 else:
                     self.values[child.name] = Meta(child).values

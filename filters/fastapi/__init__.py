@@ -23,8 +23,9 @@ def get_enum_list(field, klass):
 
 def get_index_params(index):
     params_list = list()
-    for field_name in index['field_name_list']:
-        params_list.append(f"'{field_name}'")
+    field_name_list = index['field_name_list'].replace("，", ",").split(",")
+    for field_name in field_name_list:
+        params_list.append(f"'{field_name.strip()}'")
     return ", ".join(params_list)
 
 
@@ -99,18 +100,12 @@ def get_model_params(field, klass) -> str:
     field_detail_type = field.field_detail_type
 
     required = field.values.get("required", False)
-    unique = field.values.get("unique", False)
     nullable = field.values.get("nullable", False)
 
     if required:
         params_list.append(f"required=True")
     else:
         params_list.append(f"required=False")
-
-    if unique:
-        params_list.append(f"unique=True")
-    else:
-        params_list.append(f"unique=False")
 
     if nullable:
         params_list.append(f"allow_none=True")

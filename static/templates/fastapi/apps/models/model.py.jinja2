@@ -42,7 +42,10 @@ class {{klass.name}}(Document):
             {% for index in klass.meta.values.get("index_list") %}
             {
                 'key': [{{index | get_index_params}}],
-                {% if index["is_uniq"] %}
+                {% if index["is_sparse"] %}
+                'sparse': True,
+                {% endif %}
+                {% if index["is_unique"] %}
                 'unique': True,
                 {% endif %}
             },
