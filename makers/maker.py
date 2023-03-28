@@ -6,6 +6,7 @@
 import os
 import abc
 import black
+import isort
 import datetime
 from ..utils.utils import dict2objectdict
 
@@ -78,8 +79,27 @@ class Maker(object, metaclass=abc.ABCMeta):
             _, ext = os.path.splitext(dst_file)
             if ext == ".py":
                 code = black.format_str(
-                    code, mode=black.Mode(line_length=120, string_normalization=False, is_pyi=False)
+                    code,
+                    mode=black.Mode(
+                        line_length=120,
+                        string_normalization=False,
+                        is_pyi=False,
+                    ),
                 )
+                code = isort.code(
+                    code,
+                    config=isort.Config(
+                        profile="black",
+                        length_sort=True,
+                        case_sensitive=True,
+                        group_by_package=True,
+                        combine_as_imports=True,
+                        sections=['FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'COMMONS', 'LOCALFOLDER'],
+                        known_commons=['commons'],
+                        import_headings={"commons": "通用方法", "localfolder": "本模块方法"},
+                    ),
+                )
+
             open(dst_file, 'w', encoding='utf-8').write(code)
         except Exception as e:
             logger.exception(f"创建异常!")
