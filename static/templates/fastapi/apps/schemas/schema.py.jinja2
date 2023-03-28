@@ -40,25 +40,6 @@ class {{klass.name}}Schema(pydantic.BaseModel):
     {% endif %}
 {% endfor %}
 
-{% for field in klass.fields %}
-    {% if field.virtual < 1 %}
-        {% if field.field_type == "datetime" %}
-        {% elif field.field_type == "str" %}
-        {% elif field.field_type == "int" %}
-        {% elif field.field_type == "list" %}
-        {% elif field.field_type == "dict" %}
-        {% elif field.field_type == "boolean" %}
-        {% elif field.field_type == "objectid" %}
-    @pydantic.validator('{{field.name}}')
-    def {{field.name}}_objectid(cls, v):
-        if isinstance(v, str):
-            return ObjectId(v)
-        return ObjectId(v)
-        {% else %}
-        {% endif %}
-    {% endif %}
-{% endfor %}
-
 
 async def get_{{klass.name | lower}}_schema(
 {% for field in klass.fields %}
