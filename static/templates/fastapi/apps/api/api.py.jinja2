@@ -28,11 +28,12 @@ async def get_{{klass.name | lower}}_list(
     {{klass.name | lower}}_schema: {{klass.name}}Schema = Depends(get_{{klass.name | lower}}_schema),
     pagination: PageSchema = Depends(get_pagination),
 ):
-    {{klass.name | lower}}_list = await {{klass.name}}.search(
+    {{klass.name | lower}}_list = (await {{klass.name}}.search(
         searches={{klass.name | lower}}_schema.dict(exclude_unset=True),
         skip=pagination.skip,
         limit=pagination.limit,
-    )
+    )).order_by(pagination.order_by)
+
     return success(
         {
             "data": await {{klass.name | lower}}_list.to_dict(),
@@ -48,6 +49,7 @@ async def get_{{klass.name | lower}}(
     {{klass.name | lower}} = await {{klass.name}}.find_one(
         finds={{'{'}}"id": ObjectId({{klass.name | lower}}_id){{'}'}},
     )
+
     return success(
         {
             "data": {{klass.name | lower}},
@@ -63,6 +65,7 @@ async def create_{{klass.name | lower}}(
     {{klass.name | lower}} = await {{klass.name}}.create(
         params={{klass.name | lower}}_schema.dict(exclude_defaults=True),
     )
+
     return success(
         {
             "data": {{klass.name | lower}},
@@ -80,6 +83,7 @@ async def modify_{{klass.name | lower}}(
         finds={{'{'}}"id": ObjectId({{klass.name | lower}}_id){{'}'}},
         params={{klass.name | lower}}_schema.dict(exclude_defaults=True),
     )
+
     return success(
         {
             "data": {{klass.name | lower}},
@@ -95,6 +99,7 @@ async def delete_{{klass.name | lower}}(
     count = await {{klass.name}}.delete_one(
         finds={{'{'}}"id": ObjectId({{klass.name | lower}}_id){{'}'}},
     )
+    
     return success(
         {
             "count": count,
