@@ -1,0 +1,56 @@
+# -*- coding: utf-8 -*-
+# @FILE    : models/{{klass.name | lower}}.py
+# @AUTH    : code_creater
+
+from umongo import Document, fields
+
+import core
+
+
+@core.mongodb_instance.register
+class {{klass.name}}(Document):
+{% for field in klass.fields %}
+    {% if field.virtual < 2 %}
+        {% if field.field_type == "primary" %}
+    {{field.name}} = fields.ObjectIdField({{field|get_model_params(klass)}})
+        {% elif field.field_type == "objectid" %}
+    {{field.name}} = fields.ObjectIdField({{field|get_model_params(klass)}})
+        {% elif field.field_type == "str" %}
+    {{field.name}} = fields.StringField({{field|get_model_params(klass)}})
+        {% elif field.field_type == "boolean" %}
+    {{field.name}} = fields.BooleanField({{field|get_model_params(klass)}})    
+        {% elif field.field_type == "int" %}
+    {{field.name}} = fields.IntField({{field|get_model_params(klass)}})
+        {% elif field.field_type == "float" %}
+    {{field.name}} = fields.FloatField({{field|get_model_params(klass)}})
+        {% elif field.field_type == "datetime" %}
+    {{field.name}} = fields.DateTimeField({{field|get_model_params(klass)}})
+        {% elif field.field_type == "list" %}
+    {{field.name}} = fields.ListField({{field|get_model_params(klass)}})
+        {% elif field.field_type == "dict" %}
+    {{field.name}} = fields.DictField({{field|get_model_params(klass)}})
+        {% else %}
+    {{field.name}} = fields.StringField({{field|get_model_params(klass)}})
+        {% endif %}
+    {% endif %}
+{% endfor %}
+{% if klass.meta.values %}
+
+    class Meta:
+        {% if klass.meta.values.get("index_list") %}
+        indexes = [
+            {% for index in klass.meta.values.get("index_list") %}
+            {
+                'key': [{{index | get_index_params}}],
+                {% if index["is_sparse"] %}
+                'sparse': True,
+                {% endif %}
+                {% if index["is_unique"] %}
+                'unique': True,
+                {% endif %}
+            },
+            {% endfor %}
+        ]
+        {% endif %}
+        pass
+{% endif %}

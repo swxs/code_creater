@@ -6,7 +6,7 @@ import sys
 from operator import ge
 import unittest
 import functools
-import settings
+from .. import core
 
 
 class MyLoader(unittest.TestLoader):
@@ -70,7 +70,7 @@ def report_to_html(suite):
     import HTMLTestRunner
 
     now = datetime.datetime.now()
-    path = settings.get_dir_path(settings.SITE_ROOT, "tests", "reports")
+    path = os.path.join(core.path.SITE_ROOT, "tests", "reports")
     report_file = os.path.join(path, f"{now:%Y_%m_%d_%H_%M_%S}_report.html")
 
     # 执行测试

@@ -7,12 +7,12 @@
 import {{import.name}}
     {% endfor %}
 {% endif %}
+import logging
 from dao import fields
 from ..BaseDAO import BaseDAO
 from . import consts
-from commons.Utils.log_utils import getLogger
 
-log = getLogger("dao")
+logger = logging.getLogger("main.{{app.name | lower}}.dao")
 
 {% for klass in app.klasses %}
 
@@ -23,21 +23,21 @@ class {{klass.name}}(BaseDAO):
     {% endif %}
     {% for field in klass.fields %}
         {% if field.field_type == "datetime" %}
-    {{field.name}} = fields.DateTimeField({{field|get_utils_params(klass)}})
+    {{field.name}} = fields.DateTimeField({{field|get_dao_params(klass)}})
         {% elif field.field_type == "str" %}
-    {{field.name}} = fields.StringField({{field|get_utils_params(klass)}})
+    {{field.name}} = fields.StringField({{field|get_dao_params(klass)}})
         {% elif field.field_type == "int" %}
-    {{field.name}} = fields.IntField({{field|get_utils_params(klass)}})
+    {{field.name}} = fields.IntField({{field|get_dao_params(klass)}})
         {% elif field.field_type == "list" %}
-    {{field.name}} = fields.ListField({{field|get_utils_params(klass)}})
+    {{field.name}} = fields.ListField({{field|get_dao_params(klass)}})
         {% elif field.field_type == "dict" %}
-    {{field.name}} = fields.DictField({{field|get_utils_params(klass)}})
+    {{field.name}} = fields.DictField({{field|get_dao_params(klass)}})
         {% elif field.field_type == "boolean" %}
-    {{field.name}} = fields.BooleanField({{field|get_utils_params(klass)}})
+    {{field.name}} = fields.BooleanField({{field|get_dao_params(klass)}})
         {% elif field.field_type == "objectid" %}
-    {{field.name}} = fields.ObjectIdField({{field|get_utils_params(klass)}})
+    {{field.name}} = fields.ObjectIdField({{field|get_dao_params(klass)}})
         {% else %}
-    {{field.name}} = fields.StringField({{field|get_utils_params(klass)}})
+    {{field.name}} = fields.StringField({{field|get_dao_params(klass)}})
         {% endif %}
     {% endfor %}
 

@@ -1,0 +1,107 @@
+# -*- coding: utf-8 -*-
+# @File    : api/{{klass.name | lower}}.py
+# @AUTH    : code_creater
+
+import logging
+
+from bson import ObjectId
+from fastapi import Body, Path, Query, APIRouter
+from fastapi.param_functions import Depends
+
+from web.response import success
+from web.custom_types import OID
+from web.dependencies.token import TokenSchema, get_token
+from web.dependencies.pagination import PageSchema, get_pagination
+
+# 本模块方法
+from ..dao.{{klass.name | lower}} import {{klass.name}}
+from ..schemas.{{klass.name | lower}} import {{klass.name}}Schema, get_{{klass.name | lower}}_schema
+
+router = APIRouter()
+
+logger = logging.getLogger("main.apps.{{klass.name | lower}}.api.{{klass.name | lower}}")
+
+
+@router.get("/")
+async def get_{{klass.name | lower}}_list(
+    token_schema: TokenSchema = Depends(get_token),
+    {{klass.name | lower}}_schema: {{klass.name}}Schema = Depends(get_{{klass.name | lower}}_schema),
+    pagination: PageSchema = Depends(get_pagination),
+):
+    {{klass.name | lower}}_list = (await {{klass.name}}.search(
+        searches={{klass.name | lower}}_schema.dict(exclude_unset=True),
+        skip=pagination.skip,
+        limit=pagination.limit,
+    )).order_by(pagination.order_by)
+
+    return success(
+        {
+            "data": await {{klass.name | lower}}_list.to_dict(),
+        }
+    )
+
+
+@router.get("/{{'{'}}{{klass.name | lower}}_id{{'}'}}")
+async def get_{{klass.name | lower}}(
+    token_schema: TokenSchema = Depends(get_token),
+    {{klass.name | lower}}_id: OID = Path(..., regex="[0-9a-f]{{'{'}}24{{'}'}}"),
+):
+    {{klass.name | lower}} = await {{klass.name}}.find_one(
+        finds={{'{'}}"id": ObjectId({{klass.name | lower}}_id){{'}'}},
+    )
+
+    return success(
+        {
+            "data": {{klass.name | lower}},
+        }
+    )
+
+
+@router.post("/")
+async def create_{{klass.name | lower}}(
+    token_schema: TokenSchema = Depends(get_token),
+    {{klass.name | lower}}_schema: {{klass.name}}Schema = Body(...),
+):
+    {{klass.name | lower}} = await {{klass.name}}.create(
+        params={{klass.name | lower}}_schema.dict(exclude_defaults=True),
+    )
+
+    return success(
+        {
+            "data": {{klass.name | lower}},
+        }
+    )
+
+
+@router.put("/{{'{'}}{{klass.name | lower}}_id{{'}'}}")
+async def modify_{{klass.name | lower}}(
+    token_schema: TokenSchema = Depends(get_token),
+    {{klass.name | lower}}_id: OID = Path(..., regex="[0-9a-f]{{'{'}}24{{'}'}}"),
+    {{klass.name | lower}}_schema: {{klass.name}}Schema = Body(...),
+):
+    {{klass.name | lower}} = await {{klass.name}}.update_one(
+        finds={{'{'}}"id": ObjectId({{klass.name | lower}}_id){{'}'}},
+        params={{klass.name | lower}}_schema.dict(exclude_defaults=True),
+    )
+
+    return success(
+        {
+            "data": {{klass.name | lower}},
+        }
+    )
+
+
+@router.delete("/{{'{'}}{{klass.name | lower}}_id{{'}'}}")
+async def delete_{{klass.name | lower}}(
+    token_schema: TokenSchema = Depends(get_token),
+    {{klass.name | lower}}_id: OID = Path(..., regex="[0-9a-f]{{'{'}}24{{'}'}}"),
+):
+    count = await {{klass.name}}.delete_one(
+        finds={{'{'}}"id": ObjectId({{klass.name | lower}}_id){{'}'}},
+    )
+    
+    return success(
+        {
+            "count": count,
+        }
+    )

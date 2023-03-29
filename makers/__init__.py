@@ -5,7 +5,8 @@
 
 import os
 import sys
-import settings
+
+from .. import core
 from ..utils.Helper_productor import Productor
 from .maker import Maker
 
@@ -23,4 +24,4 @@ class MakerProductor(Productor):
 
 
 base_path = os.path.dirname(os.path.abspath(__file__))
-productor = MakerProductor(settings.SITE_ROOT, base_path, Maker, Maker, "*.py")
+maker_productor = MakerProductor(core.path.SITE_ROOT, base_path, Maker, Maker, "*.py")

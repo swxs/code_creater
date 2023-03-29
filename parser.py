@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# @File    : core.py
+# @File    : parser.py
 # @AUTH    : swxs
 # @Time    : 2019/3/25 14:13
 
@@ -44,6 +44,7 @@ class Root(object):
 class App(object):
     def __init__(self, node):
         self.name = title(node.sub[0])
+        self.name_lower = lower(node.sub[0])
         self.klasses = []
         self.meta = Meta(None)
         self.descriptions = []
@@ -115,12 +116,15 @@ class Meta(object):
                     self.values["index_list"] = []
                     for index_child in child.children:
                         index = dict(
-                            field_name_list=[index_child.name, *index_child.sub],
-                            uniq=False,
+                            field_name_list=index_child.name,
+                            is_unique=False,
+                            is_sparse=False,
                         )
                         for params in index_child.children:
-                            if Validate.check(params.name, f"uniq"):
-                                index["uniq"] = True
+                            if Validate.check(params.name, f"unique"):
+                                index["is_unique"] = True
+                            if Validate.check(params.name, f"sparse"):
+                                index["is_sparse"] = True
                         self.values["index_list"].append(index)
                 else:
                     self.values[child.name] = Meta(child).values
@@ -132,6 +136,7 @@ class Meta(object):
 class Klass(object):
     def __init__(self, node):
         self.name = title(node.name)
+        self.name_lower = lower(node.name)
         self.fields = []
         self.meta = Meta(None)
         self.descriptions = []
@@ -161,6 +166,7 @@ class Field(object):
         "float": ("float", "float"),
         "bool": ("boolean", "boolean"),
         "boolean": ("boolean", "boolean"),
+        "primary": ("primary", "objectid"),
         "id": ("objectid", "objectid"),
         "objectid": ("objectid", "objectid"),
         "object_id": ("objectid", "objectid"),
@@ -186,24 +192,39 @@ class Field(object):
             节点
         """
         self.name = lower(node.name)
+        self.virtual = 0
         if node.sub:
             self.ttype = lower(node.sub[0])
         else:
             self.ttype = "str"
         self.field_type = self.CONVERTS[self.ttype][0]
         self.field_detail_type = self.CONVERTS[self.ttype][1]
-        self.values = {}
+        self.values = {
+            "required": False,
+            "unique": False,
+            "nullable": False,
+        }
         self.descriptions = []
 
         for child in node.children:
             if Validate.start_with(child.name, RegType.DESC):
                 self.descriptions.append(Desc(child))
-            elif Validate.start_with(child.name, RegType.DEFAULT):
-                self.values["default"] = child.sub[0]
+            elif Validate.start_with(child.name, RegType.REQUIRED):
+                self.values["required"] = True
+            elif Validate.start_with(child.name, RegType.UNIQUE):
+                self.values["unique"] = True
+            elif Validate.start_with(child.name, RegType.NULLABLE):
+                self.values["nullable"] = True
+            elif Validate.start_with(child.name, RegType.VIRTUAL):
+                self.virtual = int(child.sub[0])
+            elif Validate.start_with(child.name, RegType.CONVART):
+                self.values["convert"] = child.sub[0]
+            elif Validate.start_with(child.name, RegType.DEFAULT_CREATE):
+                self.values["default_create"] = child.sub[0]
+            elif Validate.start_with(child.name, RegType.DEFAULT_UPDATE):
+                self.values["default_update"] = child.sub[0]
             elif Validate.start_with(child.name, RegType.REF):
                 self.values["ref"] = child.sub[0]
-            elif Validate.start_with(child.name, RegType.NOCREATE):
-                self.values["no_create"] = True
             elif Validate.start_with(child.name, RegType.ENUM):
                 enum_list = []
                 for enum_child in child.children:

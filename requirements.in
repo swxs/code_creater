@@ -3,3 +3,4 @@ PyYAML
 xmindparser
 Jinja2
 black
+isort
