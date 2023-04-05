@@ -26,13 +26,13 @@ logger = logging.getLogger("main.apps.{{klass.name | lower}}.api.{{klass.name | 
 async def get_{{klass.name | lower}}_list(
     token_schema: TokenSchema = Depends(get_token),
     {{klass.name | lower}}_schema: {{klass.name}}Schema = Depends(get_{{klass.name | lower}}_schema),
-    pagination: PageSchema = Depends(get_pagination),
+    page_schema: PageSchema = Depends(get_pagination),
 ):
     {{klass.name | lower}}_list = (await {{klass.name}}.search(
         searches={{klass.name | lower}}_schema.dict(exclude_unset=True),
-        skip=pagination.skip,
-        limit=pagination.limit,
-    )).order_by(pagination.order_by)
+        skip=page_schema.skip,
+        limit=page_schema.limit,
+    )).order_by(page_schema.order_by)
 
     pagination = PaginationSchema(
         total=await {{klass.name}}.count(
