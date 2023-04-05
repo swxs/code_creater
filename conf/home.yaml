@@ -1,0 +1,52 @@
+tasks:
+  - input: "用户.xmind"
+    params:
+      aio: true
+    key:
+      USERAUTHTTYPE:
+        - key: 手机号
+          value: phone
+        - key: 邮箱
+          value: email
+    output:
+      - framework: fastapi
+        target: D:\codehouse\home\apps
+        formatter: black
+      - framework: markfile
+        target: D:\codehouse\home\docs
+
+  - input: "密码控制.xmind"
+    params:
+      aio: true
+    output:
+      - framework: fastapi
+        target: D:\codehouse\home\apps
+        formatter: black
+      - framework: markfile
+        target: D:\codehouse\home\docs
+      - framework: element-ui
+        target: D:\codehouse\openapi_passwordlock
+
+  - input: "备忘录.xmind"
+    params:
+      aio: true
+    output:
+      - framework: fastapi
+        target: D:\codehouse\home\apps
+        formatter: black
+      - framework: markfile
+        target: D:\codehouse\home\docs
+      - framework: element-ui
+        target: D:\codehouse\openapi_memo
+
+  - input: "单词本.xmind"
+    params:
+      aio: true
+    output:
+      - framework: fastapi
+        target: D:\codehouse\home\apps
+        formatter: black
+      - framework: markfile
+        target: D:\codehouse\home\docs
+      - framework: element-ui
+        target: D:\codehouse\openapi_wordbook
