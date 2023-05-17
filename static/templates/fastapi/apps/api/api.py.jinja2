@@ -19,7 +19,7 @@ from ..schemas.{{klass.name | lower}} import {{klass.name}}Schema, get_{{klass.n
 
 router = APIRouter()
 
-logger = logging.getLogger("main.apps.{{klass.name | lower}}.api.{{klass.name | lower}}")
+logger = logging.getLogger("main.apps.{{app.name | lower}}.api.{{klass.name | lower}}")
 
 
 @router.get("/")

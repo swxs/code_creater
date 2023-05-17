@@ -8,6 +8,8 @@ tasks:
           value: phone
         - key: 邮箱
           value: email
+        - key: 微信
+          value: wechat
     output:
       - framework: fastapi
         target: D:\codehouse\home\apps
@@ -22,8 +24,6 @@ tasks:
       - framework: fastapi
         target: D:\codehouse\home\apps
         formatter: black
-      - framework: markfile
-        target: D:\codehouse\home\docs
       - framework: element-ui
         target: D:\codehouse\openapi_passwordlock
 
@@ -34,8 +34,6 @@ tasks:
       - framework: fastapi
         target: D:\codehouse\home\apps
         formatter: black
-      - framework: markfile
-        target: D:\codehouse\home\docs
       - framework: element-ui
         target: D:\codehouse\openapi_memo
 
@@ -46,7 +44,13 @@ tasks:
       - framework: fastapi
         target: D:\codehouse\home\apps
         formatter: black
-      - framework: markfile
-        target: D:\codehouse\home\docs
       - framework: element-ui
         target: D:\codehouse\openapi_wordbook
+
+  - input: "微信公众号.xmind"
+    params:
+      aio: true
+    output:
+      - framework: fastapi
+        target: D:\codehouse\home\apps
+        formatter: black
