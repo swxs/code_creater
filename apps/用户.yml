@@ -1,0 +1,42 @@
+app:
+  name: System
+  desc: 本模块包含用户模型相关节点信息
+  model:
+    - name: User
+      field:
+        - name: id
+          type: primary
+          desc: id
+          virtual: 3
+        - name: created
+          type: datetime
+          desc: 创建时间
+          virtual: 1
+          default_create: "{ datetime.datetime.now }"
+          required: true
+      meta:
+        indexes:
+          - name: username
+            unique: true
+        import:
+          - datetime
+    - name: UserAuth
+      field:
+        - name: id
+          type: primary
+          desc: id
+          virtual: 3
+        - name: created
+          type: datetime
+          desc: 创建时间
+          virtual: 1
+          default_create: "{ datetime.datetime.now }"
+          required: true
+      meta:
+        indexes:
+          - name: "user_id"
+            sparse: true
+          - name: "ttype, identifier"
+            unique: true
+        import:
+          - name: datetime

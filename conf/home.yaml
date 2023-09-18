@@ -4,12 +4,16 @@ tasks:
       aio: true
     key:
       USERAUTHTTYPE:
+        - key: 超管
+          value: superadmin
+        - key: 账号密码
+          value: password
+        - key: 微信
+          value: wechat
         - key: 手机号
           value: phone
         - key: 邮箱
           value: email
-        - key: 微信
-          value: wechat
     output:
       - framework: fastapi
         target: D:\codehouse\home\apps

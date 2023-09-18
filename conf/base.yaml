@@ -23,3 +23,7 @@ tasks:
           前端接口代码
       target: 
         生成代码位置
+      formatter:
+        代码规整化
+        black:
+          black配置, 支持python相关代码

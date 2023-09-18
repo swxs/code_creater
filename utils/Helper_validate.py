@@ -36,7 +36,7 @@ class RegType:
 
 class Validate:
     @classmethod
-    def _find_reg(self, reg_type):
+    def _find_reg(cls, reg_type):
         if reg_type in RegType.__dict__:
             return reg_type
         if isinstance(reg_type, Pattern):
@@ -54,6 +54,8 @@ class Validate:
     @classmethod
     def any(cls, value, reg_type_list=None):
         try:
+            if reg_type_list is None:
+                reg_type_list = []
             return any(Validate.has(value, reg_type=reg_type) for reg_type in reg_type_list)
         except TypeError:
             return False
@@ -69,6 +71,13 @@ class Validate:
     def end_with(cls, value, reg_type=RegType.ALL):
         try:
             return re.match(r'.*?({0})$'.format(cls._find_reg(reg_type)), value, re.M) is not None
+        except TypeError:
+            return False
+
+    @classmethod
+    def wrap_with(cls, value, start_reg_type=RegType.ALL, end_reg_type=RegType.ALL):
+        try:
+            return re.match(r'^({0}).*?({1})$'.format(cls._find_reg(start_reg_type), cls._find_reg(end_reg_type)), value, re.M) is not None
         except TypeError:
             return False
 
