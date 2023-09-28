@@ -11,17 +11,5 @@ from ..utils.Helper_productor import Productor
 from .maker import Maker
 
 
-class MakerProductor(Productor):
-    def __init__(
-        self,
-        root_dir: object,
-        start_dir: object,
-        base_module: object = None,
-        temp_module: object = None,
-        pattern: object = '*.py',
-    ):
-        super().__init__(root_dir, start_dir, base_module=base_module, temp_module=temp_module, pattern=pattern)
-
-
 base_path = os.path.dirname(os.path.abspath(__file__))
-maker_productor = MakerProductor(core.path.SITE_ROOT, base_path, Maker, Maker, "*.py")
+maker_productor = Productor(core.path.SITE_ROOT, base_path, Maker, Maker, "*.py")
