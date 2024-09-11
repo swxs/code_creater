@@ -15,46 +15,54 @@ tasks:
         - key: 邮箱
           value: email
     output:
-      - framework: fastapi
-        target: D:\codehouse\home\apps
+      - target: D:\codehouse\home\apps
+        framework: fastapi
         formatter: black
-      - framework: markfile
-        target: D:\codehouse\home\docs
 
   - input: "密码控制.xmind"
     params:
       aio: true
     output:
-      - framework: fastapi
-        target: D:\codehouse\home\apps
+      - target: D:\codehouse\home\apps
+        framework: fastapi
         formatter: black
-      - framework: element-ui
-        target: D:\codehouse\openapi_passwordlock
 
   - input: "备忘录.xmind"
     params:
       aio: true
     output:
-      - framework: fastapi
-        target: D:\codehouse\home\apps
+      - target: D:\codehouse\home\apps
+        framework: fastapi
         formatter: black
-      - framework: element-ui
-        target: D:\codehouse\openapi_memo
 
   - input: "单词本.xmind"
     params:
       aio: true
     output:
-      - framework: fastapi
-        target: D:\codehouse\home\apps
+      - target: D:\codehouse\home\apps
+        framework: fastapi
         formatter: black
-      - framework: element-ui
-        target: D:\codehouse\openapi_wordbook
+      - target: D:\codehouse\home\docs
+        framework: markfile
+      - target: D:\codehouse\openapi_wordbook
+        framework: element-ui
+
+  - input: "附件.xmind"
+    params:
+      aio: true
+    key:
+      UPLOAD_POLICY:
+        - key: 阿里OSS
+          value: alioss
+    output:
+      - target: D:\codehouse\home\apps
+        framework: fastapi
+        formatter: black
 
   - input: "微信公众号.xmind"
     params:
       aio: true
     output:
-      - framework: fastapi
-        target: D:\codehouse\home\apps
+      - target: D:\codehouse\home\apps
+        framework: fastapi
         formatter: black
