@@ -59,6 +59,7 @@ async def get_{{klass.name | lower}}(
 ):
     {{klass.name | lower}} = await {{klass.name}}.find_one(
         finds={{'{'}}"id": ObjectId({{klass.name | lower}}_id){{'}'}},
+        nullable=False,
     )
 
     return success(
